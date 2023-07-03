@@ -3,6 +3,10 @@ package gateway;
 
 import "google/protobuf/empty.proto";
 
+message ConfigurationRequest {
+  optional string name = 1;
+}
+
 message Configuration {
   string name = 1;
   string prvkey = 2;
@@ -41,7 +45,7 @@ message PeerStats {
 }
 
 service GatewayService {
-  rpc Config (google.protobuf.Empty) returns (Configuration);
+  rpc Config (ConfigurationRequest) returns (Configuration);
   rpc Updates (google.protobuf.Empty) returns (stream Update);
   rpc Stats (stream PeerStats) returns (google.protobuf.Empty);
 }
