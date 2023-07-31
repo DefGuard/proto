@@ -38,6 +38,14 @@ message NewDevice {
   string pubkey = 2;
 }
 
+message Device {
+  int64 id = 1;
+  string name = 2;
+  string pubkey = 3;
+  int64 user_id = 4;
+  int64 created_at = 5;
+}
+
 message DeviceConfig {
   int64 network_id = 1;
   string network_name = 2;
@@ -45,7 +53,8 @@ message DeviceConfig {
 }
 
 message CreateDeviceResponse {
-  repeated DeviceConfig configs = 1;
+  Device device = 1;
+  repeated DeviceConfig configs = 2;
 }
 
 service EnrollmentService {
