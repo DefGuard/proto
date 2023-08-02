@@ -1,0 +1,64 @@
+syntax = "proto3";
+package enrollment;
+
+import "google/protobuf/empty.proto";
+
+message EnrollmentStartRequest {
+  string token = 1;
+}
+
+message AdminInfo {
+  string name = 1;
+  optional string phone_number = 2;
+  string email = 3;
+}
+
+message InitialUserInfo {
+  string first_name = 1;
+  string last_name = 2;
+  string login = 3;
+  string email = 4;
+}
+
+message EnrollmentStartResponse {
+  AdminInfo admin = 1;
+  InitialUserInfo user = 2;
+  int64 deadline_timestamp = 3;
+  string final_page_content = 5;
+  bool vpn_setup_optional = 6;
+}
+
+message ActivateUserRequest {
+  string phone_number = 1;
+  string password = 2;
+}
+
+message NewDevice {
+  string name = 1;
+  string pubkey = 2;
+}
+
+message Device {
+  int64 id = 1;
+  string name = 2;
+  string pubkey = 3;
+  int64 user_id = 4;
+  int64 created_at = 5;
+}
+
+message DeviceConfig {
+  int64 network_id = 1;
+  string network_name = 2;
+  string config = 3;
+}
+
+message CreateDeviceResponse {
+  Device device = 1;
+  repeated DeviceConfig configs = 2;
+}
+
+service EnrollmentService {
+  rpc StartEnrollment (EnrollmentStartRequest) returns (EnrollmentStartResponse);
+  rpc ActivateUser (ActivateUserRequest) returns (google.protobuf.Empty);
+  rpc CreateDevice (NewDevice) returns (CreateDeviceResponse);
+}
