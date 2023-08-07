@@ -18,6 +18,7 @@ message InitialUserInfo {
   string last_name = 2;
   string login = 3;
   string email = 4;
+  optional string phone_number = 5;
 }
 
 message EnrollmentStartResponse {
