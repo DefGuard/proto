@@ -19,6 +19,7 @@ message InitialUserInfo {
   string login = 3;
   string email = 4;
   optional string phone_number = 5;
+  bool is_active = 6;
 }
 
 message EnrollmentStartResponse {
@@ -27,6 +28,7 @@ message EnrollmentStartResponse {
   int64 deadline_timestamp = 3;
   string final_page_content = 5;
   bool vpn_setup_optional = 6;
+  InstanceInfo instance = 7;
 }
 
 message ActivateUserRequest {
@@ -51,11 +53,23 @@ message DeviceConfig {
   int64 network_id = 1;
   string network_name = 2;
   string config = 3;
+  string endpoint = 4;
+  string assigned_ip = 5;
+  // network pubkey
+  string pubkey = 6;
+  string allowed_ips = 7;
+}
+
+message InstanceInfo {
+  string id = 1;
+  string name = 2;
 }
 
 message CreateDeviceResponse {
   Device device = 1;
   repeated DeviceConfig configs = 2;
+  InstanceInfo instance = 3;
+
 }
 
 service EnrollmentService {
