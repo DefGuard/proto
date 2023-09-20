@@ -73,8 +73,13 @@ message CreateDeviceResponse {
 
 }
 
+message ExistingDevice {
+  string pubkey = 1;
+}
+
 service EnrollmentService {
   rpc StartEnrollment (EnrollmentStartRequest) returns (EnrollmentStartResponse);
   rpc ActivateUser (ActivateUserRequest) returns (google.protobuf.Empty);
   rpc CreateDevice (NewDevice) returns (CreateDeviceResponse);
+  rpc GetNetworkInfo (ExistingDevice) returns (CreateDeviceResponse);
 }
