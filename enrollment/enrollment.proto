@@ -66,7 +66,7 @@ message InstanceInfo {
   string url = 3;
 }
 
-message CreateDeviceResponse {
+message DeviceConfigResponse {
   Device device = 1;
   repeated DeviceConfig configs = 2;
   InstanceInfo instance = 3;
@@ -80,6 +80,6 @@ message ExistingDevice {
 service EnrollmentService {
   rpc StartEnrollment (EnrollmentStartRequest) returns (EnrollmentStartResponse);
   rpc ActivateUser (ActivateUserRequest) returns (google.protobuf.Empty);
-  rpc CreateDevice (NewDevice) returns (CreateDeviceResponse);
-  rpc GetNetworkInfo (ExistingDevice) returns (CreateDeviceResponse);
+  rpc CreateDevice (NewDevice) returns (DeviceConfigResponse);
+  rpc GetNetworkInfo (ExistingDevice) returns (DeviceConfigResponse);
 }
