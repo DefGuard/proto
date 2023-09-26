@@ -19,6 +19,7 @@ message InitialUserInfo {
   string login = 3;
   string email = 4;
   optional string phone_number = 5;
+  bool is_active = 6;
 }
 
 message EnrollmentStartResponse {
@@ -27,6 +28,7 @@ message EnrollmentStartResponse {
   int64 deadline_timestamp = 3;
   string final_page_content = 5;
   bool vpn_setup_optional = 6;
+  InstanceInfo instance = 7;
 }
 
 message ActivateUserRequest {
@@ -51,15 +53,33 @@ message DeviceConfig {
   int64 network_id = 1;
   string network_name = 2;
   string config = 3;
+  string endpoint = 4;
+  string assigned_ip = 5;
+  // network pubkey
+  string pubkey = 6;
+  string allowed_ips = 7;
 }
 
-message CreateDeviceResponse {
+message InstanceInfo {
+  string id = 1;
+  string name = 2;
+  string url = 3;
+}
+
+message DeviceConfigResponse {
   Device device = 1;
   repeated DeviceConfig configs = 2;
+  InstanceInfo instance = 3;
+
+}
+
+message ExistingDevice {
+  string pubkey = 1;
 }
 
 service EnrollmentService {
   rpc StartEnrollment (EnrollmentStartRequest) returns (EnrollmentStartResponse);
   rpc ActivateUser (ActivateUserRequest) returns (google.protobuf.Empty);
-  rpc CreateDevice (NewDevice) returns (CreateDeviceResponse);
+  rpc CreateDevice (NewDevice) returns (DeviceConfigResponse);
+  rpc GetNetworkInfo (ExistingDevice) returns (DeviceConfigResponse);
 }
