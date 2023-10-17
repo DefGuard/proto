@@ -14,12 +14,12 @@ message InterfaceConfig {
 message Peer {
   string public_key = 1;
   optional string preshared_key = 2;
-  optional int64 protocol_version = 3;
+  optional uint32 protocol_version = 3;
   optional string endpoint = 4;
-  optional int64 last_handshake = 5;
-  int64 tx_bytes = 6;
-  int64 rx_bytes = 7;
-  optional int32 persistent_keepalive_interval = 8;
+  optional uint64 last_handshake = 5;
+  uint64 tx_bytes = 6;
+  uint64 rx_bytes = 7;
+  optional uint32 persistent_keepalive_interval = 8;
   repeated string allowed_ips = 9;
 }
 
