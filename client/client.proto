@@ -1,5 +1,5 @@
 syntax = "proto3";
-package enrollment;
+package client;
 
 import "google/protobuf/empty.proto";
 
@@ -7,7 +7,7 @@ message InterfaceConfig {
   string name = 1;
   string prvkey = 2;
   string address = 3;
-  int32 port = 4;
+  uint32 port = 4;
   repeated Peer peers = 5;
 }
 
@@ -23,13 +23,27 @@ message Peer {
   repeated string allowed_ips = 9;
 }
 
+message CreateInterfaceRequest {
+  InterfaceConfig config = 1;
+}
+
+message RemoveInterfaceRequest {
+  string interface_name = 2;
+}
+
+message ReadInterfaceDataRequest {
+  string interface_name = 2;
+}
+
 message InterfaceData {
-  string name = 1;
+  int32 listen_port = 1;
+  optional uint32 fwmark = 2;
+  map<string, Peer> peers = 3;
 }
 
 // service used by desktop clients to communicate with interface management daemon
 service DesktopDaemonService {
-  rpc CreateInterface (google.protobuf.Empty) returns (google.protobuf.Empty);
-  rpc RemoveInterface (google.protobuf.Empty) returns (google.protobuf.Empty);
-  rpc ReadInterfaceData (google.protobuf.Empty) returns (stream InterfaceData);
+  rpc CreateInterface (CreateInterfaceRequest) returns (google.protobuf.Empty);
+  rpc RemoveInterface (RemoveInterfaceRequest) returns (google.protobuf.Empty);
+  rpc ReadInterfaceData (ReadInterfaceDataRequest) returns (stream InterfaceData);
 }
