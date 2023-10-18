@@ -58,6 +58,7 @@ message DeviceConfig {
   // network pubkey
   string pubkey = 6;
   string allowed_ips = 7;
+  optional string dns = 8;
 }
 
 message InstanceInfo {
