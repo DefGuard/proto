@@ -20,6 +20,7 @@ message InitialUserInfo {
   string email = 4;
   optional string phone_number = 5;
   bool is_active = 6;
+  repeated string device_names = 7;
 }
 
 message EnrollmentStartResponse {
