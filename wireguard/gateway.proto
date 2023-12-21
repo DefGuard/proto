@@ -24,6 +24,7 @@ enum UpdateType {
 message Peer {
   string pubkey = 1;
   repeated string allowed_ips = 2;
+  optional string preshared_key = 3;
 }
 
 message Update {
