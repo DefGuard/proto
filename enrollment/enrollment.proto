@@ -60,12 +60,16 @@ message DeviceConfig {
   string pubkey = 6;
   string allowed_ips = 7;
   optional string dns = 8;
+  bool mfa_enabled = 9;
+  int32 keepalive_interval = 10;
 }
 
 message InstanceInfo {
   string id = 1;
   string name = 2;
   string url = 3;
+  string proxy_url = 4;
+  string username = 5;
 }
 
 message DeviceConfigResponse {
