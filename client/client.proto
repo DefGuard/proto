@@ -28,10 +28,14 @@ message CreateInterfaceRequest {
   InterfaceConfig config = 1;
   repeated string allowed_ips = 2;
   optional string dns = 3;
+  optional string pre_up = 4;
+  optional string post_up = 5;
 }
 
 message RemoveInterfaceRequest {
   string interface_name = 2;
+  optional string pre_down = 4;
+  optional string post_down = 5;
 }
 
 message ReadInterfaceDataRequest {
