@@ -1,5 +1,5 @@
 syntax = "proto3";
-package enrollment;
+package defguard.proxy;
 
 import "google/protobuf/empty.proto";
 
@@ -35,11 +35,17 @@ message EnrollmentStartResponse {
 message ActivateUserRequest {
   string phone_number = 1;
   string password = 2;
+  optional string token = 3;
+  optional string ip_address = 4;
+  optional string user_agent = 5;
 }
 
 message NewDevice {
   string name = 1;
   string pubkey = 2;
+  optional string token = 3;
+  optional string ip_address = 4;
+  optional string user_agent = 5;
 }
 
 message Device {
@@ -76,16 +82,59 @@ message DeviceConfigResponse {
   Device device = 1;
   repeated DeviceConfig configs = 2;
   InstanceInfo instance = 3;
-
 }
 
 message ExistingDevice {
   string pubkey = 1;
+  optional string token = 2;
 }
 
-service EnrollmentService {
-  rpc StartEnrollment (EnrollmentStartRequest) returns (EnrollmentStartResponse);
-  rpc ActivateUser (ActivateUserRequest) returns (google.protobuf.Empty);
-  rpc CreateDevice (NewDevice) returns (DeviceConfigResponse);
-  rpc GetNetworkInfo (ExistingDevice) returns (DeviceConfigResponse);
+message PasswordResetStartRequest {
+  string token = 1;
+  optional string ip_address = 2;
+  optional string user_agent = 3;
+}
+
+message PasswordResetInitializeRequest {
+  string email = 1;
+  optional string ip_address = 2;
+  optional string user_agent = 3;
+}
+
+message PasswordResetStartResponse {
+  int64 deadline_timestamp = 1;
+}
+
+message PasswordResetRequest {
+  string password = 1;
+  optional string token = 2;
+  optional string ip_address = 3;
+  optional string user_agent = 4;
+}
+
+message ProxyRequest {
+  uint64 id = 1;
+  oneof payload {
+    google.protobuf.Empty empty = 2;
+    EnrollmentStartResponse enrollment_start = 3;
+    DeviceConfigResponse device_config = 4;
+    PasswordResetStartResponse password_reset_start = 5;
+  }
+}
+
+message ProxyResponse {
+  uint64 id = 1;
+  oneof payload {
+    EnrollmentStartRequest enrollment_start = 2;
+    ActivateUserRequest activate_user = 3;
+    NewDevice new_device = 4;
+    ExistingDevice existing_device = 5;
+    PasswordResetInitializeRequest password_reset_init = 6;
+    PasswordResetStartRequest password_reset_start = 7;
+    PasswordResetRequest password_reset = 8;
+  }
+}
+
+service Proxy {
+  rpc Bidi (stream ProxyRequest) returns (stream ProxyResponse);
 }
