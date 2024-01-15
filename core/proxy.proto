@@ -116,7 +116,7 @@ message DeviceInfo {
  * can return gRPC errors from core.
  */
 message CoreError {
-  uint32 status = 1;
+  int32 status = 1;
   string message = 2;
 }
 
