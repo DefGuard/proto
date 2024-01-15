@@ -3,6 +3,7 @@ package defguard.proxy;
 
 import "google/protobuf/empty.proto";
 
+// Enrollment & Desktop Client activation
 message EnrollmentStartRequest {
   string token = 1;
 }
@@ -85,6 +86,7 @@ message ExistingDevice {
   optional string token = 2;
 }
 
+// Password Reset
 message PasswordResetStartRequest {
   string token = 1;
 }
@@ -102,9 +104,20 @@ message PasswordResetRequest {
   optional string token = 2;
 }
 
+// Common client info
 message DeviceInfo {
   optional string ip_address = 3;
   optional string user_agent = 4;
+}
+
+/*
+ * Error response variant.
+ * Due to reverse proxy -> core communication this is how we
+ * can return gRPC errors from core.
+ */
+message CoreError {
+  int32 status_code = 1;
+  string message = 2;
 }
 
 /*
@@ -118,6 +131,7 @@ message CoreResponse {
     EnrollmentStartResponse enrollment_start = 3;
     DeviceConfigResponse device_config = 4;
     PasswordResetStartResponse password_reset_start = 5;
+    CoreError core_error = 6;
   }
 }
 
