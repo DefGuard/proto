@@ -3,6 +3,7 @@ package defguard.proxy;
 
 import "google/protobuf/empty.proto";
 
+// Enrollment & Desktop Client activation
 message EnrollmentStartRequest {
   string token = 1;
 }
@@ -85,6 +86,7 @@ message ExistingDevice {
   optional string token = 2;
 }
 
+// Password Reset
 message PasswordResetStartRequest {
   string token = 1;
 }
@@ -102,6 +104,7 @@ message PasswordResetRequest {
   optional string token = 2;
 }
 
+// Common client info
 message DeviceInfo {
   optional string ip_address = 3;
   optional string user_agent = 4;
