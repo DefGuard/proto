@@ -131,6 +131,7 @@ message CoreResponse {
     EnrollmentStartResponse enrollment_start = 3;
     DeviceConfigResponse device_config = 4;
     PasswordResetStartResponse password_reset_start = 5;
+    CoreError core_error = 6;
   }
 }
 
@@ -148,7 +149,6 @@ message CoreRequest {
     PasswordResetInitializeRequest password_reset_init = 7;
     PasswordResetStartRequest password_reset_start = 8;
     PasswordResetRequest password_reset = 9;
-    CoreError core_error = 10;
   }
 }
 
