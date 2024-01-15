@@ -117,7 +117,7 @@ message DeviceInfo {
  */
 message CoreError {
   uint32 status = 1;
-  optional string message = 2;
+  string message = 2;
 }
 
 /*
