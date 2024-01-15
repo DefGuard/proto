@@ -111,6 +111,16 @@ message DeviceInfo {
 }
 
 /*
+ * Error response variant.
+ * Due to reverse proxy -> core communication this is how we
+ * can return gRPC errors from core.
+ */
+message CoreError {
+  uint32 status = 1;
+  optional string message = 2;
+}
+
+/*
  * CoreResponse represents messages send from core to proxy
  * in response to CoreRequest.
  */
@@ -138,6 +148,7 @@ message CoreRequest {
     PasswordResetInitializeRequest password_reset_init = 7;
     PasswordResetStartRequest password_reset_start = 8;
     PasswordResetRequest password_reset = 9;
+    CoreError core_error = 10;
   }
 }
 
