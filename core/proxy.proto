@@ -104,10 +104,29 @@ message PasswordResetRequest {
   optional string token = 2;
 }
 
+// Desktop client MFA
+enum MfaMethod {
+  TOTP = 0;
+  EMAIL = 1;
+}
+
+message ClientMfaStartRequest {
+  string username = 1;
+  MfaMethod method = 2;
+}
+
+message ClientMfaFinishRequest {
+  uint32 code = 1;
+}
+
+message ClientMfaFinishResponse {
+  string preshared_key = 1;
+}
+
 // Common client info
 message DeviceInfo {
-  optional string ip_address = 3;
-  optional string user_agent = 4;
+  optional string ip_address = 1;
+  optional string user_agent = 2;
 }
 
 /*
@@ -131,7 +150,8 @@ message CoreResponse {
     EnrollmentStartResponse enrollment_start = 3;
     DeviceConfigResponse device_config = 4;
     PasswordResetStartResponse password_reset_start = 5;
-    CoreError core_error = 6;
+    ClientMfaFinishResponse client_mfa_finish = 6;
+    CoreError core_error = 7;
   }
 }
 
@@ -149,6 +169,8 @@ message CoreRequest {
     PasswordResetInitializeRequest password_reset_init = 7;
     PasswordResetStartRequest password_reset_start = 8;
     PasswordResetRequest password_reset = 9;
+    ClientMfaStartRequest client_mfa_start = 10;
+    ClientMfaFinishRequest client_mfa_finish = 11;
   }
 }
 
