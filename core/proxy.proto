@@ -111,12 +111,18 @@ enum MfaMethod {
 }
 
 message ClientMfaStartRequest {
-  string username = 1;
-  MfaMethod method = 2;
+  int64 location_id = 1;
+  string username = 2;
+  MfaMethod method = 3;
+}
+
+message ClientMfaStartResponse {
+  string token = 1;
 }
 
 message ClientMfaFinishRequest {
-  uint32 code = 1;
+  string token = 1;
+  uint32 code = 2;
 }
 
 message ClientMfaFinishResponse {
@@ -150,8 +156,9 @@ message CoreResponse {
     EnrollmentStartResponse enrollment_start = 3;
     DeviceConfigResponse device_config = 4;
     PasswordResetStartResponse password_reset_start = 5;
-    ClientMfaFinishResponse client_mfa_finish = 6;
-    CoreError core_error = 7;
+    ClientMfaStartResponse client_mfa_start = 6;
+    ClientMfaFinishResponse client_mfa_finish = 7;
+    CoreError core_error = 8;
   }
 }
 
