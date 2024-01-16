@@ -112,7 +112,7 @@ enum MfaMethod {
 
 message ClientMfaStartRequest {
   int64 location_id = 1;
-  string username = 2;
+  string pubkey = 2;
   MfaMethod method = 3;
 }
 
