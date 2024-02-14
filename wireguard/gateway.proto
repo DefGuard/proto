@@ -39,16 +39,26 @@ message Update {
 message PeerStats {
   string public_key = 1;
   string endpoint = 2;
-  int64 upload = 3;
-  int64 download = 4;
-  int64 keepalive_interval = 5;
-  int64 latest_handshake = 6;
+  uint64 upload = 3;
+  uint64 download = 4;
+  uint32 keepalive_interval = 5;
+  uint64 latest_handshake = 6;
   string allowed_ips = 7;
+}
+
+/*
+ * Allow empty messages to keep the connection alive.
+ */
+message StatsUpdate {
+  uint64 id = 1;
+  oneof payload {
+    google.protobuf.Empty empty = 2;
+    PeerStats peer_stats = 3;
+  }
 }
 
 service GatewayService {
   rpc Config (ConfigurationRequest) returns (Configuration);
   rpc Updates (google.protobuf.Empty) returns (stream Update);
-  rpc Stats (stream PeerStats) returns (google.protobuf.Empty);
+  rpc Stats (stream StatsUpdate) returns (google.protobuf.Empty);
 }
-
