@@ -12,7 +12,7 @@ message JobStatus {
   bool success = 3;
   string public_key = 4;
   string ssh_key = 5;
-  string fingerprint = 6;
+  string yubikey_serial = 6;
   string error = 7;
 }
 
