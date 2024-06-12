@@ -22,6 +22,7 @@ message InitialUserInfo {
   optional string phone_number = 5;
   bool is_active = 6;
   repeated string device_names = 7;
+  bool enrolled = 8;
 }
 
 message EnrollmentStartResponse {
