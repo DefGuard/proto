@@ -40,6 +40,11 @@ message ActivateUserRequest {
   optional string token = 3;
 }
 
+message ActivateUserResponse {
+  // auth token used for post-enrollment client-core communication
+  string token = 1;
+}
+
 message NewDevice {
   string name = 1;
   string pubkey = 2;
@@ -80,6 +85,16 @@ message DeviceConfigResponse {
   Device device = 1;
   repeated DeviceConfig configs = 2;
   InstanceInfo instance = 3;
+}
+
+message InstanceInfoRequest {
+  string token = 1;
+  string pubkey = 2;
+}
+
+message InstanceInfoResponse {
+  DeviceConfigResponse device_config = 1;
+  bool is_enterprise = 2;
 }
 
 message ExistingDevice {
@@ -160,6 +175,8 @@ message CoreResponse {
     ClientMfaStartResponse client_mfa_start = 6;
     ClientMfaFinishResponse client_mfa_finish = 7;
     CoreError core_error = 8;
+    ActivateUserResponse activate_user_response = 9;
+    InstanceInfoResponse instance_info = 10;
   }
 }
 
@@ -179,6 +196,7 @@ message CoreRequest {
     PasswordResetRequest password_reset = 9;
     ClientMfaStartRequest client_mfa_start = 10;
     ClientMfaFinishRequest client_mfa_finish = 11;
+    InstanceInfoRequest instance_info = 12;
   }
 }
 
