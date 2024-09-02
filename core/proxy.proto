@@ -25,13 +25,18 @@ message InitialUserInfo {
   bool enrolled = 8;
 }
 
+message Settings {
+  bool vpn_setup_optional = 1;
+  bool only_client_activation = 2;
+}
+
 message EnrollmentStartResponse {
   AdminInfo admin = 1;
   InitialUserInfo user = 2;
   int64 deadline_timestamp = 3;
   string final_page_content = 5;
-  bool vpn_setup_optional = 6;
   InstanceInfo instance = 7;
+  Settings settings = 8;
 }
 
 message ActivateUserRequest {
