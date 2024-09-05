@@ -80,7 +80,7 @@ message DeviceConfigResponse {
   Device device = 1;
   repeated DeviceConfig configs = 2;
   InstanceInfo instance = 3;
-  // auth token used for further client-core communication
+  // polling token used for further client-core communication
   optional string token = 4;
 }
 
