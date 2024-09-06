@@ -86,7 +86,6 @@ message DeviceConfigResponse {
 
 message InstanceInfoRequest {
   string token = 1;
-  string pubkey = 2;
 }
 
 message InstanceInfoResponse {
