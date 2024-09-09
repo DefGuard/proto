@@ -89,12 +89,18 @@ message DeviceConfigResponse {
   optional string token = 4;
 }
 
+message InstanceConfigResponse {
+    bool enterprise = 1;
+    bool disable_all_traffic = 2;
+}
+
 message InstanceInfoRequest {
   string token = 1;
 }
 
 message InstanceInfoResponse {
   DeviceConfigResponse device_config = 1;
+  InstanceConfigResponse instance_config = 2;
 }
 
 message ExistingDevice {
