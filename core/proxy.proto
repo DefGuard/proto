@@ -91,7 +91,7 @@ message DeviceConfigResponse {
 
 message InstanceConfigResponse {
     bool enterprise = 1;
-    bool disable_route_all_traffic = 2;
+    bool disable_all_traffic = 2;
 }
 
 message InstanceInfoRequest {
