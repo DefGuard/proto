@@ -79,6 +79,8 @@ message InstanceInfo {
   string url = 3;
   string proxy_url = 4;
   string username = 5;
+  bool enterprise_enabled = 6;
+  bool disable_all_traffic = 7;
 }
 
 message DeviceConfigResponse {
@@ -89,18 +91,12 @@ message DeviceConfigResponse {
   optional string token = 4;
 }
 
-message InstanceConfigResponse {
-    bool enterprise = 1;
-    bool disable_all_traffic = 2;
-}
-
 message InstanceInfoRequest {
   string token = 1;
 }
 
 message InstanceInfoResponse {
   DeviceConfigResponse device_config = 1;
-  InstanceConfigResponse instance_config = 2;
 }
 
 message ExistingDevice {
