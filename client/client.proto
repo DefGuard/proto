@@ -23,7 +23,6 @@ message Peer {
   repeated string allowed_ips = 9;
 }
 
-
 message CreateInterfaceRequest {
   InterfaceConfig config = 1;
   repeated string allowed_ips = 2;
@@ -36,6 +35,7 @@ message RemoveInterfaceRequest {
   string interface_name = 2;
   optional string pre_down = 4;
   optional string post_down = 5;
+  string endpoint = 6;
 }
 
 message ReadInterfaceDataRequest {
