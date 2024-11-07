@@ -147,6 +147,12 @@ message ClientMfaFinishResponse {
   string preshared_key = 1;
 }
 
+message AuthInfoResponse {
+  string url = 1;
+  string csrf_token = 2;
+  string nonce = 3;
+}
+
 // Common client info
 message DeviceInfo {
   optional string ip_address = 1;
@@ -178,6 +184,7 @@ message CoreResponse {
     ClientMfaFinishResponse client_mfa_finish = 7;
     CoreError core_error = 8;
     InstanceInfoResponse instance_info = 9;
+    AuthInfoResponse auth_info = 13;
   }
 }
 
@@ -198,6 +205,7 @@ message CoreRequest {
     ClientMfaStartRequest client_mfa_start = 10;
     ClientMfaFinishRequest client_mfa_finish = 11;
     InstanceInfoRequest instance_info = 12;
+    google.protobuf.Empty auth_info = 13;
   }
 }
 
