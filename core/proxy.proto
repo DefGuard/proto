@@ -147,6 +147,10 @@ message ClientMfaFinishResponse {
   string preshared_key = 1;
 }
 
+message AuthInfoRequest {
+  string redirect_url = 1;
+}
+
 message AuthInfoResponse {
   string url = 1;
   string csrf_token = 2;
@@ -205,7 +209,7 @@ message CoreRequest {
     ClientMfaStartRequest client_mfa_start = 10;
     ClientMfaFinishRequest client_mfa_finish = 11;
     InstanceInfoRequest instance_info = 12;
-    google.protobuf.Empty auth_info = 13;
+    AuthInfoRequest auth_info = 13;
   }
 }
 
