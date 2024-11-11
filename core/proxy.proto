@@ -157,6 +157,16 @@ message AuthInfoResponse {
   string nonce = 3;
 }
 
+message AuthCallbackRequest {
+  string id_token = 1;
+  string nonce = 2;
+  string callback_url = 3;
+}
+
+message AuthCallbackResponse {
+  string mfa_info = 1;
+}
+
 // Common client info
 message DeviceInfo {
   optional string ip_address = 1;
@@ -189,6 +199,7 @@ message CoreResponse {
     CoreError core_error = 8;
     InstanceInfoResponse instance_info = 9;
     AuthInfoResponse auth_info = 13;
+    AuthCallbackResponse auth_callback = 14;
   }
 }
 
@@ -210,6 +221,7 @@ message CoreRequest {
     ClientMfaFinishRequest client_mfa_finish = 11;
     InstanceInfoRequest instance_info = 12;
     AuthInfoRequest auth_info = 13;
+    AuthCallbackRequest auth_callback = 14;
   }
 }
 
