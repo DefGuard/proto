@@ -163,10 +163,6 @@ message AuthCallbackRequest {
   string callback_url = 3;
 }
 
-message AuthCallbackResponse {
-  string mfa_info = 1;
-}
-
 // Common client info
 message DeviceInfo {
   optional string ip_address = 1;
@@ -199,7 +195,6 @@ message CoreResponse {
     CoreError core_error = 8;
     InstanceInfoResponse instance_info = 9;
     AuthInfoResponse auth_info = 13;
-    AuthCallbackResponse auth_callback = 14;
   }
 }
 
