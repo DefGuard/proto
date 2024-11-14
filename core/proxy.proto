@@ -155,12 +155,18 @@ message AuthInfoResponse {
   string url = 1;
   string csrf_token = 2;
   string nonce = 3;
+  optional string button_display_name = 4;
 }
 
 message AuthCallbackRequest {
-  string id_token = 1;
+  string code = 1;
   string nonce = 2;
   string callback_url = 3;
+}
+
+message AuthCallbackResponse {
+  string url = 1;
+  string token = 2;
 }
 
 // Common client info
@@ -195,6 +201,7 @@ message CoreResponse {
     CoreError core_error = 8;
     InstanceInfoResponse instance_info = 9;
     AuthInfoResponse auth_info = 13;
+    AuthCallbackResponse auth_callback = 14;
   }
 }
 
