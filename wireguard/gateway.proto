@@ -10,9 +10,9 @@ message ConfigurationRequest {
 message Configuration {
   string name = 1;
   string prvkey = 2;
-  string address = 3;
   uint32 port = 4;
   repeated Peer peers = 5;
+  repeated string addresses = 6;
 }
 
 enum UpdateType {
