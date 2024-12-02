@@ -147,6 +147,28 @@ message ClientMfaFinishResponse {
   string preshared_key = 1;
 }
 
+message AuthInfoRequest {
+  string redirect_url = 1;
+}
+
+message AuthInfoResponse {
+  string url = 1;
+  string csrf_token = 2;
+  string nonce = 3;
+  optional string button_display_name = 4;
+}
+
+message AuthCallbackRequest {
+  string code = 1;
+  string nonce = 2;
+  string callback_url = 3;
+}
+
+message AuthCallbackResponse {
+  string url = 1;
+  string token = 2;
+}
+
 // Common client info
 message DeviceInfo {
   optional string ip_address = 1;
@@ -178,6 +200,8 @@ message CoreResponse {
     ClientMfaFinishResponse client_mfa_finish = 7;
     CoreError core_error = 8;
     InstanceInfoResponse instance_info = 9;
+    AuthInfoResponse auth_info = 13;
+    AuthCallbackResponse auth_callback = 14;
   }
 }
 
@@ -198,6 +222,8 @@ message CoreRequest {
     ClientMfaStartRequest client_mfa_start = 10;
     ClientMfaFinishRequest client_mfa_finish = 11;
     InstanceInfoRequest instance_info = 12;
+    AuthInfoRequest auth_info = 13;
+    AuthCallbackRequest auth_callback = 14;
   }
 }
 
