@@ -4,9 +4,13 @@ package gateway;
 import "google/protobuf/empty.proto";
 
 message ConfigurationRequest {
-  optional string name = 1;
+  string auth_token = 1;
+  string hostname = 2;
 }
 
+/*
+ * Networking and VPN configuration send from core to gateway.
+ */
 message Configuration {
   string name = 1;
   string prvkey = 2;
@@ -48,18 +52,35 @@ message PeerStats {
 }
 
 /*
- * Allow empty messages to keep the connection alive.
+ * CoreResponse represents messages send from core to gateway
+ * in response to CoreRequest.
  */
-message StatsUpdate {
+message CoreResponse {
   uint64 id = 1;
   oneof payload {
+    // Allow empty messages to keep the connection alive.
     google.protobuf.Empty empty = 2;
-    PeerStats peer_stats = 3;
+    Configuration config = 3;
+    Update update = 4;
   }
 }
 
-service GatewayService {
-  rpc Config (ConfigurationRequest) returns (Configuration);
-  rpc Updates (google.protobuf.Empty) returns (stream Update);
-  rpc Stats (stream StatsUpdate) returns (google.protobuf.Empty);
+/*
+ * CoreRequest represents messages send from gateway to core.
+ */
+message CoreRequest {
+  uint64 id = 1;
+  oneof payload {
+    PeerStats peer_stats = 2;
+    ConfigurationRequest config_request = 3;
+  }
+}
+
+/*
+ * Bi-directional communication between core and gateway.
+ * For security reasons, the connection has to be initiated by core,
+ * so requests and responses are actually send in reverse.
+ */
+service Gateway {
+  rpc Bidi (stream CoreResponse) returns (stream CoreRequest);
 }
