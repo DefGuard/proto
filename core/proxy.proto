@@ -140,7 +140,7 @@ message ClientMfaStartResponse {
 
 message ClientMfaFinishRequest {
   string token = 1;
-  uint32 code = 2;
+  string code = 2;
 }
 
 message ClientMfaFinishResponse {
