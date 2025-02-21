@@ -19,7 +19,7 @@ enum FirewallPolicy {
 }
 
 message FirewallRule {
-  optional uint32 index = 1;
+  int64 id = 1;
   repeated IpAddress source_addr = 2;
   repeated IpAddress destination_addr = 3;
   repeated Port destination_port = 4;
