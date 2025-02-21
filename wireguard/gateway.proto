@@ -59,7 +59,7 @@ message StatsUpdate {
 }
 
 service GatewayService {
-  rpc Config (ConfigurationRequest) returns (Configuration);
-  rpc Updates (google.protobuf.Empty) returns (stream Update);
-  rpc Stats (stream StatsUpdate) returns (google.protobuf.Empty);
+  rpc Config(ConfigurationRequest) returns (Configuration);
+  rpc Updates(google.protobuf.Empty) returns (stream Update);
+  rpc Stats(stream StatsUpdate) returns (google.protobuf.Empty);
 }

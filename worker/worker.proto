@@ -1,5 +1,6 @@
 syntax = "proto3";
 package worker;
+
 import "google/protobuf/empty.proto";
 
 message Worker {
@@ -24,7 +25,7 @@ message GetJobResponse {
 }
 
 service WorkerService {
-  rpc RegisterWorker (Worker) returns (google.protobuf.Empty) {}
-  rpc GetJob (Worker) returns (GetJobResponse) {}
-  rpc SetJobDone (JobStatus) returns (google.protobuf.Empty) {}
+  rpc RegisterWorker(Worker) returns (google.protobuf.Empty) {}
+  rpc GetJob(Worker) returns (GetJobResponse) {}
+  rpc SetJobDone(JobStatus) returns (google.protobuf.Empty) {}
 }
