@@ -3,8 +3,14 @@ package firewall;
 
 // Describes target configuration of the firewall
 message FirewallConfig {
-  FirewallPolicy default_policy = 1;
-  repeated FirewallRule rules = 2;
+  IpVersion ip_version = 1;
+  FirewallPolicy default_policy = 2;
+  repeated FirewallRule rules = 3;
+}
+
+enum IpVersion {
+  IPV4 = 0;
+  IPV6 = 1;
 }
 
 enum FirewallPolicy {
@@ -13,19 +19,13 @@ enum FirewallPolicy {
 }
 
 message FirewallRule {
-  IpVersion ip_version = 1;
-  optional uint32 index = 2;
-  repeated IpAddress source_addr = 3;
-  repeated IpAddress destination_addr = 4;
-  repeated Port destination_port = 5;
-  repeated Protocol protocol = 6;
-  FirewallPolicy verdict = 7;
-  optional string comment = 8;
-}
-
-enum IpVersion {
-  IPV4 = 0;
-  IPV6 = 1;
+  optional uint32 index = 1;
+  repeated IpAddress source_addr = 2;
+  repeated IpAddress destination_addr = 3;
+  repeated Port destination_port = 4;
+  repeated Protocol protocol = 5;
+  FirewallPolicy verdict = 6;
+  optional string comment = 7;
 }
 
 // IPv4 or IPv6 address
