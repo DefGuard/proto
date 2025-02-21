@@ -20,10 +20,10 @@ enum FirewallPolicy {
 
 message FirewallRule {
   int64 id = 1;
-  repeated IpAddress source_addr = 2;
-  repeated IpAddress destination_addr = 3;
-  repeated Port destination_port = 4;
-  repeated Protocol protocol = 5;
+  repeated IpAddress source_addrs = 2;
+  repeated IpAddress destination_addrs = 3;
+  repeated Port destination_ports = 4;
+  repeated Protocol protocols = 5;
   FirewallPolicy verdict = 6;
   optional string comment = 7;
 }
