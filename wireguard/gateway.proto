@@ -1,6 +1,7 @@
 syntax = "proto3";
 package gateway;
 
+import "firewall.proto";
 import "google/protobuf/empty.proto";
 
 message ConfigurationRequest {
@@ -14,6 +15,7 @@ message Configuration {
   uint32 port = 4;
   repeated Peer peers = 5;
   repeated string addresses = 6;
+  optional firewall.FirewallConfig firewall_config = 7;
 }
 
 enum UpdateType {
@@ -34,6 +36,7 @@ message Update {
   oneof update {
     Peer peer = 2;
     Configuration network = 3;
+    firewall.FirewallConfig firewall_config = 4;
   }
 }
 
