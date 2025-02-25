@@ -1,5 +1,5 @@
 syntax = "proto3";
-package firewall;
+package enterprise.firewall;
 
 // Describes target configuration of the firewall
 message FirewallConfig {
