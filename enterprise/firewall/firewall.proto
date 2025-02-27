@@ -61,8 +61,12 @@ message PortRange {
   uint32 end = 2;
 }
 
+// Specific IDs are used to align with the standard below:
+// https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/in.h
 enum Protocol {
-  TCP = 0;
-  UDP = 1;
-  ICMP = 2;
+  // proto3 requires that first enum value must be 0
+  INVALID = 0;
+  ICMP = 1;
+  TCP = 6;
+  UDP = 17;
 }
