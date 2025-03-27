@@ -233,5 +233,5 @@ message CoreRequest {
  * so requests and responses are actually send in reverse.
  */
 service Proxy {
-  rpc Bidi (stream CoreResponse) returns (stream CoreRequest);
+  rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
 }

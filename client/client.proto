@@ -45,7 +45,7 @@ message InterfaceData {
 
 // service used by desktop clients to communicate with interface management daemon
 service DesktopDaemonService {
-  rpc CreateInterface (CreateInterfaceRequest) returns (google.protobuf.Empty);
-  rpc RemoveInterface (RemoveInterfaceRequest) returns (google.protobuf.Empty);
-  rpc ReadInterfaceData (ReadInterfaceDataRequest) returns (stream InterfaceData);
+  rpc CreateInterface(CreateInterfaceRequest) returns (google.protobuf.Empty);
+  rpc RemoveInterface(RemoveInterfaceRequest) returns (google.protobuf.Empty);
+  rpc ReadInterfaceData(ReadInterfaceDataRequest) returns (stream InterfaceData);
 }

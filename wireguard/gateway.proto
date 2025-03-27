@@ -1,6 +1,7 @@
 syntax = "proto3";
 package gateway;
 
+import "firewall.proto";
 import "google/protobuf/empty.proto";
 
 message ConfigurationRequest {
@@ -14,6 +15,7 @@ message Configuration {
   uint32 port = 4;
   repeated Peer peers = 5;
   repeated string addresses = 6;
+  optional enterprise.firewall.FirewallConfig firewall_config = 7;
 }
 
 enum UpdateType {
@@ -34,6 +36,7 @@ message Update {
   oneof update {
     Peer peer = 2;
     Configuration network = 3;
+    enterprise.firewall.FirewallConfig firewall_config = 4;
   }
 }
 
@@ -59,7 +62,7 @@ message StatsUpdate {
 }
 
 service GatewayService {
-  rpc Config (ConfigurationRequest) returns (Configuration);
-  rpc Updates (google.protobuf.Empty) returns (stream Update);
-  rpc Stats (stream StatsUpdate) returns (google.protobuf.Empty);
+  rpc Config(ConfigurationRequest) returns (Configuration);
+  rpc Updates(google.protobuf.Empty) returns (stream Update);
+  rpc Stats(stream StatsUpdate) returns (google.protobuf.Empty);
 }
