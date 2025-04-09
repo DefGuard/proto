@@ -37,6 +37,7 @@ message Update {
     Peer peer = 2;
     Configuration network = 3;
     enterprise.firewall.FirewallConfig firewall_config = 4;
+    google.protobuf.Empty disable_firewall = 5;
   }
 }
 
