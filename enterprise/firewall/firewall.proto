@@ -3,7 +3,6 @@ package enterprise.firewall;
 
 // Describes target configuration of the firewall
 message FirewallConfig {
-  IpVersion ip_version = 1;
   FirewallPolicy default_policy = 2;
   repeated FirewallRule rules = 3;
 }
@@ -26,6 +25,7 @@ message FirewallRule {
   repeated Protocol protocols = 5;
   FirewallPolicy verdict = 6;
   optional string comment = 7;
+  IpVersion ip_version = 8;
 }
 
 // IPv4 or IPv6 address
