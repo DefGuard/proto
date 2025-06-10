@@ -171,7 +171,7 @@ message AuthCallbackResponse {
 
 // Common client info
 message DeviceInfo {
-  optional string ip_address = 1;
+  string ip_address = 1;
   optional string user_agent = 2;
 }
 
