@@ -23,6 +23,7 @@ message InitialUserInfo {
   bool is_active = 6;
   repeated string device_names = 7;
   bool enrolled = 8;
+  bool is_admin = 9;
 }
 
 message EnrollmentSettings {
