@@ -230,7 +230,7 @@ message CoreRequest {
 /*
  * Bi-directional communication between core and proxy.
  * For security reasons, the connection has to be initiated by core,
- * so requests and responses are actually send in reverse.
+ * so requests and responses are actually sent in reverse.
  */
 service Proxy {
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
