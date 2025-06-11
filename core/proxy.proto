@@ -171,7 +171,7 @@ message AuthCallbackResponse {
 
 // Common client info
 message DeviceInfo {
-  optional string ip_address = 1;
+  string ip_address = 1;
   optional string user_agent = 2;
 }
 
@@ -230,7 +230,7 @@ message CoreRequest {
 /*
  * Bi-directional communication between core and proxy.
  * For security reasons, the connection has to be initiated by core,
- * so requests and responses are actually send in reverse.
+ * so requests and responses are actually sent in reverse.
  */
 service Proxy {
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
