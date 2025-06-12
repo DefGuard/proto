@@ -23,11 +23,13 @@ message InitialUserInfo {
   bool is_active = 6;
   repeated string device_names = 7;
   bool enrolled = 8;
+  bool is_admin = 9;
 }
 
-message Settings {
+message EnrollmentSettings {
   bool vpn_setup_optional = 1;
   bool only_client_activation = 2;
+  bool admin_device_management = 3;
 }
 
 message EnrollmentStartResponse {
@@ -36,7 +38,7 @@ message EnrollmentStartResponse {
   int64 deadline_timestamp = 3;
   string final_page_content = 5;
   InstanceInfo instance = 7;
-  Settings settings = 8;
+  EnrollmentSettings settings = 8;
 }
 
 message ActivateUserRequest {
