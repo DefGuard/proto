@@ -5,6 +5,7 @@ package enterprise.firewall;
 message FirewallConfig {
   FirewallPolicy default_policy = 2;
   repeated FirewallRule rules = 3;
+  repeated SnatBinding snat_bindings = 4;
 }
 
 enum IpVersion {
@@ -26,6 +27,13 @@ message FirewallRule {
   FirewallPolicy verdict = 6;
   optional string comment = 7;
   IpVersion ip_version = 8;
+}
+
+message SnatBinding {
+  int64 id = 1;
+  repeated IpAddress source_addrs = 2;
+  string public_ip = 3;
+  optional string comment = 4;
 }
 
 // IPv4 or IPv6 address
