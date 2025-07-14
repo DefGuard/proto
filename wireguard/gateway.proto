@@ -2,10 +2,14 @@ syntax = "proto3";
 package gateway;
 
 import "firewall.proto";
+import "version.proto";
 import "google/protobuf/empty.proto";
 
 message ConfigurationRequest {
+  // gateway name
   optional string name = 1;
+  // gateway version
+  optional version.Version version = 2;
 }
 
 message Configuration {
