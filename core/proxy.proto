@@ -61,6 +61,13 @@ message Device {
   int64 created_at = 5;
 }
 
+enum LocationMfa {
+  LOCATION_MFA_UNSPECIFIED = 0;
+  LOCATION_MFA_DISABLED = 1;
+  LOCATION_MFA_INTERNAL = 2;
+  LOCATION_MFA_EXTERNAL = 3;
+}
+
 message DeviceConfig {
   int64 network_id = 1;
   string network_name = 2;
@@ -71,8 +78,10 @@ message DeviceConfig {
   string pubkey = 6;
   string allowed_ips = 7;
   optional string dns = 8;
-  bool mfa_enabled = 9;
+  reserved 9;
+  reserved "mfa_enabled";
   int32 keepalive_interval = 10;
+  optional LocationMfa location_mfa = 11;
 }
 
 message InstanceInfo {
@@ -83,8 +92,7 @@ message InstanceInfo {
   string username = 5;
   bool enterprise_enabled = 6;
   bool disable_all_traffic = 7;
-  bool use_openid_for_mfa = 8;
-  optional string openid_display_name = 9;
+  optional string openid_display_name = 8;
 }
 
 message DeviceConfigResponse {
