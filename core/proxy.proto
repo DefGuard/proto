@@ -78,8 +78,8 @@ message DeviceConfig {
   string pubkey = 6;
   string allowed_ips = 7;
   optional string dns = 8;
-  reserved 9;
-  reserved "mfa_enabled";
+  // used by pre-1.5 clients
+  bool mfa_enabled = 9 [deprecated = true];
   int32 keepalive_interval = 10;
   optional LocationMfa location_mfa = 11;
 }
