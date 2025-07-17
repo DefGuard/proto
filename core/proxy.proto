@@ -61,6 +61,13 @@ message Device {
   int64 created_at = 5;
 }
 
+enum LocationMfaMode {
+  LOCATION_MFA_MODE_UNSPECIFIED = 0;
+  LOCATION_MFA_MODE_DISABLED = 1;
+  LOCATION_MFA_MODE_INTERNAL = 2;
+  LOCATION_MFA_MODE_EXTERNAL = 3;
+}
+
 message DeviceConfig {
   int64 network_id = 1;
   string network_name = 2;
@@ -71,8 +78,10 @@ message DeviceConfig {
   string pubkey = 6;
   string allowed_ips = 7;
   optional string dns = 8;
-  bool mfa_enabled = 9;
+  // DEPRECATED(1.5): superseeded by location_mfa_mode
+  bool mfa_enabled = 9 [deprecated = true];
   int32 keepalive_interval = 10;
+  optional LocationMfaMode location_mfa_mode = 11;
 }
 
 message InstanceInfo {
@@ -83,8 +92,7 @@ message InstanceInfo {
   string username = 5;
   bool enterprise_enabled = 6;
   bool disable_all_traffic = 7;
-  bool use_openid_for_mfa = 8;
-  optional string openid_display_name = 9;
+  optional string openid_display_name = 8;
 }
 
 message DeviceConfigResponse {
