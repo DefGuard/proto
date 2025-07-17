@@ -61,11 +61,11 @@ message Device {
   int64 created_at = 5;
 }
 
-enum LocationMfa {
-  LOCATION_MFA_UNSPECIFIED = 0;
-  LOCATION_MFA_DISABLED = 1;
-  LOCATION_MFA_INTERNAL = 2;
-  LOCATION_MFA_EXTERNAL = 3;
+enum LocationMfaMode {
+  LOCATION_MFA_MODE_UNSPECIFIED = 0;
+  LOCATION_MFA_MODE_DISABLED = 1;
+  LOCATION_MFA_MODE_INTERNAL = 2;
+  LOCATION_MFA_MODE_EXTERNAL = 3;
 }
 
 message DeviceConfig {
@@ -78,10 +78,10 @@ message DeviceConfig {
   string pubkey = 6;
   string allowed_ips = 7;
   optional string dns = 8;
-  // used by pre-1.5 clients
+  // DEPRECATED(1.5): superseeded by location_mfa_mode
   bool mfa_enabled = 9 [deprecated = true];
   int32 keepalive_interval = 10;
-  optional LocationMfa location_mfa = 11;
+  optional LocationMfaMode location_mfa_mode = 11;
 }
 
 message InstanceInfo {
