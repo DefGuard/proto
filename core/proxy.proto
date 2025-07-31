@@ -249,11 +249,22 @@ message CoreRequest {
   }
 }
 
-/*
- * Bi-directional communication between core and proxy.
- * For security reasons, the connection has to be initiated by core,
- * so requests and responses are actually sent in reverse.
- */
+message VersionInfo {
+  string version = 1;
+  string os_type = 2;
+  string os_version = 3;
+  string os_edition = 4;
+  string os_codename = 5;
+  string bitness = 6;
+  string architecture = 7;
+}
+
 service Proxy {
+  /*
+   * Bi-directional communication between core and proxy.
+   * For security reasons, the connection has to be initiated by core,
+   * so requests and responses are actually sent in reverse.
+   */
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
+  rpc ExchangeVersion(VersionInfo) returns (VersionInfo);
 }
