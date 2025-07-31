@@ -196,6 +196,12 @@ message DeviceInfo {
   optional string user_agent = 2;
 }
 
+message RegisterMobileAuthRequest {
+  string token = 1;
+  string auth_pub_key = 2;
+  string device_pub_key = 3;
+}
+
 /*
  * Error response variant.
  * Due to reverse proxy -> core communication this is how we
@@ -246,6 +252,7 @@ message CoreRequest {
     AuthInfoRequest auth_info = 13;
     AuthCallbackRequest auth_callback = 14;
     ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
+    RegisterMobileAuthRequest register_mobile_auth = 16;
   }
 }
 
