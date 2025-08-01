@@ -134,11 +134,12 @@ message PasswordResetRequest {
   optional string token = 2;
 }
 
-// Desktop client MFA
+// Client MFA
 enum MfaMethod {
   TOTP = 0;
   EMAIL = 1;
   OIDC = 2;
+  BIOMETRIC = 3;
 }
 
 message ClientMfaStartRequest {
@@ -149,6 +150,8 @@ message ClientMfaStartRequest {
 
 message ClientMfaStartResponse {
   string token = 1;
+  // for biometric mfa method
+  optional string challenge = 2;
 }
 
 message ClientMfaFinishRequest {
