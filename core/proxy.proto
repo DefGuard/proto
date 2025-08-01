@@ -2,6 +2,7 @@ syntax = "proto3";
 package defguard.proxy;
 
 import "google/protobuf/empty.proto";
+import "version.proto";
 
 // Enrollment & Desktop Client activation
 message EnrollmentStartRequest {
@@ -249,16 +250,6 @@ message CoreRequest {
   }
 }
 
-message VersionInfo {
-  string version = 1;
-  string os_type = 2;
-  string os_version = 3;
-  string os_edition = 4;
-  string os_codename = 5;
-  string bitness = 6;
-  string architecture = 7;
-}
-
 service Proxy {
   /*
    * Bi-directional communication between core and proxy.
@@ -266,5 +257,5 @@ service Proxy {
    * so requests and responses are actually sent in reverse.
    */
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
-  rpc ExchangeVersion(VersionInfo) returns (VersionInfo);
+  rpc ExchangeVersion(proto.version.VersionInfo) returns (proto.version.VersionInfo);
 }

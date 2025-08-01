@@ -1,0 +1,12 @@
+syntax = "proto3";
+package proto.version;
+
+message VersionInfo {
+  string version = 1;
+  string os_type = 2;
+  string os_version = 3;
+  string os_edition = 4;
+  string os_codename = 5;
+  string bitness = 6;
+  string architecture = 7;
+}
