@@ -2,7 +2,7 @@ syntax = "proto3";
 package gateway;
 
 import "firewall.proto";
-// import "version.proto";
+import "version.proto";
 import "google/protobuf/empty.proto";
 
 message ConfigurationRequest {
@@ -67,5 +67,5 @@ service GatewayService {
   rpc Config(ConfigurationRequest) returns (Configuration);
   rpc Updates(google.protobuf.Empty) returns (stream Update);
   rpc Stats(stream StatsUpdate) returns (google.protobuf.Empty);
-  // rpc ExchangeVersion(version.VersionInfo) returns (version.VersionInfo);
+  rpc ExchangeVersion(proto.version.VersionInfo) returns (proto.version.VersionInfo);
 }
