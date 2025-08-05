@@ -134,11 +134,12 @@ message PasswordResetRequest {
   optional string token = 2;
 }
 
-// Desktop client MFA
+// Client MFA
 enum MfaMethod {
   TOTP = 0;
   EMAIL = 1;
   OIDC = 2;
+  BIOMETRIC = 3;
 }
 
 message ClientMfaStartRequest {
@@ -149,6 +150,8 @@ message ClientMfaStartRequest {
 
 message ClientMfaStartResponse {
   string token = 1;
+  // for biometric mfa method
+  optional string challenge = 2;
 }
 
 message ClientMfaFinishRequest {
@@ -194,6 +197,12 @@ message ClientMfaOidcAuthenticateRequest {
 message DeviceInfo {
   string ip_address = 1;
   optional string user_agent = 2;
+}
+
+message RegisterMobileAuthRequest {
+  string token = 1;
+  string auth_pub_key = 2;
+  string device_pub_key = 3;
 }
 
 /*
@@ -246,6 +255,7 @@ message CoreRequest {
     AuthInfoRequest auth_info = 13;
     AuthCallbackRequest auth_callback = 14;
     ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
+    RegisterMobileAuthRequest register_mobile_auth = 16;
   }
 }
 
