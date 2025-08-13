@@ -140,6 +140,7 @@ enum MfaMethod {
   EMAIL = 1;
   OIDC = 2;
   BIOMETRIC = 3;
+  MOBILE_APPROVE = 4;
 }
 
 message ClientMfaStartRequest {
@@ -161,6 +162,7 @@ message ClientMfaFinishRequest {
 
 message ClientMfaFinishResponse {
   string preshared_key = 1;
+  optional string token = 2;
 }
 
 message AuthInfoRequest {
