@@ -158,6 +158,7 @@ message ClientMfaStartResponse {
 message ClientMfaFinishRequest {
   string token = 1;
   optional string code = 2;
+  optional string auth_pub_key = 3;
 }
 
 message ClientMfaFinishResponse {
