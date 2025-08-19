@@ -143,6 +143,14 @@ enum MfaMethod {
   MOBILE_APPROVE = 4;
 }
 
+message ClientMfaTokenValidationRequest {
+  string token = 1;
+}
+
+message ClientMfaTokenValidationResponse {
+  bool token_valid = 1;
+}
+
 message ClientMfaStartRequest {
   int64 location_id = 1;
   string pubkey = 2;
@@ -235,6 +243,7 @@ message CoreResponse {
     InstanceInfoResponse instance_info = 9;
     AuthInfoResponse auth_info = 13;
     AuthCallbackResponse auth_callback = 14;
+    ClientMfaTokenValidationResponse client_mfa_token_validation = 15;
   }
 }
 
@@ -259,6 +268,7 @@ message CoreRequest {
     AuthCallbackRequest auth_callback = 14;
     ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
     RegisterMobileAuthRequest register_mobile_auth = 16;
+    ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
   }
 }
 
