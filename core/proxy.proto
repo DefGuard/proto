@@ -140,6 +140,15 @@ enum MfaMethod {
   EMAIL = 1;
   OIDC = 2;
   BIOMETRIC = 3;
+  MOBILE_APPROVE = 4;
+}
+
+message ClientMfaTokenValidationRequest {
+  string token = 1;
+}
+
+message ClientMfaTokenValidationResponse {
+  bool token_valid = 1;
 }
 
 message ClientMfaStartRequest {
@@ -157,10 +166,12 @@ message ClientMfaStartResponse {
 message ClientMfaFinishRequest {
   string token = 1;
   optional string code = 2;
+  optional string auth_pub_key = 3;
 }
 
 message ClientMfaFinishResponse {
   string preshared_key = 1;
+  optional string token = 2;
 }
 
 message AuthInfoRequest {
@@ -232,6 +243,7 @@ message CoreResponse {
     InstanceInfoResponse instance_info = 9;
     AuthInfoResponse auth_info = 13;
     AuthCallbackResponse auth_callback = 14;
+    ClientMfaTokenValidationResponse client_mfa_token_validation = 15;
   }
 }
 
@@ -256,6 +268,7 @@ message CoreRequest {
     AuthCallbackRequest auth_callback = 14;
     ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
     RegisterMobileAuthRequest register_mobile_auth = 16;
+    ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
   }
 }
 
