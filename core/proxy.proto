@@ -220,6 +220,7 @@ message RegisterMobileAuthRequest {
 
 message CodeMfaSetupStartRequest {
   MfaMethod method = 1;
+  string token = 2;
 }
 
 // in case of email secret is empty
@@ -229,6 +230,7 @@ message CodeMfaSetupStartResponse {
 
 message CodeMfaSetupFinishRequest {
   string code = 1;
+  string token = 2;
 }
 
 message CodeMfaSetupFinishResponse {
