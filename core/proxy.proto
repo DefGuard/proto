@@ -216,6 +216,25 @@ message RegisterMobileAuthRequest {
   string device_pub_key = 3;
 }
 
+// TOTP and Email MFA Setup
+
+message CodeMfaSetupStartRequest {
+  MfaMethod method = 1;
+}
+
+// in case of email secret is empty
+message CodeMfaSetupStartResponse {
+  optional string totp_secret = 1;
+}
+
+message CodeMfaSetupFinishRequest {
+  string code = 1;
+}
+
+message CodeMfaSetupFinishResponse {
+  repeated string recovery_codes = 1;
+}
+
 /*
  * Error response variant.
  * Due to reverse proxy -> core communication this is how we
@@ -244,6 +263,8 @@ message CoreResponse {
     AuthInfoResponse auth_info = 13;
     AuthCallbackResponse auth_callback = 14;
     ClientMfaTokenValidationResponse client_mfa_token_validation = 15;
+    CodeMfaSetupStartResponse code_mfa_setup_start_response = 16;
+    CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 17;
   }
 }
 
@@ -269,6 +290,8 @@ message CoreRequest {
     ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
     RegisterMobileAuthRequest register_mobile_auth = 16;
     ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
+    CodeMfaSetupStartRequest code_mfa_setup_start_request = 18;
+    CodeMfaSetupFinishRequest code_mfa_setup_finish_request = 19;
   }
 }
 
