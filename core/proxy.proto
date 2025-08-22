@@ -231,6 +231,7 @@ message CodeMfaSetupStartResponse {
 message CodeMfaSetupFinishRequest {
   string code = 1;
   string token = 2;
+  MfaMethod method = 3;
 }
 
 message CodeMfaSetupFinishResponse {
@@ -292,8 +293,8 @@ message CoreRequest {
     ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
     RegisterMobileAuthRequest register_mobile_auth = 16;
     ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
-    CodeMfaSetupStartRequest code_mfa_setup_start_request = 18;
-    CodeMfaSetupFinishRequest code_mfa_setup_finish_request = 19;
+    CodeMfaSetupStartRequest code_mfa_setup_start = 18;
+    CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
   }
 }
 
