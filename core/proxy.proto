@@ -217,7 +217,6 @@ message RegisterMobileAuthRequest {
 }
 
 // TOTP and Email MFA Setup
-
 message CodeMfaSetupStartRequest {
   MfaMethod method = 1;
   string token = 2;
