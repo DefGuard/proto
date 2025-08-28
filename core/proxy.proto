@@ -27,9 +27,16 @@ message InitialUserInfo {
 }
 
 message EnrollmentSettings {
+  // Vpn step is skippable
   bool vpn_setup_optional = 1;
+  // Manual WireGuard setup is disabled
   bool only_client_activation = 2;
+  // Only admins can add devices so vpn step is skipped
   bool admin_device_management = 3;
+  // Enable Email method for MFA setup 
+  bool smtp_configured = 4;
+  // MFA setup is not skippable
+  bool mfa_required = 5;
 }
 
 message EnrollmentStartResponse {
