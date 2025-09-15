@@ -27,9 +27,16 @@ message InitialUserInfo {
 }
 
 message EnrollmentSettings {
+  // Vpn step is skippable
   bool vpn_setup_optional = 1;
+  // Manual WireGuard setup is disabled
   bool only_client_activation = 2;
+  // Only admins can add devices so vpn step is skipped
   bool admin_device_management = 3;
+  // Enable Email method for MFA setup 
+  bool smtp_configured = 4;
+  // MFA setup is not skippable
+  bool mfa_required = 5;
 }
 
 message EnrollmentStartResponse {
@@ -134,11 +141,21 @@ message PasswordResetRequest {
   optional string token = 2;
 }
 
-// Desktop client MFA
+// Client MFA
 enum MfaMethod {
   TOTP = 0;
   EMAIL = 1;
   OIDC = 2;
+  BIOMETRIC = 3;
+  MOBILE_APPROVE = 4;
+}
+
+message ClientMfaTokenValidationRequest {
+  string token = 1;
+}
+
+message ClientMfaTokenValidationResponse {
+  bool token_valid = 1;
 }
 
 message ClientMfaStartRequest {
@@ -149,15 +166,19 @@ message ClientMfaStartRequest {
 
 message ClientMfaStartResponse {
   string token = 1;
+  // for biometric mfa method
+  optional string challenge = 2;
 }
 
 message ClientMfaFinishRequest {
   string token = 1;
   optional string code = 2;
+  optional string auth_pub_key = 3;
 }
 
 message ClientMfaFinishResponse {
   string preshared_key = 1;
+  optional string token = 2;
 }
 
 message AuthInfoRequest {
@@ -196,6 +217,33 @@ message DeviceInfo {
   optional string user_agent = 2;
 }
 
+message RegisterMobileAuthRequest {
+  string token = 1;
+  string auth_pub_key = 2;
+  string device_pub_key = 3;
+}
+
+// TOTP and Email MFA Setup
+message CodeMfaSetupStartRequest {
+  MfaMethod method = 1;
+  string token = 2;
+}
+
+// in case of email secret is empty
+message CodeMfaSetupStartResponse {
+  optional string totp_secret = 1;
+}
+
+message CodeMfaSetupFinishRequest {
+  string code = 1;
+  string token = 2;
+  MfaMethod method = 3;
+}
+
+message CodeMfaSetupFinishResponse {
+  repeated string recovery_codes = 1;
+}
+
 /*
  * Error response variant.
  * Due to reverse proxy -> core communication this is how we
@@ -223,6 +271,9 @@ message CoreResponse {
     InstanceInfoResponse instance_info = 9;
     AuthInfoResponse auth_info = 13;
     AuthCallbackResponse auth_callback = 14;
+    ClientMfaTokenValidationResponse client_mfa_token_validation = 15;
+    CodeMfaSetupStartResponse code_mfa_setup_start_response = 16;
+    CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 17;
   }
 }
 
@@ -246,6 +297,10 @@ message CoreRequest {
     AuthInfoRequest auth_info = 13;
     AuthCallbackRequest auth_callback = 14;
     ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
+    RegisterMobileAuthRequest register_mobile_auth = 16;
+    ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
+    CodeMfaSetupStartRequest code_mfa_setup_start = 18;
+    CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
   }
 }
 
