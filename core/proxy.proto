@@ -75,6 +75,13 @@ enum LocationMfaMode {
   LOCATION_MFA_MODE_EXTERNAL = 3;
 }
 
+enum ServiceLocationMode {
+  SERVICE_LOCATION_MODE_UNSPECIFIED = 0;
+  SERVICE_LOCATION_MODE_DISABLED = 1;
+  SERVICE_LOCATION_MODE_PRELOGON = 2;
+  SERVICE_LOCATION_MODE_ALWAYSON = 3;
+}
+
 message DeviceConfig {
   int64 network_id = 1;
   string network_name = 2;
@@ -89,6 +96,7 @@ message DeviceConfig {
   bool mfa_enabled = 9 [deprecated = true];
   int32 keepalive_interval = 10;
   optional LocationMfaMode location_mfa_mode = 11;
+  optional ServiceLocationMode service_location_mode = 12;
 }
 
 message InstanceInfo {
