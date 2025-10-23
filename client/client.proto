@@ -65,13 +65,8 @@ message SaveServiceLocationsRequest {
   string private_key = 3;
 }
 
-message DeleteServiceLocationsRequest { 
+message DeleteServiceLocationsRequest {
   string instance_id = 1;
-}
-
-message ResetServiceLocationRequest {
-  string instance_id = 1;
-  string pubkey = 2;
 }
 
 message StopServiceLocationRequest {
@@ -89,7 +84,5 @@ service DesktopDaemonService {
   rpc SaveServiceLocations(SaveServiceLocationsRequest)
       returns (google.protobuf.Empty);
   rpc DeleteServiceLocations(DeleteServiceLocationsRequest)
-      returns (google.protobuf.Empty);
-  rpc ResetServiceLocation(ResetServiceLocationRequest)
       returns (google.protobuf.Empty);
 }
