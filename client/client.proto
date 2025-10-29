@@ -25,7 +25,6 @@ message Peer {
 
 message CreateInterfaceRequest {
   InterfaceConfig config = 1;
-  repeated string allowed_ips = 2;
   optional string dns = 3;
 }
 
