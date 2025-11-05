@@ -223,6 +223,8 @@ message ClientMfaOidcAuthenticateRequest {
 message DeviceInfo {
   string ip_address = 1;
   optional string user_agent = 2;
+  optional string version = 3;
+  optional string platform = 4;
 }
 
 message RegisterMobileAuthRequest {
