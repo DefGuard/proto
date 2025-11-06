@@ -219,6 +219,16 @@ message ClientMfaOidcAuthenticateRequest {
   string nonce = 4;
 }
 
+message ClientPlatformInfo {
+  string os_family = 1;
+  string os_type = 2;
+  string version = 3;
+  optional string edition = 4;
+  optional string codename = 5;
+  optional string bitness = 6;
+  optional string architecture = 7; 
+}
+
 // Common client info
 message DeviceInfo {
   string ip_address = 1;
