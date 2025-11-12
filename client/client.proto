@@ -9,6 +9,7 @@ message InterfaceConfig {
   string address = 3;
   uint32 port = 4;
   repeated Peer peers = 5;
+  optional uint32 mtu = 6;
 }
 
 message Peer {
