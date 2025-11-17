@@ -108,6 +108,7 @@ message InstanceInfo {
   bool enterprise_enabled = 6;
   bool disable_all_traffic = 7;
   optional string openid_display_name = 8;
+  optional bool force_all_traffic = 9;
 }
 
 message DeviceConfigResponse {
