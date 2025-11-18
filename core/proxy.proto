@@ -99,6 +99,12 @@ message DeviceConfig {
   optional ServiceLocationMode service_location_mode = 12;
 }
 
+enum ClientTrafficPolicy {
+  NONE = 0;
+  DISABLE_ALL_TRAFFIC = 1;
+  FORCE_ALL_TRAFFIC = 2;
+}
+
 message InstanceInfo {
   string id = 1;
   string name = 2;
@@ -106,9 +112,10 @@ message InstanceInfo {
   string proxy_url = 4;
   string username = 5;
   bool enterprise_enabled = 6;
-  bool disable_all_traffic = 7;
+  // DEPRECATED(1.6): superseeded by client_traffic_policy
+  bool disable_all_traffic = 7 [deprecated = true];
   optional string openid_display_name = 8;
-  optional bool force_all_traffic = 9;
+  optional ClientTrafficPolicy client_traffic_policy = 9;
 }
 
 message DeviceConfigResponse {
