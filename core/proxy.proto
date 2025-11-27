@@ -75,6 +75,13 @@ enum LocationMfaMode {
   LOCATION_MFA_MODE_EXTERNAL = 3;
 }
 
+enum ServiceLocationMode {
+  SERVICE_LOCATION_MODE_UNSPECIFIED = 0;
+  SERVICE_LOCATION_MODE_DISABLED = 1;
+  SERVICE_LOCATION_MODE_PRELOGON = 2;
+  SERVICE_LOCATION_MODE_ALWAYSON = 3;
+}
+
 message DeviceConfig {
   int64 network_id = 1;
   string network_name = 2;
@@ -89,6 +96,13 @@ message DeviceConfig {
   bool mfa_enabled = 9 [deprecated = true];
   int32 keepalive_interval = 10;
   optional LocationMfaMode location_mfa_mode = 11;
+  optional ServiceLocationMode service_location_mode = 12;
+}
+
+enum ClientTrafficPolicy {
+  NONE = 0;
+  DISABLE_ALL_TRAFFIC = 1;
+  FORCE_ALL_TRAFFIC = 2;
 }
 
 message InstanceInfo {
@@ -98,8 +112,10 @@ message InstanceInfo {
   string proxy_url = 4;
   string username = 5;
   bool enterprise_enabled = 6;
-  bool disable_all_traffic = 7;
+  // DEPRECATED(1.6): superseeded by client_traffic_policy
+  bool disable_all_traffic = 7 [deprecated = true];
   optional string openid_display_name = 8;
+  optional ClientTrafficPolicy client_traffic_policy = 9;
 }
 
 message DeviceConfigResponse {
@@ -211,10 +227,22 @@ message ClientMfaOidcAuthenticateRequest {
   string nonce = 4;
 }
 
+message ClientPlatformInfo {
+  string os_family = 1;
+  string os_type = 2;
+  string version = 3;
+  optional string edition = 4;
+  optional string codename = 5;
+  optional string bitness = 6;
+  optional string architecture = 7; 
+}
+
 // Common client info
 message DeviceInfo {
   string ip_address = 1;
   optional string user_agent = 2;
+  optional string version = 3;
+  optional string platform = 4;
 }
 
 message RegisterMobileAuthRequest {

@@ -9,6 +9,7 @@ message InterfaceConfig {
   string address = 3;
   uint32 port = 4;
   repeated Peer peers = 5;
+  optional uint32 mtu = 6;
 }
 
 message Peer {
@@ -25,7 +26,6 @@ message Peer {
 
 message CreateInterfaceRequest {
   InterfaceConfig config = 1;
-  repeated string allowed_ips = 2;
   optional string dns = 3;
 }
 
@@ -43,9 +43,46 @@ message InterfaceData {
   repeated Peer peers = 2;
 }
 
-// service used by desktop clients to communicate with interface management daemon
+enum ServiceLocationMode {
+  PRE_LOGON = 0;
+  ALWAYS_ON = 1;
+}
+
+message ServiceLocation {
+  string name = 1;
+  string address = 2;
+  string pubkey = 3;
+  string endpoint = 4;
+  string allowed_ips = 5;
+  uint32 keepalive_interval = 6;
+  string dns = 7;
+  ServiceLocationMode mode = 8;
+}
+
+message SaveServiceLocationsRequest {
+  repeated ServiceLocation service_locations = 1;
+  string instance_id = 2;
+  string private_key = 3;
+}
+
+message DeleteServiceLocationsRequest {
+  string instance_id = 1;
+}
+
+message StopServiceLocationRequest {
+  string instance_id = 1;
+  string pubkey = 2;
+}
+
+// service used by desktop clients to communicate with interface management
+// daemon
 service DesktopDaemonService {
   rpc CreateInterface(CreateInterfaceRequest) returns (google.protobuf.Empty);
   rpc RemoveInterface(RemoveInterfaceRequest) returns (google.protobuf.Empty);
-  rpc ReadInterfaceData(ReadInterfaceDataRequest) returns (stream InterfaceData);
+  rpc ReadInterfaceData(ReadInterfaceDataRequest)
+      returns (stream InterfaceData);
+  rpc SaveServiceLocations(SaveServiceLocationsRequest)
+      returns (google.protobuf.Empty);
+  rpc DeleteServiceLocations(DeleteServiceLocationsRequest)
+      returns (google.protobuf.Empty);
 }
