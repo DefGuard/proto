@@ -332,23 +332,19 @@ message CoreRequest {
   }
 }
 
-message CsrRequest {
-    bytes csr_der = 1;
-}
-
 message InitialSetupInfo {
   string cert_hostname = 1;
 }
 
-message CertResponse {
-  bytes cert_der = 1;
+message DerPayload {
+  bytes der_data = 1;
 }
 
 message Done {}
 
 message ProxySetupRequest {
   oneof payload {
-    CsrRequest csr_request = 1;
+    DerPayload csr_request = 1;
     Done done = 2;
   }
 }
@@ -356,7 +352,7 @@ message ProxySetupRequest {
 message ProxySetupResponse {
   oneof payload {
     InitialSetupInfo initial_setup_info = 1;
-    CertResponse cert_response = 2;
+    DerPayload cert_response = 2;
     Done done = 3;
   }
 }
