@@ -22,6 +22,8 @@ message Configuration {
   repeated Peer peers = 5;
   repeated string addresses = 6;
   optional enterprise.firewall.FirewallConfig firewall_config = 7;
+  optional uint32 mtu = 8;
+  optional uint32 fwmark = 9;
 }
 
 enum UpdateType {
@@ -88,5 +90,5 @@ message CoreRequest {
  * so requests and responses are actually send in reverse.
  */
 service Gateway {
-  rpc Bidi (stream CoreResponse) returns (stream CoreRequest);
+  rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
 }
