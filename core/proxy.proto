@@ -340,23 +340,6 @@ message DerPayload {
   bytes der_data = 1;
 }
 
-message Done {}
-
-message ProxySetupRequest {
-  oneof payload {
-    DerPayload csr_request = 1;
-    Done done = 2;
-  }
-}
-
-message ProxySetupResponse {
-  oneof payload {
-    InitialSetupInfo initial_setup_info = 1;
-    DerPayload cert_response = 2;
-    Done done = 3;
-  }
-}
-
 service Proxy {
   /*
   * Bi-directional communication between core and proxy.
@@ -364,11 +347,10 @@ service Proxy {
   * so requests and responses are actually sent in reverse.
   */
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
+}
 
-  /*
-  * Initial setup between proxy and core.
-  * Used to exchange CSRs and signed certificates, for
-  * establishing HTTPS connection later.
-  */
-  rpc Setup(stream ProxySetupResponse) returns (stream ProxySetupRequest);
+// Service used for initial Proxy setup, used for configuring TLS certificate on Proxy for gRPC communication.
+service ProxySetup {
+  rpc Start(InitialSetupInfo) returns (DerPayload);
+  rpc SendCert(DerPayload) returns (google.protobuf.Empty);
 }
