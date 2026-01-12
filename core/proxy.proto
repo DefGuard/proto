@@ -332,11 +332,25 @@ message CoreRequest {
   }
 }
 
-/*
- * Bi-directional communication between core and proxy.
- * For security reasons, the connection has to be initiated by core,
- * so requests and responses are actually sent in reverse.
- */
+message InitialSetupInfo {
+  string cert_hostname = 1;
+}
+
+message DerPayload {
+  bytes der_data = 1;
+}
+
 service Proxy {
+  /*
+  * Bi-directional communication between core and proxy.
+  * For security reasons, the connection has to be initiated by core,
+  * so requests and responses are actually sent in reverse.
+  */
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
+}
+
+// Service used for initial Proxy setup, used for configuring TLS certificate on Proxy for gRPC communication.
+service ProxySetup {
+  rpc Start(InitialSetupInfo) returns (DerPayload);
+  rpc SendCert(DerPayload) returns (google.protobuf.Empty);
 }
