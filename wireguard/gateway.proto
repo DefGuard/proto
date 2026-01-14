@@ -7,7 +7,6 @@ import "google/protobuf/empty.proto";
 message ConfigurationRequest {
   // DEPRECATED(2.0): Gateway needs to authenticate with `auth_token`.
   optional string name = 1 [deprecated = true];
-  string auth_token = 2;
   string hostname = 3;
 }
 
@@ -91,4 +90,18 @@ message CoreRequest {
  */
 service Gateway {
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
+}
+
+message InitialSetupInfo {
+  string cert_hostname = 1;
+}
+
+message DerPayload {
+  bytes der_data = 1;
+}
+
+// Service used for initial Gateway setup, for configuring TLS certificate on Gateway for gRPC communication.
+service GatewaySetup {
+  rpc Start(InitialSetupInfo) returns (DerPayload);
+  rpc SendCert(DerPayload) returns (google.protobuf.Empty);
 }
