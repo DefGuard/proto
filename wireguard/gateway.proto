@@ -6,24 +6,23 @@ import "google/protobuf/empty.proto";
 
 message ConfigurationRequest {
   // DEPRECATED(2.0): Gateway needs to authenticate with `auth_token`.
-  optional string name = 1 [deprecated = true];
-  string auth_token = 2;
-  string hostname = 3;
+  optional string name     = 1 [deprecated = true];
+  string          hostname = 3;
 }
 
 /*
  * Networking and VPN configuration send from Core to Gateway.
  */
 message Configuration {
-  string name = 1;
+  string name   = 1;
   string prvkey = 2;
   // string address = 3; // obsolete, use `addresses`
-  uint32 port = 4;
-  repeated Peer peers = 5;
-  repeated string addresses = 6;
+  uint32                                      port            = 4;
+  repeated Peer                               peers           = 5;
+  repeated string                             addresses       = 6;
   optional enterprise.firewall.FirewallConfig firewall_config = 7;
-  optional uint32 mtu = 8;
-  optional uint32 fwmark = 9;
+  optional uint32                             mtu             = 8;
+  optional uint32                             fwmark          = 9;
 }
 
 enum UpdateType {
@@ -33,30 +32,30 @@ enum UpdateType {
 }
 
 message Peer {
-  string pubkey = 1;
-  repeated string allowed_ips = 2;
-  optional string preshared_key = 3;
+  string          pubkey             = 1;
+  repeated string allowed_ips        = 2;
+  optional string preshared_key      = 3;
   optional uint32 keepalive_interval = 4;
 }
 
 message Update {
   UpdateType update_type = 1;
   oneof update {
-    Peer peer = 2;
-    Configuration network = 3;
-    enterprise.firewall.FirewallConfig firewall_config = 4;
-    google.protobuf.Empty disable_firewall = 5;
+    Peer                               peer             = 2;
+    Configuration                      network          = 3;
+    enterprise.firewall.FirewallConfig firewall_config  = 4;
+    google.protobuf.Empty              disable_firewall = 5;
   }
 }
 
 message PeerStats {
-  string public_key = 1;
-  string endpoint = 2;
-  uint64 upload = 3;
-  uint64 download = 4;
+  string public_key         = 1;
+  string endpoint           = 2;
+  uint64 upload             = 3;
+  uint64 download           = 4;
   uint32 keepalive_interval = 5;
-  uint64 latest_handshake = 6;
-  string allowed_ips = 7;
+  uint64 latest_handshake   = 6;
+  string allowed_ips        = 7;
 }
 
 /*
@@ -67,9 +66,9 @@ message CoreResponse {
   uint64 id = 1;
   oneof payload {
     // Allow empty messages to keep the connection alive.
-    google.protobuf.Empty empty = 2;
-    Configuration config = 3;
-    Update update = 4;
+    google.protobuf.Empty empty  = 2;
+    Configuration         config = 3;
+    Update                update = 4;
   }
 }
 
@@ -79,7 +78,7 @@ message CoreResponse {
 message CoreRequest {
   uint64 id = 1;
   oneof payload {
-    PeerStats peer_stats = 2;
+    PeerStats            peer_stats     = 2;
     ConfigurationRequest config_request = 3;
   }
 }
@@ -91,4 +90,18 @@ message CoreRequest {
  */
 service Gateway {
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
+}
+
+message InitialSetupInfo {
+  string cert_hostname = 1;
+}
+
+message DerPayload {
+  bytes der_data = 1;
+}
+
+// Service used for initial Gateway setup, for configuring TLS certificate on Gateway for gRPC communication.
+service GatewaySetup {
+  rpc Start(InitialSetupInfo) returns (DerPayload);
+  rpc SendCert(DerPayload) returns (google.protobuf.Empty);
 }
