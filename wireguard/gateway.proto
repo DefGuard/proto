@@ -21,8 +21,8 @@ message Configuration {
   repeated Peer peers = 5;
   repeated string addresses = 6;
   optional enterprise.firewall.FirewallConfig firewall_config = 7;
-  optional uint32 mtu = 8;
-  optional uint32 fwmark = 9;
+  uint32 mtu = 8;
+  uint32 fwmark = 9;
 }
 
 enum UpdateType {
