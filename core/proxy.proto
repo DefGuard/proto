@@ -273,12 +273,11 @@ message CodeMfaSetupFinishResponse {
 }
 
 message ClientRemoteMfaFinishRequest {
-  string token = 2;
+  string token = 1;
 }
 
 message ClientRemoteMfaFinishResponse {
   string preshared_key = 1;
-  string token = 2;
 }
 
 message InitialInfo {
