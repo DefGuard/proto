@@ -332,7 +332,7 @@ message CoreRequest {
   }
 }
 
-message InitialSetupInfo {
+message CertificateInfo {
   string cert_hostname = 1;
 }
 
@@ -359,7 +359,8 @@ message LogEntry {
 
 // Service used for initial Proxy setup, used for configuring TLS certificate on Proxy for gRPC communication.
 service ProxySetup {
-  rpc Start(InitialSetupInfo) returns (DerPayload);
+  rpc Start(google.protobuf.Empty) returns (stream LogEntry);
+  rpc GetCsr(CertificateInfo) returns (DerPayload);
   rpc SendCert(DerPayload) returns (google.protobuf.Empty);
-  rpc ReadLogs(google.protobuf.Empty) returns (stream LogEntry);
 }
+
