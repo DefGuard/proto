@@ -272,11 +272,11 @@ message CodeMfaSetupFinishResponse {
   repeated string recovery_codes = 1;
 }
 
-message ClientRemoteMfaFinishRequest {
+message AwaitRemoteMfaFinishRequest {
   string token = 1;
 }
 
-message ClientRemoteMfaFinishResponse {
+message AwaitRemoteMfaFinishResponse {
   string preshared_key = 1;
 }
 
@@ -315,7 +315,7 @@ message CoreResponse {
     CodeMfaSetupStartResponse code_mfa_setup_start_response = 16;
     CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 17;
     InitialInfo initial_info = 18;
-    ClientRemoteMfaFinishResponse client_remote_mfa_finish = 19;
+    AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 19;
   }
 }
 
@@ -343,7 +343,7 @@ message CoreRequest {
     ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
     CodeMfaSetupStartRequest code_mfa_setup_start = 18;
     CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
-    ClientRemoteMfaFinishRequest client_remote_mfa_finish = 20;
+    AwaitRemoteMfaFinishRequest await_remote_mfa_finish = 20;
   }
 }
 
