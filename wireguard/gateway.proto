@@ -92,16 +92,25 @@ service Gateway {
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
 }
 
-message InitialSetupInfo {
-  string cert_hostname = 1;
-}
-
 message DerPayload {
   bytes der_data = 1;
 }
 
+message CertificateInfo {
+  string cert_hostname = 1;
+}
+
+message LogEntry {
+  string level = 1;
+  string target = 2;
+  string message = 3;
+  string timestamp = 4;
+  map<string, string> fields = 5;
+}
+
 // Service used for initial Gateway setup, for configuring TLS certificate on Gateway for gRPC communication.
 service GatewaySetup {
-  rpc Start(InitialSetupInfo) returns (DerPayload);
+  rpc Start(google.protobuf.Empty) returns (stream LogEntry);
+  rpc GetCsr(CertificateInfo) returns (DerPayload);
   rpc SendCert(DerPayload) returns (google.protobuf.Empty);
 }
