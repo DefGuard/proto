@@ -83,13 +83,18 @@ message CoreRequest {
   }
 }
 
-/*
- * Bi-directional communication between Core and Gateway.
- * For security reasons, the connection has to be initiated by Core,
- * so requests and responses are actually send in reverse.
- */
 service Gateway {
+  /*
+  * Bi-directional communication between Core and Gateway.
+  * For security reasons, the connection has to be initiated by Core,
+  * so requests and responses are actually send in reverse.
+  */
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
+  /*
+  * Purges existing on-disk gRPC TLS credentials and signals the server to re-enter setup mode
+  * so that core can provision new ones.
+  */
+  rpc Purge(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
 message DerPayload {
