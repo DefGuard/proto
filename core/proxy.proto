@@ -212,7 +212,8 @@ message AuthInfoResponse {
 message AuthCallbackRequest {
   string code = 1;
   string nonce = 2;
-  string callback_url = 3;
+  // DEPRECATED(2.0): superseeded by core-generated URL
+  string callback_url = 3 [deprecated = true];
 }
 
 message AuthCallbackResponse {
@@ -223,7 +224,8 @@ message AuthCallbackResponse {
 message ClientMfaOidcAuthenticateRequest {
   string code = 1;
   string state = 2;
-  string callback_url = 3;
+  // DEPRECATED(2.0): superseeded by core-generated URL
+  string callback_url = 3 [deprecated = true];
   string nonce = 4;
 }
 
