@@ -197,9 +197,17 @@ message ClientMfaFinishResponse {
   optional string token = 2;
 }
 
+enum AuthFlowType {
+  AUTH_FLOW_TYPE_UNSPECIFIED = 0;
+  AUTH_FLOW_TYPE_ENROLLMENT = 1;
+  AUTH_FLOW_TYPE_MFA = 2;
+}
+
 message AuthInfoRequest {
-  string redirect_url = 1;
+  // DEPRECATED(2.0): superseeded by auth_flow_type
+  string redirect_url = 1 [deprecated = true];
   optional string state = 2;
+  AuthFlowType auth_flow_type = 3;
 }
 
 message AuthInfoResponse {
@@ -212,7 +220,8 @@ message AuthInfoResponse {
 message AuthCallbackRequest {
   string code = 1;
   string nonce = 2;
-  string callback_url = 3;
+  // DEPRECATED(2.0): superseeded by core-generated URL
+  string callback_url = 3 [deprecated = true];
 }
 
 message AuthCallbackResponse {
@@ -223,7 +232,8 @@ message AuthCallbackResponse {
 message ClientMfaOidcAuthenticateRequest {
   string code = 1;
   string state = 2;
-  string callback_url = 3;
+  // DEPRECATED(2.0): superseeded by core-generated URL
+  string callback_url = 3 [deprecated = true];
   string nonce = 4;
 }
 
