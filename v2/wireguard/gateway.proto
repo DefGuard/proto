@@ -1,7 +1,7 @@
 syntax = "proto3";
 package defguard.gateway.v2;
 
-import "firewall.proto";
+import "enterprise/v2/firewall/firewall.proto";
 import "google/protobuf/empty.proto";
 
 message ConfigurationRequest {
@@ -20,7 +20,7 @@ message Configuration {
   uint32 port = 4;
   repeated Peer peers = 5;
   repeated string addresses = 6;
-  optional enterprise.firewall.FirewallConfig firewall_config = 7;
+  optional defguard.enterprise.firewall.v2.FirewallConfig firewall_config = 7;
   uint32 mtu = 8;
   uint32 fwmark = 9;
 }
@@ -43,7 +43,7 @@ message Update {
   oneof update {
     Peer peer = 2;
     Configuration network = 3;
-    enterprise.firewall.FirewallConfig firewall_config = 4;
+    defguard.enterprise.firewall.v2.FirewallConfig firewall_config = 4;
     google.protobuf.Empty disable_firewall = 5;
   }
 }
