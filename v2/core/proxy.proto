@@ -1,5 +1,5 @@
 syntax = "proto3";
-package defguard.proxy;
+package defguard.proxy.v2;
 
 import "google/protobuf/empty.proto";
 

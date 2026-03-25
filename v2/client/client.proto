@@ -1,5 +1,5 @@
 syntax = "proto3";
-package client;
+package defguard.client.v2;
 
 import "google/protobuf/empty.proto";
 
