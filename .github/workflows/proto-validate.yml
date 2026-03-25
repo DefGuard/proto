@@ -37,6 +37,8 @@ jobs:
         run: buf lint
 
       - name: Check breaking changes for v1
+        # Remove once new file structure is actually merged into base branch.
+        continue-on-error: true
         run: |
           buf breaking \
             --against ".git#ref=${{ github.event.pull_request.base.sha }}" \
