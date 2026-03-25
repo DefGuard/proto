@@ -1,5 +1,5 @@
 syntax = "proto3";
-package defguard.enterprise.firewall.v1;
+package defguard.enterprise.firewall.v2;
 
 // Describes target configuration of the firewall
 message FirewallConfig {
