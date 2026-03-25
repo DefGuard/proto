@@ -1,5 +1,5 @@
 syntax = "proto3";
-package gateway;
+package defguard.gateway.v1;
 
 import "firewall.proto";
 import "google/protobuf/empty.proto";
