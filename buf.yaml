@@ -1,0 +1,14 @@
+version: v2
+modules:
+  - path: .
+    excludes:
+      - .direnv
+lint:
+  use:
+    - BASIC
+  except:
+    - DIRECTORY_SAME_PACKAGE
+    - PACKAGE_DIRECTORY_MATCH
+breaking:
+  use:
+    - FILE
