@@ -33,7 +33,7 @@ message EnrollmentSettings {
   bool only_client_activation = 2;
   // Only admins can add devices so vpn step is skipped
   bool admin_device_management = 3;
-  // Enable Email method for MFA setup 
+  // Enable Email method for MFA setup
   bool smtp_configured = 4;
   // MFA setup is not skippable
   bool mfa_required = 5;
@@ -244,7 +244,7 @@ message ClientPlatformInfo {
   optional string edition = 4;
   optional string codename = 5;
   optional string bitness = 6;
-  optional string architecture = 7; 
+  optional string architecture = 7;
 }
 
 // Common client info
@@ -367,15 +367,15 @@ message DerPayload {
 
 service Proxy {
   /*
-  * Bi-directional communication between core and proxy.
-  * For security reasons, the connection has to be initiated by core,
-  * so requests and responses are actually sent in reverse.
-  */
+   * Bi-directional communication between core and proxy.
+   * For security reasons, the connection has to be initiated by core,
+   * so requests and responses are actually sent in reverse.
+   */
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
   /*
-  * Purges existing on-disk gRPC TLS credentials and signals the server to re-enter setup mode
-  * so that core can provision new ones.
-  */
+   * Purges existing on-disk gRPC TLS credentials and signals the server to re-enter setup mode
+   * so that core can provision new ones.
+   */
   rpc Purge(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
@@ -393,4 +393,3 @@ service ProxySetup {
   rpc GetCsr(CertificateInfo) returns (DerPayload);
   rpc SendCert(DerPayload) returns (google.protobuf.Empty);
 }
-

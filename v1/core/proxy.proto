@@ -33,7 +33,7 @@ message EnrollmentSettings {
   bool only_client_activation = 2;
   // Only admins can add devices so vpn step is skipped
   bool admin_device_management = 3;
-  // Enable Email method for MFA setup 
+  // Enable Email method for MFA setup
   bool smtp_configured = 4;
   // MFA setup is not skippable
   bool mfa_required = 5;
@@ -234,7 +234,7 @@ message ClientPlatformInfo {
   optional string edition = 4;
   optional string codename = 5;
   optional string bitness = 6;
-  optional string architecture = 7; 
+  optional string architecture = 7;
 }
 
 // Common client info
