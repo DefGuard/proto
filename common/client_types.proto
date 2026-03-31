@@ -1,0 +1,161 @@
+syntax = "proto3";
+package defguard.client_types;
+
+/*
+ * Shared message and enum definitions used by Defguard desktop clients (desktop app and CLI).
+ *
+ * This module exists to decouple the desktop client from any specific proxy protocol version.
+ * The client only needs a stable, version-independent set of types for:
+ *   - Enrollment and device configuration (DeviceConfigResponse and its dependencies)
+ *   - Periodic configuration polling (InstanceInfoRequest/Response)
+ *   - Platform info reporting (ClientPlatformInfo)
+ *
+ * Both v1 and v2 proxy protocol definitions import this file and reference these types in
+ * their CoreRequest/CoreResponse envelopes, ensuring that a single client build can
+ * communicate with proxies running either protocol version without any code changes.
+ *
+ * Types that are proxy-version-specific (e.g. MFA flows, gRPC envelope messages,
+ * setup/certificate provisioning) are intentionally NOT included here.
+ */
+
+// Enrollment & Desktop Client activation
+
+message EnrollmentStartRequest {
+  string token = 1;
+}
+
+message AdminInfo {
+  string name = 1;
+  optional string phone_number = 2;
+  string email = 3;
+}
+
+message InitialUserInfo {
+  string first_name = 1;
+  string last_name = 2;
+  string login = 3;
+  string email = 4;
+  optional string phone_number = 5;
+  bool is_active = 6;
+  repeated string device_names = 7;
+  bool enrolled = 8;
+  bool is_admin = 9;
+}
+
+message EnrollmentSettings {
+  // Vpn step is skippable
+  bool vpn_setup_optional = 1;
+  // Manual WireGuard setup is disabled
+  bool only_client_activation = 2;
+  // Only admins can add devices so vpn step is skipped
+  bool admin_device_management = 3;
+  // Enable Email method for MFA setup
+  bool smtp_configured = 4;
+  // MFA setup is not skippable
+  bool mfa_required = 5;
+}
+
+message EnrollmentStartResponse {
+  AdminInfo admin = 1;
+  InitialUserInfo user = 2;
+  int64 deadline_timestamp = 3;
+  string final_page_content = 5;
+  InstanceInfo instance = 7;
+  EnrollmentSettings settings = 8;
+}
+
+message NewDevice {
+  string name = 1;
+  string pubkey = 2;
+  optional string token = 3;
+}
+
+message Device {
+  int64 id = 1;
+  string name = 2;
+  string pubkey = 3;
+  int64 user_id = 4;
+  int64 created_at = 5;
+}
+
+// Device configuration
+
+enum LocationMfaMode {
+  LOCATION_MFA_MODE_UNSPECIFIED = 0;
+  LOCATION_MFA_MODE_DISABLED = 1;
+  LOCATION_MFA_MODE_INTERNAL = 2;
+  LOCATION_MFA_MODE_EXTERNAL = 3;
+}
+
+enum ServiceLocationMode {
+  SERVICE_LOCATION_MODE_UNSPECIFIED = 0;
+  SERVICE_LOCATION_MODE_DISABLED = 1;
+  SERVICE_LOCATION_MODE_PRELOGON = 2;
+  SERVICE_LOCATION_MODE_ALWAYSON = 3;
+}
+
+message DeviceConfig {
+  int64 network_id = 1;
+  string network_name = 2;
+  string config = 3;
+  string endpoint = 4;
+  string assigned_ip = 5;
+  // network pubkey
+  string pubkey = 6;
+  string allowed_ips = 7;
+  optional string dns = 8;
+  // DEPRECATED(1.5): superseded by location_mfa_mode
+  bool mfa_enabled = 9 [deprecated = true];
+  int32 keepalive_interval = 10;
+  optional LocationMfaMode location_mfa_mode = 11;
+  optional ServiceLocationMode service_location_mode = 12;
+}
+
+enum ClientTrafficPolicy {
+  NONE = 0;
+  DISABLE_ALL_TRAFFIC = 1;
+  FORCE_ALL_TRAFFIC = 2;
+}
+
+message InstanceInfo {
+  string id = 1;
+  string name = 2;
+  string url = 3;
+  string proxy_url = 4;
+  string username = 5;
+  bool enterprise_enabled = 6;
+  // DEPRECATED(1.6): superseded by client_traffic_policy
+  bool disable_all_traffic = 7 [deprecated = true];
+  optional string openid_display_name = 8;
+  optional ClientTrafficPolicy client_traffic_policy = 9;
+}
+
+message DeviceConfigResponse {
+  Device device = 1;
+  repeated DeviceConfig configs = 2;
+  InstanceInfo instance = 3;
+  // polling token used for further client-core communication
+  optional string token = 4;
+}
+
+// Configuration polling
+
+message InstanceInfoRequest {
+  string token = 1;
+}
+
+message InstanceInfoResponse {
+  DeviceConfigResponse device_config = 1;
+}
+
+// Platform info sent as a header with every request to the proxy
+
+message ClientPlatformInfo {
+  string os_family = 1;
+  string os_type = 2;
+  string version = 3;
+  optional string edition = 4;
+  optional string codename = 5;
+  optional string bitness = 6;
+  optional string architecture = 7;
+}
