@@ -181,6 +181,68 @@ message CoreResponse {
     CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 17;
     InitialInfo initial_info = 18;
     AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 19;
+    HttpsCerts https_certs = 20;
+  }
+}
+
+message HttpsCerts {
+  string cert_pem = 1;
+  string key_pem = 2;
+}
+
+/*
+ * Sent from core to proxy to trigger ACME HTTP-01 certificate issuance.
+ */
+message AcmeChallenge {
+  string domain = 1;
+  // JSON-serialized instant-acme AccountCredentials; empty string means create a new account.
+  string account_credentials_json = 3;
+}
+
+/*
+ * Sent from proxy to core after ACME certificate issuance completes.
+ */
+message AcmeCertificate {
+  string cert_pem = 1;
+  string key_pem = 2;
+  // JSON-serialized instant-acme AccountCredentials for reuse on renewal.
+  string account_credentials_json = 3;
+}
+
+/*
+ * Progress steps emitted by the proxy during ACME HTTP-01 certificate issuance.
+ * Streamed as AcmeIssueEvent payloads before the final AcmeCertificate.
+ */
+enum AcmeStep {
+  ACME_STEP_UNSPECIFIED          = 0;
+  ACME_STEP_CONNECTING           = 1;
+  ACME_STEP_VALIDATING_DOMAIN    = 2;
+  ACME_STEP_ISSUING_CERTIFICATE  = 3;
+  ACME_STEP_CHECKING_DOMAIN      = 4;
+}
+
+message AcmeProgress {
+  AcmeStep step = 1;
+}
+
+/*
+ * Log lines collected by the proxy during ACME certificate issuance.
+ * Sent once on failure, immediately before the gRPC error status.
+ */
+message AcmeLogs {
+  repeated string lines = 1;
+}
+
+/*
+ * Wrapper message streamed by IssueAcme.
+ * Carries either a progress update, the final certificate, or (on failure)
+ * the collected proxy log lines.
+ */
+message AcmeIssueEvent {
+  oneof payload {
+    AcmeProgress    progress    = 1;
+    AcmeCertificate certificate = 2;
+    AcmeLogs        logs        = 3;
   }
 }
 
@@ -209,6 +271,7 @@ message CoreRequest {
     CodeMfaSetupStartRequest code_mfa_setup_start = 18;
     CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
     AwaitRemoteMfaFinishRequest await_remote_mfa_finish = 20;
+    AcmeCertificate acme_certificate = 21;
   }
 }
 
@@ -232,6 +295,11 @@ service Proxy {
    * so that core can provision new ones.
    */
   rpc Purge(google.protobuf.Empty) returns (google.protobuf.Empty);
+  /*
+  * Triggers ACME HTTP-01 certificate issuance directly on the proxy.
+  * Streams progress events followed by the issued certificate.
+  */
+  rpc TriggerAcme(AcmeChallenge) returns (stream AcmeIssueEvent);
 }
 
 message LogEntry {
