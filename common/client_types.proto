@@ -64,10 +64,21 @@ message EnrollmentStartResponse {
   EnrollmentSettings settings = 8;
 }
 
+message ActivateUserRequest {
+  optional string phone_number = 1;
+  string password = 2;
+  optional string token = 3;
+}
+
 message NewDevice {
   string name = 1;
   string pubkey = 2;
   optional string token = 3;
+}
+
+message ExistingDevice {
+  string pubkey = 1;
+  optional string token = 2;
 }
 
 message Device {
