@@ -1,8 +1,8 @@
 syntax = "proto3";
 package defguard.proxy.v2;
 
-import "google/protobuf/empty.proto";
 import "common/client_types.proto";
+import "google/protobuf/empty.proto";
 
 // Password Reset
 message PasswordResetStartRequest {
@@ -214,11 +214,11 @@ message AcmeCertificate {
  * Streamed as AcmeIssueEvent payloads before the final AcmeCertificate.
  */
 enum AcmeStep {
-  ACME_STEP_UNSPECIFIED          = 0;
-  ACME_STEP_CONNECTING           = 1;
-  ACME_STEP_VALIDATING_DOMAIN    = 2;
-  ACME_STEP_ISSUING_CERTIFICATE  = 3;
-  ACME_STEP_CHECKING_DOMAIN      = 4;
+  ACME_STEP_UNSPECIFIED = 0;
+  ACME_STEP_CONNECTING = 1;
+  ACME_STEP_VALIDATING_DOMAIN = 2;
+  ACME_STEP_ISSUING_CERTIFICATE = 3;
+  ACME_STEP_CHECKING_DOMAIN = 4;
 }
 
 message AcmeProgress {
@@ -240,9 +240,9 @@ message AcmeLogs {
  */
 message AcmeIssueEvent {
   oneof payload {
-    AcmeProgress    progress    = 1;
+    AcmeProgress progress = 1;
     AcmeCertificate certificate = 2;
-    AcmeLogs        logs        = 3;
+    AcmeLogs logs = 3;
   }
 }
 
@@ -296,9 +296,9 @@ service Proxy {
    */
   rpc Purge(google.protobuf.Empty) returns (google.protobuf.Empty);
   /*
-  * Triggers ACME HTTP-01 certificate issuance directly on the proxy.
-  * Streams progress events followed by the issued certificate.
-  */
+   * Triggers ACME HTTP-01 certificate issuance directly on the proxy.
+   * Streams progress events followed by the issued certificate.
+   */
   rpc TriggerAcme(AcmeChallenge) returns (stream AcmeIssueEvent);
 }
 
