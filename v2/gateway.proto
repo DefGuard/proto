@@ -4,25 +4,18 @@ package defguard.gateway.v2;
 import "enterprise/v2/firewall/firewall.proto";
 import "google/protobuf/empty.proto";
 
-message ConfigurationRequest {
-  // DEPRECATED(2.0): Gateway needs to authenticate with `auth_token`.
-  optional string name = 1 [deprecated = true];
-  string hostname = 3;
-}
-
 /*
  * Networking and VPN configuration send from Core to Gateway.
  */
 message Configuration {
   string name = 1;
   string prvkey = 2;
-  // string address = 3; // obsolete, use `addresses`
-  uint32 port = 4;
-  repeated Peer peers = 5;
-  repeated string addresses = 6;
-  optional defguard.enterprise.firewall.v2.FirewallConfig firewall_config = 7;
-  uint32 mtu = 8;
-  uint32 fwmark = 9;
+  uint32 port = 3;
+  repeated Peer peers = 4;
+  repeated string addresses = 5;
+  optional defguard.enterprise.firewall.v2.FirewallConfig firewall_config = 6;
+  uint32 mtu = 7;
+  uint32 fwmark = 8;
 }
 
 enum UpdateType {
@@ -79,7 +72,7 @@ message CoreRequest {
   uint64 id = 1;
   oneof payload {
     PeerStats peer_stats = 2;
-    ConfigurationRequest config_request = 3;
+    google.protobuf.Empty config_request = 3;
   }
 }
 

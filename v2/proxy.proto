@@ -69,10 +69,8 @@ enum AuthFlowType {
 }
 
 message AuthInfoRequest {
-  // DEPRECATED(2.0): superseded by auth_flow_type
-  string redirect_url = 1 [deprecated = true];
-  optional string state = 2;
-  AuthFlowType auth_flow_type = 3;
+  optional string state = 1;
+  AuthFlowType auth_flow_type = 2;
 }
 
 message AuthInfoResponse {
@@ -85,8 +83,6 @@ message AuthInfoResponse {
 message AuthCallbackRequest {
   string code = 1;
   string nonce = 2;
-  // DEPRECATED(2.0): superseded by core-generated URL
-  string callback_url = 3 [deprecated = true];
 }
 
 message AuthCallbackResponse {
@@ -97,9 +93,7 @@ message AuthCallbackResponse {
 message ClientMfaOidcAuthenticateRequest {
   string code = 1;
   string state = 2;
-  // DEPRECATED(2.0): superseded by core-generated URL
-  string callback_url = 3 [deprecated = true];
-  string nonce = 4;
+  string nonce = 3;
 }
 
 // Common client info
@@ -174,14 +168,14 @@ message CoreResponse {
     ClientMfaFinishResponse client_mfa_finish = 7;
     CoreError core_error = 8;
     defguard.client_types.InstanceInfoResponse instance_info = 9;
-    AuthInfoResponse auth_info = 13;
-    AuthCallbackResponse auth_callback = 14;
-    ClientMfaTokenValidationResponse client_mfa_token_validation = 15;
-    CodeMfaSetupStartResponse code_mfa_setup_start_response = 16;
-    CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 17;
-    InitialInfo initial_info = 18;
-    AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 19;
-    HttpsCerts https_certs = 20;
+    AuthInfoResponse auth_info = 10;
+    AuthCallbackResponse auth_callback = 11;
+    ClientMfaTokenValidationResponse client_mfa_token_validation = 12;
+    CodeMfaSetupStartResponse code_mfa_setup_start_response = 13;
+    CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 14;
+    InitialInfo initial_info = 15;
+    AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 16;
+    HttpsCerts https_certs = 17;
   }
 }
 
@@ -196,7 +190,7 @@ message HttpsCerts {
 message AcmeChallenge {
   string domain = 1;
   // JSON-serialized instant-acme AccountCredentials; empty string means create a new account.
-  string account_credentials_json = 3;
+  string account_credentials_json = 2;
 }
 
 /*
