@@ -22,14 +22,7 @@ message PasswordResetRequest {
   optional string token = 2;
 }
 
-// Client MFA
-enum MfaMethod {
-  TOTP = 0;
-  EMAIL = 1;
-  OIDC = 2;
-  BIOMETRIC = 3;
-  MOBILE_APPROVE = 4;
-}
+// Client MFA (proxy-internal)
 
 message ClientMfaTokenValidationRequest {
   string token = 1;
@@ -37,34 +30,6 @@ message ClientMfaTokenValidationRequest {
 
 message ClientMfaTokenValidationResponse {
   bool token_valid = 1;
-}
-
-message ClientMfaStartRequest {
-  int64 location_id = 1;
-  string pubkey = 2;
-  MfaMethod method = 3;
-}
-
-message ClientMfaStartResponse {
-  string token = 1;
-  // for biometric mfa method
-  optional string challenge = 2;
-}
-
-message ClientMfaFinishRequest {
-  string token = 1;
-  optional string code = 2;
-  optional string auth_pub_key = 3;
-}
-
-message ClientMfaFinishResponse {
-  string preshared_key = 1;
-  optional string token = 2;
-}
-
-message AuthInfoRequest {
-  string redirect_url = 1;
-  optional string state = 2;
 }
 
 message AuthInfoResponse {
@@ -100,33 +65,6 @@ message DeviceInfo {
   optional string platform = 4;
 }
 
-message RegisterMobileAuthRequest {
-  string token = 1;
-  string auth_pub_key = 2;
-  string device_pub_key = 3;
-}
-
-// TOTP and Email MFA Setup
-message CodeMfaSetupStartRequest {
-  MfaMethod method = 1;
-  string token = 2;
-}
-
-// in case of email secret is empty
-message CodeMfaSetupStartResponse {
-  optional string totp_secret = 1;
-}
-
-message CodeMfaSetupFinishRequest {
-  string code = 1;
-  string token = 2;
-  MfaMethod method = 3;
-}
-
-message CodeMfaSetupFinishResponse {
-  repeated string recovery_codes = 1;
-}
-
 /*
  * Error response variant.
  * Due to reverse proxy -> core communication this is how we
@@ -148,15 +86,15 @@ message CoreResponse {
     defguard.client_types.EnrollmentStartResponse enrollment_start = 3;
     defguard.client_types.DeviceConfigResponse device_config = 4;
     PasswordResetStartResponse password_reset_start = 5;
-    ClientMfaStartResponse client_mfa_start = 6;
-    ClientMfaFinishResponse client_mfa_finish = 7;
+    defguard.client_types.ClientMfaStartResponse client_mfa_start = 6;
+    defguard.client_types.ClientMfaFinishResponse client_mfa_finish = 7;
     CoreError core_error = 8;
     defguard.client_types.InstanceInfoResponse instance_info = 9;
     AuthInfoResponse auth_info = 13;
     AuthCallbackResponse auth_callback = 14;
     ClientMfaTokenValidationResponse client_mfa_token_validation = 15;
-    CodeMfaSetupStartResponse code_mfa_setup_start_response = 16;
-    CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 17;
+    defguard.client_types.CodeMfaSetupStartResponse code_mfa_setup_start_response = 16;
+    defguard.client_types.CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 17;
   }
 }
 
@@ -174,16 +112,16 @@ message CoreRequest {
     PasswordResetInitializeRequest password_reset_init = 7;
     PasswordResetStartRequest password_reset_start = 8;
     PasswordResetRequest password_reset = 9;
-    ClientMfaStartRequest client_mfa_start = 10;
-    ClientMfaFinishRequest client_mfa_finish = 11;
+    defguard.client_types.ClientMfaStartRequest client_mfa_start = 10;
+    defguard.client_types.ClientMfaFinishRequest client_mfa_finish = 11;
     defguard.client_types.InstanceInfoRequest instance_info = 12;
-    AuthInfoRequest auth_info = 13;
+    defguard.client_types.AuthInfoRequest auth_info = 13;
     AuthCallbackRequest auth_callback = 14;
     ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
-    RegisterMobileAuthRequest register_mobile_auth = 16;
+    defguard.client_types.RegisterMobileAuthRequest register_mobile_auth = 16;
     ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
-    CodeMfaSetupStartRequest code_mfa_setup_start = 18;
-    CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
+    defguard.client_types.CodeMfaSetupStartRequest code_mfa_setup_start = 18;
+    defguard.client_types.CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
   }
 }
 

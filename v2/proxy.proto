@@ -5,7 +5,25 @@ import "common/client_types.proto";
 import "google/protobuf/empty.proto";
 import "v2/common.proto";
 
-// Client MFA (proxy-internal only)
+// Password Reset (proxy-internal)
+
+message PasswordResetInitializeRequest {
+  string email = 1;
+}
+
+message PasswordResetStartRequest {
+  string token = 1;
+}
+
+message PasswordResetStartResponse {
+  int64 deadline_timestamp = 1;
+}
+
+message PasswordResetRequest {
+  string password = 1;
+  optional string token = 2;
+}
+
 message ClientMfaTokenValidationRequest {
   string token = 1;
 }
@@ -77,7 +95,7 @@ message CoreResponse {
     google.protobuf.Empty empty = 2;
     defguard.client_types.EnrollmentStartResponse enrollment_start = 3;
     defguard.client_types.DeviceConfigResponse device_config = 4;
-    defguard.client_types.PasswordResetStartResponse password_reset_start = 5;
+    PasswordResetStartResponse password_reset_start = 5;
     defguard.client_types.ClientMfaStartResponse client_mfa_start = 6;
     defguard.client_types.ClientMfaFinishResponse client_mfa_finish = 7;
     CoreError core_error = 8;
@@ -165,9 +183,9 @@ message CoreRequest {
     defguard.client_types.ActivateUserRequest activate_user = 4;
     defguard.client_types.NewDevice new_device = 5;
     defguard.client_types.ExistingDevice existing_device = 6;
-    defguard.client_types.PasswordResetInitializeRequest password_reset_init = 7;
-    defguard.client_types.PasswordResetStartRequest password_reset_start = 8;
-    defguard.client_types.PasswordResetRequest password_reset = 9;
+    PasswordResetInitializeRequest password_reset_init = 7;
+    PasswordResetStartRequest password_reset_start = 8;
+    PasswordResetRequest password_reset = 9;
     defguard.client_types.ClientMfaStartRequest client_mfa_start = 10;
     defguard.client_types.ClientMfaFinishRequest client_mfa_finish = 11;
     defguard.client_types.InstanceInfoRequest instance_info = 12;

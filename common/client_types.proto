@@ -14,8 +14,8 @@ package defguard.client_types;
  * their CoreRequest/CoreResponse envelopes, ensuring that a single client build can
  * communicate with proxies running either protocol version without any code changes.
  *
- * Types that are proxy-version-specific (e.g. MFA flows, gRPC envelope messages,
- * setup/certificate provisioning) are intentionally NOT included here.
+ * Types that are proxy-version-specific (e.g. gRPC envelope messages, setup/certificate
+ * provisioning, password reset flows) are intentionally NOT included here.
  */
 
 // Enrollment & Desktop Client activation
@@ -169,25 +169,6 @@ message ClientPlatformInfo {
   optional string codename = 5;
   optional string bitness = 6;
   optional string architecture = 7;
-}
-
-// Password Reset
-
-message PasswordResetInitializeRequest {
-  string email = 1;
-}
-
-message PasswordResetStartRequest {
-  string token = 1;
-}
-
-message PasswordResetStartResponse {
-  int64 deadline_timestamp = 1;
-}
-
-message PasswordResetRequest {
-  string password = 1;
-  optional string token = 2;
 }
 
 // Client MFA
