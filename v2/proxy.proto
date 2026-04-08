@@ -3,6 +3,7 @@ package defguard.proxy.v2;
 
 import "common/client_types.proto";
 import "google/protobuf/empty.proto";
+import "v2/common.proto";
 
 // Client MFA (proxy-internal only)
 message ClientMfaTokenValidationRequest {
@@ -182,14 +183,6 @@ message CoreRequest {
   }
 }
 
-message CertificateInfo {
-  string cert_hostname = 1;
-}
-
-message DerPayload {
-  bytes der_data = 1;
-}
-
 service Proxy {
   /*
    * Bi-directional communication between core and proxy.
@@ -209,17 +202,9 @@ service Proxy {
   rpc TriggerAcme(AcmeChallenge) returns (stream AcmeIssueEvent);
 }
 
-message LogEntry {
-  string level = 1;
-  string target = 2;
-  string message = 3;
-  string timestamp = 4;
-  map<string, string> fields = 5;
-}
-
 // Service used for initial Proxy setup, used for configuring TLS certificate on Proxy for gRPC communication.
 service ProxySetup {
-  rpc Start(google.protobuf.Empty) returns (stream LogEntry);
-  rpc GetCsr(CertificateInfo) returns (DerPayload);
-  rpc SendCert(DerPayload) returns (google.protobuf.Empty);
+  rpc Start(google.protobuf.Empty) returns (stream defguard.common.v2.LogEntry);
+  rpc GetCsr(defguard.common.v2.CertificateInfo) returns (defguard.common.v2.DerPayload);
+  rpc SendCert(defguard.common.v2.DerPayload) returns (google.protobuf.Empty);
 }

@@ -3,6 +3,7 @@ package defguard.gateway.v2;
 
 import "enterprise/v2/firewall/firewall.proto";
 import "google/protobuf/empty.proto";
+import "v2/common.proto";
 
 /*
  * Networking and VPN configuration send from Core to Gateway.
@@ -90,25 +91,9 @@ service Gateway {
   rpc Purge(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
-message DerPayload {
-  bytes der_data = 1;
-}
-
-message CertificateInfo {
-  string cert_hostname = 1;
-}
-
-message LogEntry {
-  string level = 1;
-  string target = 2;
-  string message = 3;
-  string timestamp = 4;
-  map<string, string> fields = 5;
-}
-
 // Service used for initial Gateway setup, for configuring TLS certificate on Gateway for gRPC communication.
 service GatewaySetup {
-  rpc Start(google.protobuf.Empty) returns (stream LogEntry);
-  rpc GetCsr(CertificateInfo) returns (DerPayload);
-  rpc SendCert(DerPayload) returns (google.protobuf.Empty);
+  rpc Start(google.protobuf.Empty) returns (stream defguard.common.v2.LogEntry);
+  rpc GetCsr(defguard.common.v2.CertificateInfo) returns (defguard.common.v2.DerPayload);
+  rpc SendCert(defguard.common.v2.DerPayload) returns (google.protobuf.Empty);
 }
