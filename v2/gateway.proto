@@ -3,6 +3,7 @@ package defguard.gateway.v2;
 
 import "enterprise/v2/firewall/firewall.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 import "v2/common.proto";
 
 /*
@@ -48,7 +49,7 @@ message PeerStats {
   uint64 upload = 3;
   uint64 download = 4;
   uint32 keepalive_interval = 5;
-  uint64 latest_handshake = 6;
+  optional google.protobuf.Timestamp latest_handshake = 6;
   string allowed_ips = 7;
 }
 
