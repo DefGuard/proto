@@ -3,9 +3,9 @@ package defguard.enterprise.firewall.v2;
 
 // Describes target configuration of the firewall
 message FirewallConfig {
-  FirewallPolicy default_policy = 2;
-  repeated FirewallRule rules = 3;
-  repeated SnatBinding snat_bindings = 4;
+  FirewallPolicy default_policy = 1;
+  repeated FirewallRule rules = 2;
+  repeated SnatBinding snat_bindings = 3;
 }
 
 enum IpVersion {
