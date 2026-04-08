@@ -160,11 +160,13 @@ message CoreRequest {
   uint64 id = 1;
   DeviceInfo device_info = 2;
   oneof payload {
-    // desktop & mobile client messages
     defguard.client_types.EnrollmentStartRequest enrollment_start = 3;
     defguard.client_types.ActivateUserRequest activate_user = 4;
     defguard.client_types.NewDevice new_device = 5;
     defguard.client_types.ExistingDevice existing_device = 6;
+    defguard.client_types.PasswordResetInitializeRequest password_reset_init = 7;
+    defguard.client_types.PasswordResetStartRequest password_reset_start = 8;
+    defguard.client_types.PasswordResetRequest password_reset = 9;
     defguard.client_types.ClientMfaStartRequest client_mfa_start = 10;
     defguard.client_types.ClientMfaFinishRequest client_mfa_finish = 11;
     defguard.client_types.InstanceInfoRequest instance_info = 12;
@@ -176,10 +178,6 @@ message CoreRequest {
     defguard.client_types.CodeMfaSetupStartRequest code_mfa_setup_start = 18;
     defguard.client_types.CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
     AwaitRemoteMfaFinishRequest await_remote_mfa_finish = 20;
-    // proxy messages
-    defguard.client_types.PasswordResetInitializeRequest password_reset_init = 7;
-    defguard.client_types.PasswordResetStartRequest password_reset_start = 8;
-    defguard.client_types.PasswordResetRequest password_reset = 9;
     AcmeCertificate acme_certificate = 21;
   }
 }
