@@ -108,6 +108,7 @@ message CoreResponse {
     InitialInfo initial_info = 15;
     AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 16;
     HttpsCerts https_certs = 17;
+    google.protobuf.Empty clear_https_certs = 18;
   }
 }
 
