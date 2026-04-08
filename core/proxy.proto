@@ -327,6 +327,7 @@ message CoreResponse {
     InitialInfo initial_info = 18;
     AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 19;
     HttpsCerts https_certs = 20;
+    google.protobuf.Empty clear_https_certs = 21;
   }
 }
 
@@ -461,4 +462,3 @@ service ProxySetup {
   rpc GetCsr(CertificateInfo) returns (DerPayload);
   rpc SendCert(DerPayload) returns (google.protobuf.Empty);
 }
-
