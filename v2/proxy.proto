@@ -4,62 +4,13 @@ package defguard.proxy.v2;
 import "common/client_types.proto";
 import "google/protobuf/empty.proto";
 
-// Password Reset
-message PasswordResetStartRequest {
-  string token = 1;
-}
-
-message PasswordResetInitializeRequest {
-  string email = 1;
-}
-
-message PasswordResetStartResponse {
-  int64 deadline_timestamp = 1;
-}
-
-message PasswordResetRequest {
-  string password = 1;
-  optional string token = 2;
-}
-
-// Client MFA
-enum MfaMethod {
-  TOTP = 0;
-  EMAIL = 1;
-  OIDC = 2;
-  BIOMETRIC = 3;
-  MOBILE_APPROVE = 4;
-}
-
+// Client MFA (proxy-internal only)
 message ClientMfaTokenValidationRequest {
   string token = 1;
 }
 
 message ClientMfaTokenValidationResponse {
   bool token_valid = 1;
-}
-
-message ClientMfaStartRequest {
-  int64 location_id = 1;
-  string pubkey = 2;
-  MfaMethod method = 3;
-}
-
-message ClientMfaStartResponse {
-  string token = 1;
-  // for biometric mfa method
-  optional string challenge = 2;
-}
-
-message ClientMfaFinishRequest {
-  string token = 1;
-  optional string code = 2;
-  optional string auth_pub_key = 3;
-}
-
-message ClientMfaFinishResponse {
-  string preshared_key = 1;
-  optional string token = 2;
 }
 
 message AuthInfoResponse {
@@ -91,33 +42,6 @@ message DeviceInfo {
   optional string user_agent = 2;
   optional string version = 3;
   optional string platform = 4;
-}
-
-message RegisterMobileAuthRequest {
-  string token = 1;
-  string auth_pub_key = 2;
-  string device_pub_key = 3;
-}
-
-// TOTP and Email MFA Setup
-message CodeMfaSetupStartRequest {
-  MfaMethod method = 1;
-  string token = 2;
-}
-
-// in case of email secret is empty
-message CodeMfaSetupStartResponse {
-  optional string totp_secret = 1;
-}
-
-message CodeMfaSetupFinishRequest {
-  string code = 1;
-  string token = 2;
-  MfaMethod method = 3;
-}
-
-message CodeMfaSetupFinishResponse {
-  repeated string recovery_codes = 1;
 }
 
 message AwaitRemoteMfaFinishRequest {
@@ -152,16 +76,16 @@ message CoreResponse {
     google.protobuf.Empty empty = 2;
     defguard.client_types.EnrollmentStartResponse enrollment_start = 3;
     defguard.client_types.DeviceConfigResponse device_config = 4;
-    PasswordResetStartResponse password_reset_start = 5;
-    ClientMfaStartResponse client_mfa_start = 6;
-    ClientMfaFinishResponse client_mfa_finish = 7;
+    defguard.client_types.PasswordResetStartResponse password_reset_start = 5;
+    defguard.client_types.ClientMfaStartResponse client_mfa_start = 6;
+    defguard.client_types.ClientMfaFinishResponse client_mfa_finish = 7;
     CoreError core_error = 8;
     defguard.client_types.InstanceInfoResponse instance_info = 9;
     AuthInfoResponse auth_info = 10;
     AuthCallbackResponse auth_callback = 11;
     ClientMfaTokenValidationResponse client_mfa_token_validation = 12;
-    CodeMfaSetupStartResponse code_mfa_setup_start_response = 13;
-    CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 14;
+    defguard.client_types.CodeMfaSetupStartResponse code_mfa_setup_start_response = 13;
+    defguard.client_types.CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 14;
     InitialInfo initial_info = 15;
     AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 16;
     HttpsCerts https_certs = 17;
@@ -236,24 +160,26 @@ message CoreRequest {
   uint64 id = 1;
   DeviceInfo device_info = 2;
   oneof payload {
+    // desktop & mobile client messages
     defguard.client_types.EnrollmentStartRequest enrollment_start = 3;
     defguard.client_types.ActivateUserRequest activate_user = 4;
     defguard.client_types.NewDevice new_device = 5;
     defguard.client_types.ExistingDevice existing_device = 6;
-    PasswordResetInitializeRequest password_reset_init = 7;
-    PasswordResetStartRequest password_reset_start = 8;
-    PasswordResetRequest password_reset = 9;
-    ClientMfaStartRequest client_mfa_start = 10;
-    ClientMfaFinishRequest client_mfa_finish = 11;
+    defguard.client_types.ClientMfaStartRequest client_mfa_start = 10;
+    defguard.client_types.ClientMfaFinishRequest client_mfa_finish = 11;
     defguard.client_types.InstanceInfoRequest instance_info = 12;
     defguard.client_types.AuthInfoRequest auth_info = 13;
     AuthCallbackRequest auth_callback = 14;
     ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
-    RegisterMobileAuthRequest register_mobile_auth = 16;
+    defguard.client_types.RegisterMobileAuthRequest register_mobile_auth = 16;
     ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
-    CodeMfaSetupStartRequest code_mfa_setup_start = 18;
-    CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
+    defguard.client_types.CodeMfaSetupStartRequest code_mfa_setup_start = 18;
+    defguard.client_types.CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
     AwaitRemoteMfaFinishRequest await_remote_mfa_finish = 20;
+    // proxy messages
+    defguard.client_types.PasswordResetInitializeRequest password_reset_init = 7;
+    defguard.client_types.PasswordResetStartRequest password_reset_start = 8;
+    defguard.client_types.PasswordResetRequest password_reset = 9;
     AcmeCertificate acme_certificate = 21;
   }
 }

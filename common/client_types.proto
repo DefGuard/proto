@@ -171,6 +171,86 @@ message ClientPlatformInfo {
   optional string architecture = 7;
 }
 
+// Password Reset
+
+message PasswordResetInitializeRequest {
+  string email = 1;
+}
+
+message PasswordResetStartRequest {
+  string token = 1;
+}
+
+message PasswordResetStartResponse {
+  int64 deadline_timestamp = 1;
+}
+
+message PasswordResetRequest {
+  string password = 1;
+  optional string token = 2;
+}
+
+// Client MFA
+
+enum MfaMethod {
+  TOTP = 0;
+  EMAIL = 1;
+  OIDC = 2;
+  BIOMETRIC = 3;
+  MOBILE_APPROVE = 4;
+}
+
+message ClientMfaStartRequest {
+  int64 location_id = 1;
+  string pubkey = 2;
+  MfaMethod method = 3;
+}
+
+message ClientMfaStartResponse {
+  string token = 1;
+  // for biometric mfa method
+  optional string challenge = 2;
+}
+
+message ClientMfaFinishRequest {
+  string token = 1;
+  optional string code = 2;
+  optional string auth_pub_key = 3;
+}
+
+message ClientMfaFinishResponse {
+  string preshared_key = 1;
+  optional string token = 2;
+}
+
+message RegisterMobileAuthRequest {
+  string token = 1;
+  string auth_pub_key = 2;
+  string device_pub_key = 3;
+}
+
+// TOTP and Email MFA Setup
+
+message CodeMfaSetupStartRequest {
+  MfaMethod method = 1;
+  string token = 2;
+}
+
+// in case of email secret is empty
+message CodeMfaSetupStartResponse {
+  optional string totp_secret = 1;
+}
+
+message CodeMfaSetupFinishRequest {
+  string code = 1;
+  string token = 2;
+  MfaMethod method = 3;
+}
+
+message CodeMfaSetupFinishResponse {
+  repeated string recovery_codes = 1;
+}
+
 // OIDC authentication flow
 
 enum AuthFlowType {
