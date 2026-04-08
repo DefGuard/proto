@@ -1,0 +1,464 @@
+syntax = "proto3";
+package defguard.proxy;
+
+import "google/protobuf/empty.proto";
+
+// Enrollment & Desktop Client activation
+message EnrollmentStartRequest {
+  string token = 1;
+}
+
+message AdminInfo {
+  string name = 1;
+  optional string phone_number = 2;
+  string email = 3;
+}
+
+message InitialUserInfo {
+  string first_name = 1;
+  string last_name = 2;
+  string login = 3;
+  string email = 4;
+  optional string phone_number = 5;
+  bool is_active = 6;
+  repeated string device_names = 7;
+  bool enrolled = 8;
+  bool is_admin = 9;
+}
+
+message EnrollmentSettings {
+  // Vpn step is skippable
+  bool vpn_setup_optional = 1;
+  // Manual WireGuard setup is disabled
+  bool only_client_activation = 2;
+  // Only admins can add devices so vpn step is skipped
+  bool admin_device_management = 3;
+  // Enable Email method for MFA setup 
+  bool smtp_configured = 4;
+  // MFA setup is not skippable
+  bool mfa_required = 5;
+}
+
+message EnrollmentStartResponse {
+  AdminInfo admin = 1;
+  InitialUserInfo user = 2;
+  int64 deadline_timestamp = 3;
+  string final_page_content = 5;
+  InstanceInfo instance = 7;
+  EnrollmentSettings settings = 8;
+}
+
+message ActivateUserRequest {
+  optional string phone_number = 1;
+  string password = 2;
+  optional string token = 3;
+}
+
+message NewDevice {
+  string name = 1;
+  string pubkey = 2;
+  optional string token = 3;
+}
+
+message Device {
+  int64 id = 1;
+  string name = 2;
+  string pubkey = 3;
+  int64 user_id = 4;
+  int64 created_at = 5;
+}
+
+enum LocationMfaMode {
+  LOCATION_MFA_MODE_UNSPECIFIED = 0;
+  LOCATION_MFA_MODE_DISABLED = 1;
+  LOCATION_MFA_MODE_INTERNAL = 2;
+  LOCATION_MFA_MODE_EXTERNAL = 3;
+}
+
+enum ServiceLocationMode {
+  SERVICE_LOCATION_MODE_UNSPECIFIED = 0;
+  SERVICE_LOCATION_MODE_DISABLED = 1;
+  SERVICE_LOCATION_MODE_PRELOGON = 2;
+  SERVICE_LOCATION_MODE_ALWAYSON = 3;
+}
+
+message DeviceConfig {
+  int64 network_id = 1;
+  string network_name = 2;
+  string config = 3;
+  string endpoint = 4;
+  string assigned_ip = 5;
+  // network pubkey
+  string pubkey = 6;
+  string allowed_ips = 7;
+  optional string dns = 8;
+  // DEPRECATED(1.5): superseeded by location_mfa_mode
+  bool mfa_enabled = 9 [deprecated = true];
+  int32 keepalive_interval = 10;
+  optional LocationMfaMode location_mfa_mode = 11;
+  optional ServiceLocationMode service_location_mode = 12;
+}
+
+enum ClientTrafficPolicy {
+  NONE = 0;
+  DISABLE_ALL_TRAFFIC = 1;
+  FORCE_ALL_TRAFFIC = 2;
+}
+
+message InstanceInfo {
+  string id = 1;
+  string name = 2;
+  string url = 3;
+  string proxy_url = 4;
+  string username = 5;
+  bool enterprise_enabled = 6;
+  // DEPRECATED(1.6): superseeded by client_traffic_policy
+  bool disable_all_traffic = 7 [deprecated = true];
+  optional string openid_display_name = 8;
+  optional ClientTrafficPolicy client_traffic_policy = 9;
+}
+
+message DeviceConfigResponse {
+  Device device = 1;
+  repeated DeviceConfig configs = 2;
+  InstanceInfo instance = 3;
+  // polling token used for further client-core communication
+  optional string token = 4;
+}
+
+message InstanceInfoRequest {
+  string token = 1;
+}
+
+message InstanceInfoResponse {
+  DeviceConfigResponse device_config = 1;
+}
+
+message ExistingDevice {
+  string pubkey = 1;
+  optional string token = 2;
+}
+
+// Password Reset
+message PasswordResetStartRequest {
+  string token = 1;
+}
+
+message PasswordResetInitializeRequest {
+  string email = 1;
+}
+
+message PasswordResetStartResponse {
+  int64 deadline_timestamp = 1;
+}
+
+message PasswordResetRequest {
+  string password = 1;
+  optional string token = 2;
+}
+
+// Client MFA
+enum MfaMethod {
+  TOTP = 0;
+  EMAIL = 1;
+  OIDC = 2;
+  BIOMETRIC = 3;
+  MOBILE_APPROVE = 4;
+}
+
+message ClientMfaTokenValidationRequest {
+  string token = 1;
+}
+
+message ClientMfaTokenValidationResponse {
+  bool token_valid = 1;
+}
+
+message ClientMfaStartRequest {
+  int64 location_id = 1;
+  string pubkey = 2;
+  MfaMethod method = 3;
+}
+
+message ClientMfaStartResponse {
+  string token = 1;
+  // for biometric mfa method
+  optional string challenge = 2;
+}
+
+message ClientMfaFinishRequest {
+  string token = 1;
+  optional string code = 2;
+  optional string auth_pub_key = 3;
+}
+
+message ClientMfaFinishResponse {
+  string preshared_key = 1;
+  optional string token = 2;
+}
+
+enum AuthFlowType {
+  AUTH_FLOW_TYPE_UNSPECIFIED = 0;
+  AUTH_FLOW_TYPE_ENROLLMENT = 1;
+  AUTH_FLOW_TYPE_MFA = 2;
+}
+
+message AuthInfoRequest {
+  // DEPRECATED(2.0): superseeded by auth_flow_type
+  string redirect_url = 1 [deprecated = true];
+  optional string state = 2;
+  AuthFlowType auth_flow_type = 3;
+}
+
+message AuthInfoResponse {
+  string url = 1;
+  string csrf_token = 2;
+  string nonce = 3;
+  optional string button_display_name = 4;
+}
+
+message AuthCallbackRequest {
+  string code = 1;
+  string nonce = 2;
+  // DEPRECATED(2.0): superseeded by core-generated URL
+  string callback_url = 3 [deprecated = true];
+}
+
+message AuthCallbackResponse {
+  string url = 1;
+  string token = 2;
+}
+
+message ClientMfaOidcAuthenticateRequest {
+  string code = 1;
+  string state = 2;
+  // DEPRECATED(2.0): superseeded by core-generated URL
+  string callback_url = 3 [deprecated = true];
+  string nonce = 4;
+}
+
+message ClientPlatformInfo {
+  string os_family = 1;
+  string os_type = 2;
+  string version = 3;
+  optional string edition = 4;
+  optional string codename = 5;
+  optional string bitness = 6;
+  optional string architecture = 7; 
+}
+
+// Common client info
+message DeviceInfo {
+  string ip_address = 1;
+  optional string user_agent = 2;
+  optional string version = 3;
+  optional string platform = 4;
+}
+
+message RegisterMobileAuthRequest {
+  string token = 1;
+  string auth_pub_key = 2;
+  string device_pub_key = 3;
+}
+
+// TOTP and Email MFA Setup
+message CodeMfaSetupStartRequest {
+  MfaMethod method = 1;
+  string token = 2;
+}
+
+// in case of email secret is empty
+message CodeMfaSetupStartResponse {
+  optional string totp_secret = 1;
+}
+
+message CodeMfaSetupFinishRequest {
+  string code = 1;
+  string token = 2;
+  MfaMethod method = 3;
+}
+
+message CodeMfaSetupFinishResponse {
+  repeated string recovery_codes = 1;
+}
+
+message AwaitRemoteMfaFinishRequest {
+  string token = 1;
+}
+
+message AwaitRemoteMfaFinishResponse {
+  string preshared_key = 1;
+}
+
+message InitialInfo {
+  bytes private_cookies_key = 1;
+}
+
+/*
+ * Error response variant.
+ * Due to reverse proxy -> core communication this is how we
+ * can return gRPC errors from core.
+ */
+message CoreError {
+  int32 status_code = 1;
+  string message = 2;
+}
+
+/*
+ * CoreResponse represents messages send from core to proxy
+ * in response to CoreRequest.
+ */
+message CoreResponse {
+  uint64 id = 1;
+  oneof payload {
+    google.protobuf.Empty empty = 2;
+    EnrollmentStartResponse enrollment_start = 3;
+    DeviceConfigResponse device_config = 4;
+    PasswordResetStartResponse password_reset_start = 5;
+    ClientMfaStartResponse client_mfa_start = 6;
+    ClientMfaFinishResponse client_mfa_finish = 7;
+    CoreError core_error = 8;
+    InstanceInfoResponse instance_info = 9;
+    AuthInfoResponse auth_info = 13;
+    AuthCallbackResponse auth_callback = 14;
+    ClientMfaTokenValidationResponse client_mfa_token_validation = 15;
+    CodeMfaSetupStartResponse code_mfa_setup_start_response = 16;
+    CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 17;
+    InitialInfo initial_info = 18;
+    AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 19;
+    HttpsCerts https_certs = 20;
+    google.protobuf.Empty clear_https_certs = 21;
+  }
+}
+
+message HttpsCerts {
+  string cert_pem = 1;
+  string key_pem = 2;
+}
+
+/*
+ * Sent from core to proxy to trigger ACME HTTP-01 certificate issuance.
+ */
+message AcmeChallenge {
+  string domain = 1;
+  // JSON-serialized instant-acme AccountCredentials; empty string means create a new account.
+  string account_credentials_json = 3;
+}
+
+/*
+ * Sent from proxy to core after ACME certificate issuance completes.
+ */
+message AcmeCertificate {
+  string cert_pem = 1;
+  string key_pem = 2;
+  // JSON-serialized instant-acme AccountCredentials for reuse on renewal.
+  string account_credentials_json = 3;
+}
+
+/*
+ * Progress steps emitted by the proxy during ACME HTTP-01 certificate issuance.
+ * Streamed as AcmeIssueEvent payloads before the final AcmeCertificate.
+ */
+enum AcmeStep {
+  ACME_STEP_UNSPECIFIED          = 0;
+  ACME_STEP_CONNECTING           = 1;
+  ACME_STEP_VALIDATING_DOMAIN    = 2;
+  ACME_STEP_ISSUING_CERTIFICATE  = 3;
+  ACME_STEP_CHECKING_DOMAIN      = 4;
+}
+
+message AcmeProgress {
+  AcmeStep step = 1;
+}
+
+/*
+ * Log lines collected by the proxy during ACME certificate issuance.
+ * Sent once on failure, immediately before the gRPC error status.
+ */
+message AcmeLogs {
+  repeated string lines = 1;
+}
+
+/*
+ * Wrapper message streamed by IssueAcme.
+ * Carries either a progress update, the final certificate, or (on failure)
+ * the collected proxy log lines.
+ */
+message AcmeIssueEvent {
+  oneof payload {
+    AcmeProgress    progress    = 1;
+    AcmeCertificate certificate = 2;
+    AcmeLogs        logs        = 3;
+  }
+}
+
+/*
+ * CoreRequest represents messages send from proxy to core.
+ */
+message CoreRequest {
+  uint64 id = 1;
+  DeviceInfo device_info = 2;
+  oneof payload {
+    EnrollmentStartRequest enrollment_start = 3;
+    ActivateUserRequest activate_user = 4;
+    NewDevice new_device = 5;
+    ExistingDevice existing_device = 6;
+    PasswordResetInitializeRequest password_reset_init = 7;
+    PasswordResetStartRequest password_reset_start = 8;
+    PasswordResetRequest password_reset = 9;
+    ClientMfaStartRequest client_mfa_start = 10;
+    ClientMfaFinishRequest client_mfa_finish = 11;
+    InstanceInfoRequest instance_info = 12;
+    AuthInfoRequest auth_info = 13;
+    AuthCallbackRequest auth_callback = 14;
+    ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
+    RegisterMobileAuthRequest register_mobile_auth = 16;
+    ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
+    CodeMfaSetupStartRequest code_mfa_setup_start = 18;
+    CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
+    AwaitRemoteMfaFinishRequest await_remote_mfa_finish = 20;
+    AcmeCertificate acme_certificate = 21;
+  }
+}
+
+message CertificateInfo {
+  string cert_hostname = 1;
+}
+
+message DerPayload {
+  bytes der_data = 1;
+}
+
+service Proxy {
+  /*
+  * Bi-directional communication between core and proxy.
+  * For security reasons, the connection has to be initiated by core,
+  * so requests and responses are actually sent in reverse.
+  */
+  rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
+  /*
+  * Purges existing on-disk gRPC TLS credentials and signals the server to re-enter setup mode
+  * so that core can provision new ones.
+  */
+  rpc Purge(google.protobuf.Empty) returns (google.protobuf.Empty);
+  /*
+  * Triggers ACME HTTP-01 certificate issuance directly on the proxy.
+  * Streams progress events followed by the issued certificate.
+  */
+  rpc TriggerAcme(AcmeChallenge) returns (stream AcmeIssueEvent);
+}
+
+message LogEntry {
+  string level = 1;
+  string target = 2;
+  string message = 3;
+  string timestamp = 4;
+  map<string, string> fields = 5;
+}
+
+// Service used for initial Proxy setup, used for configuring TLS certificate on Proxy for gRPC communication.
+service ProxySetup {
+  rpc Start(google.protobuf.Empty) returns (stream LogEntry);
+  rpc GetCsr(CertificateInfo) returns (DerPayload);
+  rpc SendCert(DerPayload) returns (google.protobuf.Empty);
+}
