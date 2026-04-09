@@ -1,9 +1,9 @@
 syntax = "proto3";
 package defguard.gateway.v2;
 
-import "enterprise/v2/firewall/firewall.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "enterprise/v2/firewall/firewall.proto";
 import "v2/common.proto";
 
 /*
@@ -11,7 +11,7 @@ import "v2/common.proto";
  */
 message Configuration {
   string name = 1;
-  string prvkey = 2;
+  string private_key = 2;
   uint32 port = 3;
   repeated Peer peers = 4;
   repeated string addresses = 5;
@@ -21,9 +21,10 @@ message Configuration {
 }
 
 enum UpdateType {
-  CREATE = 0;
-  MODIFY = 1;
-  DELETE = 2;
+  UPDATE_TYPE_UNSPECIFIED = 0;
+  UPDATE_TYPE_CREATE = 1;
+  UPDATE_TYPE_MODIFY = 2;
+  UPDATE_TYPE_DELETE = 3;
 }
 
 message Peer {
@@ -82,17 +83,18 @@ service Gateway {
   /*
    * Bi-directional communication between Core and Gateway.
    * For security reasons, the connection has to be initiated by Core,
-   * so requests and responses are actually send in reverse.
+   * so requests and responses are actually sent in reverse.
    */
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
   /*
-   * Purges existing on-disk gRPC TLS credentials and signals the server to re-enter setup mode
-   * so that core can provision new ones.
+   * Purges existing on-disk gRPC TLS credentials and signals the server
+   * to re-enter setup mode so that core can provision new ones.
    */
   rpc Purge(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
-// Service used for initial Gateway setup, for configuring TLS certificate on Gateway for gRPC communication.
+// Service used for initial Gateway setup, for configuring TLS certificate
+// on Gateway for gRPC communication.
 service GatewaySetup {
   rpc Start(google.protobuf.Empty) returns (stream defguard.common.v2.LogEntry);
   rpc GetCsr(defguard.common.v2.CertificateInfo) returns (defguard.common.v2.DerPayload);

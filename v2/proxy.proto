@@ -1,8 +1,8 @@
 syntax = "proto3";
 package defguard.proxy.v2;
 
-import "common/client_types.proto";
 import "google/protobuf/empty.proto";
+import "common/client_types.proto";
 import "v2/common.proto";
 
 // Password Reset (proxy-internal)
@@ -210,8 +210,8 @@ service Proxy {
    */
   rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
   /*
-   * Purges existing on-disk gRPC TLS credentials and signals the server to re-enter setup mode
-   * so that core can provision new ones.
+   * Purges existing on-disk gRPC TLS credentials and signals the server
+   * to re-enter setup mode so that core can provision new ones.
    */
   rpc Purge(google.protobuf.Empty) returns (google.protobuf.Empty);
   /*
@@ -221,7 +221,8 @@ service Proxy {
   rpc TriggerAcme(AcmeChallenge) returns (stream AcmeIssueEvent);
 }
 
-// Service used for initial Proxy setup, used for configuring TLS certificate on Proxy for gRPC communication.
+// Service used for initial Proxy setup, for configuring TLS certificate
+// on Proxy for gRPC communication.
 service ProxySetup {
   rpc Start(google.protobuf.Empty) returns (stream defguard.common.v2.LogEntry);
   rpc GetCsr(defguard.common.v2.CertificateInfo) returns (defguard.common.v2.DerPayload);

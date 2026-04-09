@@ -9,13 +9,15 @@ message FirewallConfig {
 }
 
 enum IpVersion {
-  IPV4 = 0;
-  IPV6 = 1;
+  IP_VERSION_UNSPECIFIED = 0;
+  IP_VERSION_IPV4 = 1;
+  IP_VERSION_IPV6 = 2;
 }
 
 enum FirewallPolicy {
-  ALLOW = 0;
-  DENY = 1;
+  FIREWALL_POLICY_UNSPECIFIED = 0;
+  FIREWALL_POLICY_ALLOW = 1;
+  FIREWALL_POLICY_DENY = 2;
 }
 
 message FirewallRule {
@@ -72,9 +74,8 @@ message PortRange {
 // Specific IDs are used to align with the standard below:
 // https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/in.h
 enum Protocol {
-  // proto3 requires that first enum value must be 0
-  INVALID = 0;
-  ICMP = 1;
-  TCP = 6;
-  UDP = 17;
+  PROTOCOL_UNSPECIFIED = 0;
+  PROTOCOL_ICMP = 1;
+  PROTOCOL_TCP = 6;
+  PROTOCOL_UDP = 17;
 }
