@@ -1,9 +1,9 @@
 syntax = "proto3";
 package defguard.gateway.v2;
 
+import "enterprise/v2/firewall/firewall.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
-import "enterprise/v2/firewall/firewall.proto";
 import "v2/common.proto";
 
 /*
