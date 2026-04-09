@@ -1,0 +1,135 @@
+syntax = "proto3";
+package defguard.proxy.v1;
+
+import "common/client_types.proto";
+import "google/protobuf/empty.proto";
+
+// Password Reset
+message PasswordResetStartRequest {
+  string token = 1;
+}
+
+message PasswordResetInitializeRequest {
+  string email = 1;
+}
+
+message PasswordResetStartResponse {
+  int64 deadline_timestamp = 1;
+}
+
+message PasswordResetRequest {
+  string password = 1;
+  optional string token = 2;
+}
+
+// Client MFA (proxy-internal)
+
+message ClientMfaTokenValidationRequest {
+  string token = 1;
+}
+
+message ClientMfaTokenValidationResponse {
+  bool token_valid = 1;
+}
+
+message AuthInfoResponse {
+  string url = 1;
+  string csrf_token = 2;
+  string nonce = 3;
+  optional string button_display_name = 4;
+}
+
+message AuthCallbackRequest {
+  string code = 1;
+  string nonce = 2;
+  string callback_url = 3;
+}
+
+message AuthCallbackResponse {
+  string url = 1;
+  string token = 2;
+}
+
+message ClientMfaOidcAuthenticateRequest {
+  string code = 1;
+  string state = 2;
+  string callback_url = 3;
+  string nonce = 4;
+}
+
+// Common client info
+message DeviceInfo {
+  string ip_address = 1;
+  optional string user_agent = 2;
+  optional string version = 3;
+  optional string platform = 4;
+}
+
+/*
+ * Error response variant.
+ * Due to reverse proxy -> core communication this is how we
+ * can return gRPC errors from core.
+ */
+message CoreError {
+  int32 status_code = 1;
+  string message = 2;
+}
+
+/*
+ * CoreResponse represents messages send from core to proxy
+ * in response to CoreRequest.
+ */
+message CoreResponse {
+  uint64 id = 1;
+  oneof payload {
+    google.protobuf.Empty empty = 2;
+    defguard.client_types.EnrollmentStartResponse enrollment_start = 3;
+    defguard.client_types.DeviceConfigResponse device_config = 4;
+    PasswordResetStartResponse password_reset_start = 5;
+    defguard.client_types.ClientMfaStartResponse client_mfa_start = 6;
+    defguard.client_types.ClientMfaFinishResponse client_mfa_finish = 7;
+    CoreError core_error = 8;
+    defguard.client_types.InstanceInfoResponse instance_info = 9;
+    AuthInfoResponse auth_info = 13;
+    AuthCallbackResponse auth_callback = 14;
+    ClientMfaTokenValidationResponse client_mfa_token_validation = 15;
+    defguard.client_types.CodeMfaSetupStartResponse code_mfa_setup_start_response = 16;
+    defguard.client_types.CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 17;
+  }
+}
+
+/*
+ * CoreRequest represents messages send from proxy to core.
+ */
+message CoreRequest {
+  uint64 id = 1;
+  DeviceInfo device_info = 2;
+  oneof payload {
+    defguard.client_types.EnrollmentStartRequest enrollment_start = 3;
+    defguard.client_types.ActivateUserRequest activate_user = 4;
+    defguard.client_types.NewDevice new_device = 5;
+    defguard.client_types.ExistingDevice existing_device = 6;
+    PasswordResetInitializeRequest password_reset_init = 7;
+    PasswordResetStartRequest password_reset_start = 8;
+    PasswordResetRequest password_reset = 9;
+    defguard.client_types.ClientMfaStartRequest client_mfa_start = 10;
+    defguard.client_types.ClientMfaFinishRequest client_mfa_finish = 11;
+    defguard.client_types.InstanceInfoRequest instance_info = 12;
+    defguard.client_types.AuthInfoRequest auth_info = 13;
+    AuthCallbackRequest auth_callback = 14;
+    ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
+    defguard.client_types.RegisterMobileAuthRequest register_mobile_auth = 16;
+    ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
+    defguard.client_types.CodeMfaSetupStartRequest code_mfa_setup_start = 18;
+    defguard.client_types.CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
+  }
+}
+
+/*
+ * Bi-directional communication between core and proxy.
+ * For security reasons, the connection has to be initiated by core,
+ * so requests and responses are actually sent in reverse.
+ */
+service Proxy {
+  rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
+}

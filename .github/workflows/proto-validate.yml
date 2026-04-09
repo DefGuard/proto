@@ -1,0 +1,55 @@
+name: Proto validation
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - "**/*.proto"
+      - "buf.yaml"
+      - ".github/workflows/proto-validate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Buf
+        uses: bufbuild/buf-setup-action@v1
+
+      - name: Check formatting
+        run: buf format --diff --exit-code
+
+      - name: Build image
+        run: buf build
+
+      - name: Lint protobuf
+        run: buf lint
+
+      - name: Check breaking changes for v1
+        # Remove once new file structure is actually merged into base branch.
+        continue-on-error: true
+        run: |
+          buf breaking \
+            --against ".git#ref=${{ github.event.pull_request.base.sha }}" \
+            --path v1 \
+            --path enterprise/v1
+
+      - name: Check breaking changes for v2
+        # Remove when v2 compatibility is enforced.
+        continue-on-error: true
+        run: |
+          buf breaking \
+            --against ".git#ref=${{ github.event.pull_request.base.sha }}" \
+            --path v2 \
+            --path enterprise/v2

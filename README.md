@@ -8,6 +8,14 @@
 
 See the [documentation](https://defguard.gitbook.io) for more information about the system.
 
+## Buf CLI
+
+This repository uses [Buf](https://buf.build/) to validate the protobuf module layout and schema quality across the versioned snapshots in `v1/`, `v2/`, `enterprise/v1/`, and `enterprise/v2/`. Imports are repo-root-relative.
+
+- `buf build` — verify that the module and imports resolve correctly.
+- `buf lint` — run the repository's Buf lint rules.
+- `buf format -w` — format .proto files.
+
 ## Community and Support
 
 Find us on Matrix: [#defguard:teonite.com](https://matrix.to/#/#defguard:teonite.com)

@@ -1,0 +1,27 @@
+syntax = "proto3";
+package defguard.common.v2;
+
+/*
+ * Raw DER-encoded certificate or key payload.
+ */
+message DerPayload {
+  bytes der_data = 1;
+}
+
+/*
+ * TLS certificate identity used to request a CSR from a component.
+ */
+message CertificateInfo {
+  string cert_hostname = 1;
+}
+
+/*
+ * Structured log line streamed by a component during setup.
+ */
+message LogEntry {
+  string level = 1;
+  string target = 2;
+  string message = 3;
+  string timestamp = 4;
+  map<string, string> fields = 5;
+}
