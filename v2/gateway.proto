@@ -98,5 +98,5 @@ service Gateway {
 service GatewaySetup {
   rpc Start(google.protobuf.Empty) returns (stream defguard.common.v2.LogEntry);
   rpc GetCsr(defguard.common.v2.CertificateInfo) returns (defguard.common.v2.DerPayload);
-  rpc SendCert(defguard.common.v2.DerPayload) returns (google.protobuf.Empty);
+  rpc SendCert(defguard.common.v2.CertBundle) returns (google.protobuf.Empty);
 }
