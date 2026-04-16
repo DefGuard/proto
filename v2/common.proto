@@ -38,7 +38,7 @@ message LogEntry {
  *                        every subsequent gRPC connection.
  */
 message CertBundle {
-  bytes component_cert_der   = 1;
-  bytes ca_cert_der          = 2;
+  bytes component_cert_der = 1;
+  bytes ca_cert_der = 2;
   bytes core_client_cert_der = 3;
 }
