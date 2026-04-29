@@ -1,5 +1,5 @@
 syntax = "proto3";
-package client;
+package defguard.client.v1;
 
 import "google/protobuf/empty.proto";
 
@@ -79,10 +79,7 @@ message StopServiceLocationRequest {
 service DesktopDaemonService {
   rpc CreateInterface(CreateInterfaceRequest) returns (google.protobuf.Empty);
   rpc RemoveInterface(RemoveInterfaceRequest) returns (google.protobuf.Empty);
-  rpc ReadInterfaceData(ReadInterfaceDataRequest)
-      returns (stream InterfaceData);
-  rpc SaveServiceLocations(SaveServiceLocationsRequest)
-      returns (google.protobuf.Empty);
-  rpc DeleteServiceLocations(DeleteServiceLocationsRequest)
-      returns (google.protobuf.Empty);
+  rpc ReadInterfaceData(ReadInterfaceDataRequest) returns (stream InterfaceData);
+  rpc SaveServiceLocations(SaveServiceLocationsRequest) returns (google.protobuf.Empty);
+  rpc DeleteServiceLocations(DeleteServiceLocationsRequest) returns (google.protobuf.Empty);
 }

@@ -1,0 +1,44 @@
+syntax = "proto3";
+package defguard.common.v2;
+
+/*
+ * Raw DER-encoded certificate or key payload.
+ */
+message DerPayload {
+  bytes der_data = 1;
+}
+
+/*
+ * TLS certificate identity used to request a CSR from a component.
+ */
+message CertificateInfo {
+  string cert_hostname = 1;
+}
+
+/*
+ * Structured log line streamed by a component during setup.
+ */
+message LogEntry {
+  string level = 1;
+  string target = 2;
+  string message = 3;
+  string timestamp = 4;
+  map<string, string> fields = 5;
+}
+
+/*
+ * TLS certificate bundle sent from Core to a component during setup.
+ * All fields are DER-encoded binary.
+ *
+ * component_cert_der   - the component's signed server certificate.
+ * ca_cert_der          - the CA certificate; used by the component to verify
+ *                        Core's client certificate chain during mTLS.
+ * core_client_cert_der - Core's client certificate; stored by the component
+ *                        and used to pin the exact cert Core must present on
+ *                        every subsequent gRPC connection.
+ */
+message CertBundle {
+  bytes component_cert_der = 1;
+  bytes ca_cert_der = 2;
+  bytes core_client_cert_der = 3;
+}

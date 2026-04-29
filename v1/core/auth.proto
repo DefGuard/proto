@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package auth;
+package defguard.auth.v1;
 
 service AuthService {
   rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);

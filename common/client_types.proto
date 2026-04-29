@@ -1,9 +1,25 @@
 syntax = "proto3";
-package defguard.proxy;
+package defguard.client_types;
 
-import "google/protobuf/empty.proto";
+/*
+ * Shared message and enum definitions used by Defguard desktop clients (desktop app and CLI).
+ *
+ * This module exists to decouple the desktop client from any specific proxy protocol version.
+ * The client only needs a stable, version-independent set of types for:
+ *   - Enrollment and device configuration (DeviceConfigResponse and its dependencies)
+ *   - Periodic configuration polling (InstanceInfoRequest/Response)
+ *   - Platform info reporting (ClientPlatformInfo)
+ *
+ * Both v1 and v2 proxy protocol definitions import this file and reference these types in
+ * their CoreRequest/CoreResponse envelopes, ensuring that a single client build can
+ * communicate with proxies running either protocol version without any code changes.
+ *
+ * Types that are proxy-version-specific (e.g. gRPC envelope messages, setup/certificate
+ * provisioning, password reset flows) are intentionally NOT included here.
+ */
 
 // Enrollment & Desktop Client activation
+
 message EnrollmentStartRequest {
   string token = 1;
 }
@@ -33,7 +49,7 @@ message EnrollmentSettings {
   bool only_client_activation = 2;
   // Only admins can add devices so vpn step is skipped
   bool admin_device_management = 3;
-  // Enable Email method for MFA setup 
+  // Enable Email method for MFA setup
   bool smtp_configured = 4;
   // MFA setup is not skippable
   bool mfa_required = 5;
@@ -60,6 +76,11 @@ message NewDevice {
   optional string token = 3;
 }
 
+message ExistingDevice {
+  string pubkey = 1;
+  optional string token = 2;
+}
+
 message Device {
   int64 id = 1;
   string name = 2;
@@ -67,6 +88,8 @@ message Device {
   int64 user_id = 4;
   int64 created_at = 5;
 }
+
+// Device configuration
 
 enum LocationMfaMode {
   LOCATION_MFA_MODE_UNSPECIFIED = 0;
@@ -92,7 +115,7 @@ message DeviceConfig {
   string pubkey = 6;
   string allowed_ips = 7;
   optional string dns = 8;
-  // DEPRECATED(1.5): superseeded by location_mfa_mode
+  // DEPRECATED(1.5): superseded by location_mfa_mode
   bool mfa_enabled = 9 [deprecated = true];
   int32 keepalive_interval = 10;
   optional LocationMfaMode location_mfa_mode = 11;
@@ -112,7 +135,7 @@ message InstanceInfo {
   string proxy_url = 4;
   string username = 5;
   bool enterprise_enabled = 6;
-  // DEPRECATED(1.6): superseeded by client_traffic_policy
+  // DEPRECATED(1.6): superseded by client_traffic_policy
   bool disable_all_traffic = 7 [deprecated = true];
   optional string openid_display_name = 8;
   optional ClientTrafficPolicy client_traffic_policy = 9;
@@ -126,6 +149,8 @@ message DeviceConfigResponse {
   optional string token = 4;
 }
 
+// Configuration polling
+
 message InstanceInfoRequest {
   string token = 1;
 }
@@ -134,44 +159,26 @@ message InstanceInfoResponse {
   DeviceConfigResponse device_config = 1;
 }
 
-message ExistingDevice {
-  string pubkey = 1;
-  optional string token = 2;
-}
+// Platform info sent as a header with every request to the proxy
 
-// Password Reset
-message PasswordResetStartRequest {
-  string token = 1;
-}
-
-message PasswordResetInitializeRequest {
-  string email = 1;
-}
-
-message PasswordResetStartResponse {
-  int64 deadline_timestamp = 1;
-}
-
-message PasswordResetRequest {
-  string password = 1;
-  optional string token = 2;
+message ClientPlatformInfo {
+  string os_family = 1;
+  string os_type = 2;
+  string version = 3;
+  optional string edition = 4;
+  optional string codename = 5;
+  optional string bitness = 6;
+  optional string architecture = 7;
 }
 
 // Client MFA
+
 enum MfaMethod {
   TOTP = 0;
   EMAIL = 1;
   OIDC = 2;
   BIOMETRIC = 3;
   MOBILE_APPROVE = 4;
-}
-
-message ClientMfaTokenValidationRequest {
-  string token = 1;
-}
-
-message ClientMfaTokenValidationResponse {
-  bool token_valid = 1;
 }
 
 message ClientMfaStartRequest {
@@ -197,54 +204,6 @@ message ClientMfaFinishResponse {
   optional string token = 2;
 }
 
-message AuthInfoRequest {
-  string redirect_url = 1;
-  optional string state = 2;
-}
-
-message AuthInfoResponse {
-  string url = 1;
-  string csrf_token = 2;
-  string nonce = 3;
-  optional string button_display_name = 4;
-}
-
-message AuthCallbackRequest {
-  string code = 1;
-  string nonce = 2;
-  string callback_url = 3;
-}
-
-message AuthCallbackResponse {
-  string url = 1;
-  string token = 2;
-}
-
-message ClientMfaOidcAuthenticateRequest {
-  string code = 1;
-  string state = 2;
-  string callback_url = 3;
-  string nonce = 4;
-}
-
-message ClientPlatformInfo {
-  string os_family = 1;
-  string os_type = 2;
-  string version = 3;
-  optional string edition = 4;
-  optional string codename = 5;
-  optional string bitness = 6;
-  optional string architecture = 7; 
-}
-
-// Common client info
-message DeviceInfo {
-  string ip_address = 1;
-  optional string user_agent = 2;
-  optional string version = 3;
-  optional string platform = 4;
-}
-
 message RegisterMobileAuthRequest {
   string token = 1;
   string auth_pub_key = 2;
@@ -252,6 +211,7 @@ message RegisterMobileAuthRequest {
 }
 
 // TOTP and Email MFA Setup
+
 message CodeMfaSetupStartRequest {
   MfaMethod method = 1;
   string token = 2;
@@ -272,71 +232,17 @@ message CodeMfaSetupFinishResponse {
   repeated string recovery_codes = 1;
 }
 
-/*
- * Error response variant.
- * Due to reverse proxy -> core communication this is how we
- * can return gRPC errors from core.
- */
-message CoreError {
-  int32 status_code = 1;
-  string message = 2;
+// OIDC authentication flow
+
+enum AuthFlowType {
+  AUTH_FLOW_TYPE_UNSPECIFIED = 0;
+  AUTH_FLOW_TYPE_ENROLLMENT = 1;
+  AUTH_FLOW_TYPE_MFA = 2;
 }
 
-/*
- * CoreResponse represents messages send from core to proxy
- * in response to CoreRequest.
- */
-message CoreResponse {
-  uint64 id = 1;
-  oneof payload {
-    google.protobuf.Empty empty = 2;
-    EnrollmentStartResponse enrollment_start = 3;
-    DeviceConfigResponse device_config = 4;
-    PasswordResetStartResponse password_reset_start = 5;
-    ClientMfaStartResponse client_mfa_start = 6;
-    ClientMfaFinishResponse client_mfa_finish = 7;
-    CoreError core_error = 8;
-    InstanceInfoResponse instance_info = 9;
-    AuthInfoResponse auth_info = 13;
-    AuthCallbackResponse auth_callback = 14;
-    ClientMfaTokenValidationResponse client_mfa_token_validation = 15;
-    CodeMfaSetupStartResponse code_mfa_setup_start_response = 16;
-    CodeMfaSetupFinishResponse code_mfa_setup_finish_response = 17;
-  }
-}
-
-/*
- * CoreRequest represents messages send from proxy to core.
- */
-message CoreRequest {
-  uint64 id = 1;
-  DeviceInfo device_info = 2;
-  oneof payload {
-    EnrollmentStartRequest enrollment_start = 3;
-    ActivateUserRequest activate_user = 4;
-    NewDevice new_device = 5;
-    ExistingDevice existing_device = 6;
-    PasswordResetInitializeRequest password_reset_init = 7;
-    PasswordResetStartRequest password_reset_start = 8;
-    PasswordResetRequest password_reset = 9;
-    ClientMfaStartRequest client_mfa_start = 10;
-    ClientMfaFinishRequest client_mfa_finish = 11;
-    InstanceInfoRequest instance_info = 12;
-    AuthInfoRequest auth_info = 13;
-    AuthCallbackRequest auth_callback = 14;
-    ClientMfaOidcAuthenticateRequest client_mfa_oidc_authenticate = 15;
-    RegisterMobileAuthRequest register_mobile_auth = 16;
-    ClientMfaTokenValidationRequest client_mfa_token_validation = 17;
-    CodeMfaSetupStartRequest code_mfa_setup_start = 18;
-    CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
-  }
-}
-
-/*
- * Bi-directional communication between core and proxy.
- * For security reasons, the connection has to be initiated by core,
- * so requests and responses are actually sent in reverse.
- */
-service Proxy {
-  rpc Bidi(stream CoreResponse) returns (stream CoreRequest);
+message AuthInfoRequest {
+  // DEPRECATED(2.0): superseded by auth_flow_type; kept for legacy client compatibility
+  string redirect_url = 1 [deprecated = true];
+  optional string state = 2;
+  AuthFlowType auth_flow_type = 3;
 }
