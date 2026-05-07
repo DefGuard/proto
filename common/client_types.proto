@@ -120,6 +120,9 @@ message DeviceConfig {
   int32 keepalive_interval = 10;
   optional LocationMfaMode location_mfa_mode = 11;
   optional ServiceLocationMode service_location_mode = 12;
+  // True when the location has at least one posture policy assigned.
+  // Derived at query time; not stored as a column.
+  optional bool posture_check_required = 13;
 }
 
 enum ClientTrafficPolicy {
@@ -185,6 +188,8 @@ message ClientMfaStartRequest {
   int64 location_id = 1;
   string pubkey = 2;
   MfaMethod method = 3;
+  // Required when the location has posture policies assigned.
+  optional DevicePostureData posture_data = 4;
 }
 
 message ClientMfaStartResponse {
@@ -232,8 +237,69 @@ message CodeMfaSetupFinishResponse {
   repeated string recovery_codes = 1;
 }
 
-// OIDC authentication flow
+// Device posture types
+enum UnavailableReason {
+  UNAVAILABLE_REASON_UNSPECIFIED              = 0;
+  UNAVAILABLE_REASON_INSUFFICIENT_PERMISSIONS = 1;
+  UNAVAILABLE_REASON_NOT_APPLICABLE           = 2;
+  UNAVAILABLE_REASON_DETECTION_FAILED         = 3;
+}
 
+// Wrapper for a boolean posture signal that may be unavailable.
+message BoolCheck {
+  oneof result {
+    bool              value       = 1;
+    UnavailableReason unavailable = 2;
+  }
+}
+
+// Wrapper for a string posture signal that may be unavailable.
+message StringCheck {
+  oneof result {
+    string            value       = 1;
+    UnavailableReason unavailable = 2;
+  }
+}
+
+// Raw posture signals gathered by the client.
+message DevicePostureData {
+  // Full semver string including any pre-release suffix, e.g. "1.6.0-beta1"
+  string      defguard_client_version         = 1;
+  // Normalized OS family, e.g. "windows", "macos", "linux", "ios", "android"
+  StringCheck os_family                       = 2;
+  // Detailed OS name, e.g. "Windows", "Mac OS X", "Ubuntu"
+  StringCheck os_type                         = 3;
+  // OS version string, e.g. "11", "14.5", "22.04"
+  StringCheck os_version                      = 4;
+  BoolCheck   disk_encryption                 = 5;
+  BoolCheck   antivirus_present               = 6;
+  // ISO-8601 date; NotApplicable on Linux, iOS, and Android
+  StringCheck os_last_update_date             = 7;
+  // NotApplicable on non-Windows platforms
+  BoolCheck   ad_domain_joined                = 8;
+  // NotApplicable on non-Windows platforms
+  BoolCheck   windows_security_update_current = 9;
+  // NotApplicable on non-Linux platforms
+  StringCheck kernel_version                  = 10;
+  // NotApplicable on non-Android platforms
+  BoolCheck   android_device_integrity        = 11;
+}
+
+message DevicePostureCheckRequest {
+  int64             location_id  = 1;
+  string            pubkey       = 2;
+  DevicePostureData device_posture_data = 3;
+}
+
+message DevicePostureCheckResponse {
+  string preshared_key = 1;
+}
+
+message DevicePostureRejection {
+  repeated string failed_posture_checks = 1;
+}
+
+// External OIDC authentication flow
 enum AuthFlowType {
   AUTH_FLOW_TYPE_UNSPECIFIED = 0;
   AUTH_FLOW_TYPE_ENROLLMENT = 1;
