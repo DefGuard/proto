@@ -272,14 +272,13 @@ message DevicePostureData {
   StringCheck os_version = 4;
   BoolCheck disk_encryption = 5;
   BoolCheck antivirus_present = 6;
-  StringCheck os_last_update_date = 7;
   // Windows only
-  BoolCheck windows_ad_domain_joined = 8;
-  BoolCheck windows_security_update_current = 9;
+  BoolCheck windows_ad_domain_joined = 7;
+  BoolCheck windows_security_update_current = 8;
   // Linux only
-  StringCheck linux_kernel_version = 10;
-  // Android only
-  BoolCheck android_device_integrity = 11;
+  StringCheck linux_kernel_version = 9;
+  // Android & macOS only
+  BoolCheck device_integrity = 10;
 }
 
 message DevicePostureCheckRequest {
