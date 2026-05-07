@@ -272,15 +272,13 @@ message DevicePostureData {
   StringCheck os_version = 4;
   BoolCheck disk_encryption = 5;
   BoolCheck antivirus_present = 6;
-  // ISO-8601 date; NotApplicable on Linux, iOS, and Android
   StringCheck os_last_update_date = 7;
-  // NotApplicable on non-Windows platforms
+  // Windows only
   BoolCheck ad_domain_joined = 8;
-  // NotApplicable on non-Windows platforms
   BoolCheck windows_security_update_current = 9;
-  // NotApplicable on non-Linux platforms
+  // Linux only
   StringCheck kernel_version = 10;
-  // NotApplicable on non-Android platforms
+  // Android only
   BoolCheck android_device_integrity = 11;
 }
 
