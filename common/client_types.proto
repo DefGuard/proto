@@ -120,8 +120,6 @@ message DeviceConfig {
   int32 keepalive_interval = 10;
   optional LocationMfaMode location_mfa_mode = 11;
   optional ServiceLocationMode service_location_mode = 12;
-  // True when the location has at least one posture policy assigned.
-  // Derived at query time; not stored as a column.
   optional bool posture_check_required = 13;
 }
 
@@ -239,16 +237,16 @@ message CodeMfaSetupFinishResponse {
 
 // Device posture types
 enum UnavailableReason {
-  UNAVAILABLE_REASON_UNSPECIFIED              = 0;
+  UNAVAILABLE_REASON_UNSPECIFIED = 0;
   UNAVAILABLE_REASON_INSUFFICIENT_PERMISSIONS = 1;
-  UNAVAILABLE_REASON_NOT_APPLICABLE           = 2;
-  UNAVAILABLE_REASON_DETECTION_FAILED         = 3;
+  UNAVAILABLE_REASON_NOT_APPLICABLE = 2;
+  UNAVAILABLE_REASON_DETECTION_FAILED = 3;
 }
 
 // Wrapper for a boolean posture signal that may be unavailable.
 message BoolCheck {
   oneof result {
-    bool              value       = 1;
+    bool value = 1;
     UnavailableReason unavailable = 2;
   }
 }
@@ -256,7 +254,7 @@ message BoolCheck {
 // Wrapper for a string posture signal that may be unavailable.
 message StringCheck {
   oneof result {
-    string            value       = 1;
+    string value = 1;
     UnavailableReason unavailable = 2;
   }
 }
@@ -264,30 +262,30 @@ message StringCheck {
 // Raw posture signals gathered by the client.
 message DevicePostureData {
   // Full semver string including any pre-release suffix, e.g. "1.6.0-beta1"
-  string      defguard_client_version         = 1;
+  string defguard_client_version = 1;
   // Normalized OS family, e.g. "windows", "macos", "linux", "ios", "android"
-  StringCheck os_family                       = 2;
+  StringCheck os_family = 2;
   // Detailed OS name, e.g. "Windows", "Mac OS X", "Ubuntu"
-  StringCheck os_type                         = 3;
+  StringCheck os_type = 3;
   // OS version string, e.g. "11", "14.5", "22.04"
-  StringCheck os_version                      = 4;
-  BoolCheck   disk_encryption                 = 5;
-  BoolCheck   antivirus_present               = 6;
+  StringCheck os_version = 4;
+  BoolCheck disk_encryption = 5;
+  BoolCheck antivirus_present = 6;
   // ISO-8601 date; NotApplicable on Linux, iOS, and Android
-  StringCheck os_last_update_date             = 7;
+  StringCheck os_last_update_date = 7;
   // NotApplicable on non-Windows platforms
-  BoolCheck   ad_domain_joined                = 8;
+  BoolCheck ad_domain_joined = 8;
   // NotApplicable on non-Windows platforms
-  BoolCheck   windows_security_update_current = 9;
+  BoolCheck windows_security_update_current = 9;
   // NotApplicable on non-Linux platforms
-  StringCheck kernel_version                  = 10;
+  StringCheck kernel_version = 10;
   // NotApplicable on non-Android platforms
-  BoolCheck   android_device_integrity        = 11;
+  BoolCheck android_device_integrity = 11;
 }
 
 message DevicePostureCheckRequest {
-  int64             location_id  = 1;
-  string            pubkey       = 2;
+  int64 location_id = 1;
+  string pubkey = 2;
   DevicePostureData device_posture_data = 3;
 }
 

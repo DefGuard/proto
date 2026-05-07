@@ -109,8 +109,8 @@ message CoreResponse {
     AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 16;
     HttpsCerts https_certs = 17;
     google.protobuf.Empty clear_https_certs = 18;
-    defguard.client_types.DevicePostureCheckResponse device_posture_check    = 19;
-    defguard.client_types.DevicePostureRejection     device_posture_rejected = 20;
+    defguard.client_types.DevicePostureCheckResponse device_posture_check = 19;
+    defguard.client_types.DevicePostureRejection device_posture_rejected = 20;
   }
 }
 
