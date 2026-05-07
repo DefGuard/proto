@@ -120,6 +120,7 @@ message DeviceConfig {
   int32 keepalive_interval = 10;
   optional LocationMfaMode location_mfa_mode = 11;
   optional ServiceLocationMode service_location_mode = 12;
+  // added for 2.1
   optional bool posture_check_required = 13;
 }
 
@@ -186,7 +187,7 @@ message ClientMfaStartRequest {
   int64 location_id = 1;
   string pubkey = 2;
   MfaMethod method = 3;
-  // Required when the location has posture policies assigned.
+  // [2.1] Required when the location has posture policies assigned.
   optional DevicePostureData posture_data = 4;
 }
 
