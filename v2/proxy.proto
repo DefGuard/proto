@@ -109,6 +109,8 @@ message CoreResponse {
     AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 16;
     HttpsCerts https_certs = 17;
     google.protobuf.Empty clear_https_certs = 18;
+    defguard.client_types.DevicePostureCheckResponse device_posture_check    = 19;
+    defguard.client_types.DevicePostureRejection     device_posture_rejected = 20;
   }
 }
 
@@ -199,6 +201,7 @@ message CoreRequest {
     defguard.client_types.CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
     AwaitRemoteMfaFinishRequest await_remote_mfa_finish = 20;
     AcmeCertificate acme_certificate = 21;
+    defguard.client_types.DevicePostureCheckRequest device_posture_check = 22;
   }
 }
 
