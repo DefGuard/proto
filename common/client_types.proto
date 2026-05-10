@@ -1,6 +1,8 @@
 syntax = "proto3";
 package defguard.client_types;
 
+import "enterprise/v2/posture/posture.proto";
+
 /*
  * Shared message and enum definitions used by Defguard desktop clients (desktop app and CLI).
  *
@@ -188,7 +190,7 @@ message ClientMfaStartRequest {
   string pubkey = 2;
   MfaMethod method = 3;
   // [2.1] Required when the location has posture policies assigned.
-  optional DevicePostureData posture_data = 4;
+  optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 4;
 }
 
 message ClientMfaStartResponse {
@@ -234,65 +236,6 @@ message CodeMfaSetupFinishRequest {
 
 message CodeMfaSetupFinishResponse {
   repeated string recovery_codes = 1;
-}
-
-// Device posture types
-enum UnavailableReason {
-  UNAVAILABLE_REASON_UNSPECIFIED = 0;
-  UNAVAILABLE_REASON_INSUFFICIENT_PERMISSIONS = 1;
-  UNAVAILABLE_REASON_NOT_APPLICABLE = 2;
-  UNAVAILABLE_REASON_DETECTION_FAILED = 3;
-}
-
-// Wrapper for a boolean posture signal that may be unavailable.
-message BoolCheck {
-  oneof result {
-    bool value = 1;
-    UnavailableReason unavailable = 2;
-  }
-}
-
-// Wrapper for a string posture signal that may be unavailable.
-message StringCheck {
-  oneof result {
-    string value = 1;
-    UnavailableReason unavailable = 2;
-  }
-}
-
-// Raw posture signals gathered by the client.
-message DevicePostureData {
-  // Full semver string including any pre-release suffix, e.g. "1.6.0-beta1"
-  string defguard_client_version = 1;
-  // Normalized OS family, e.g. "windows", "macos", "linux", "ios", "android"
-  StringCheck os_family = 2;
-  // Detailed OS name, e.g. "Windows", "Mac OS X", "Ubuntu"
-  StringCheck os_type = 3;
-  // OS version string, e.g. "11", "14.5", "22.04"
-  StringCheck os_version = 4;
-  BoolCheck disk_encryption = 5;
-  BoolCheck antivirus_present = 6;
-  // Windows only
-  BoolCheck windows_ad_domain_joined = 7;
-  BoolCheck windows_security_update_current = 8;
-  // Linux only
-  StringCheck linux_kernel_version = 9;
-  // Android & macOS only
-  BoolCheck device_integrity = 10;
-}
-
-message DevicePostureCheckRequest {
-  int64 location_id = 1;
-  string pubkey = 2;
-  DevicePostureData device_posture_data = 3;
-}
-
-message DevicePostureCheckResponse {
-  string preshared_key = 1;
-}
-
-message DevicePostureRejection {
-  repeated string failed_posture_checks = 1;
 }
 
 // External OIDC authentication flow
