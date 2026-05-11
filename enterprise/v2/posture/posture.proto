@@ -28,10 +28,10 @@ message StringCheck {
 message DevicePostureData {
   // Full semver string including any pre-release suffix, e.g. "1.6.0-beta1".
   string defguard_client_version = 1;
-  // Normalized OS family, e.g. "windows", "macos", "linux", "ios", "android".
-  StringCheck os_family = 2;
-  // Detailed OS name, e.g. "Windows", "Mac OS X", "Ubuntu".
-  StringCheck os_type = 3;
+  // Normalized OS type, e.g. "Windows", "macOS", "Linux", "iOS", "Android".
+  string os_type = 2;
+  // Detailed OS name, e.g. "Windows", "Darwin", "Ubuntu".
+  StringCheck os_name = 3;
   // OS version string, e.g. "11", "14.5", "22.04".
   StringCheck os_version = 4;
   BoolCheck disk_encryption = 5;
