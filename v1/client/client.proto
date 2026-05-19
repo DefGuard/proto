@@ -1,8 +1,8 @@
 syntax = "proto3";
 package defguard.client.v1;
 
-import "google/protobuf/empty.proto";
 import "enterprise/v2/posture/posture.proto";
+import "google/protobuf/empty.proto";
 
 message InterfaceConfig {
   string name = 1;
