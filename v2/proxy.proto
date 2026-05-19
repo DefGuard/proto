@@ -2,6 +2,7 @@ syntax = "proto3";
 package defguard.proxy.v2;
 
 import "common/client_types.proto";
+import "enterprise/v2/posture/posture.proto";
 import "google/protobuf/empty.proto";
 import "v2/common.proto";
 
@@ -109,6 +110,8 @@ message CoreResponse {
     AwaitRemoteMfaFinishResponse await_remote_mfa_finish = 16;
     HttpsCerts https_certs = 17;
     google.protobuf.Empty clear_https_certs = 18;
+    defguard.enterprise.posture.v2.DevicePostureCheckResponse device_posture_check = 19;
+    defguard.enterprise.posture.v2.DevicePostureRejection device_posture_rejected = 20;
   }
 }
 
@@ -199,6 +202,7 @@ message CoreRequest {
     defguard.client_types.CodeMfaSetupFinishRequest code_mfa_setup_finish = 19;
     AwaitRemoteMfaFinishRequest await_remote_mfa_finish = 20;
     AcmeCertificate acme_certificate = 21;
+    defguard.enterprise.posture.v2.DevicePostureCheckRequest device_posture_check = 22;
   }
 }
 
