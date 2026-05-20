@@ -24,6 +24,14 @@ message StringCheck {
   }
 }
 
+// Wrapper for an int32 posture signal that may be unavailable.
+message Int32Check {
+  oneof result {
+    int32 value = 1;
+    UnavailableReason unavailable = 2;
+  }
+}
+
 // Raw posture signals gathered by the client.
 message DevicePostureData {
   // Full semver string including any pre-release suffix, e.g. "1.6.0-beta1".
@@ -38,7 +46,8 @@ message DevicePostureData {
   BoolCheck antivirus_present = 6;
   // Windows only
   BoolCheck windows_ad_domain_joined = 8;
-  BoolCheck windows_security_update_current = 9;
+  // Number of days since the last installed Windows security update.
+  Int32Check windows_security_update_age_days = 9;
   // Linux only
   StringCheck linux_kernel_version = 10;
   // Android and macOS only
