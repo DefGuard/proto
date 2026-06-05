@@ -75,8 +75,13 @@ message StopServiceLocationRequest {
   string pubkey = 2;
 }
 
+message ManagedInterfaceData {
+  string interface_name = 1;
+  InterfaceData data = 2;
+}
+
 message ListInterfacesResponse {
-  repeated InterfaceData interfaces = 1;
+  repeated ManagedInterfaceData interfaces = 1;
 }
 
 // service used by desktop clients to communicate with interface management
