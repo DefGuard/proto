@@ -75,6 +75,10 @@ message StopServiceLocationRequest {
   string pubkey = 2;
 }
 
+message ListInterfacesResponse {
+  repeated InterfaceData interfaces = 1;
+}
+
 // service used by desktop clients to communicate with interface management
 // daemon
 service DesktopDaemonService {
@@ -84,4 +88,5 @@ service DesktopDaemonService {
   rpc SaveServiceLocations(SaveServiceLocationsRequest) returns (google.protobuf.Empty);
   rpc DeleteServiceLocations(DeleteServiceLocationsRequest) returns (google.protobuf.Empty);
   rpc GetPostureData(google.protobuf.Empty) returns (defguard.enterprise.posture.v2.DevicePostureData);
+  rpc ListInterfaces(google.protobuf.Empty) returns (ListInterfacesResponse);
 }
