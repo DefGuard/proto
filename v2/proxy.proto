@@ -112,12 +112,18 @@ message CoreResponse {
     google.protobuf.Empty clear_https_certs = 18;
     defguard.enterprise.posture.v2.DevicePostureCheckResponse device_posture_check = 19;
     defguard.enterprise.posture.v2.DevicePostureRejection device_posture_rejected = 20;
+    PublicSettings public_settings = 21;
   }
 }
 
 message HttpsCerts {
   string cert_pem = 1;
   string key_pem = 2;
+}
+
+message PublicSettings {
+  bool display_password_reset = 1;
+  bool display_download_step = 2;
 }
 
 /*
