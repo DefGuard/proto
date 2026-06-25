@@ -42,6 +42,11 @@ message InitialUserInfo {
   repeated string device_names = 7;
   bool enrolled = 8;
   bool is_admin = 9;
+  // When true, this user is managed by an external identity provider (LDAP/AD/OIDC)
+  // whose administrator disabled local password management. The client must not prompt
+  // for local password creation during enrollment, and the password reset option must
+  // be hidden. Defaults to false for local users.
+  bool password_management_disabled = 10;
 }
 
 message EnrollmentSettings {
@@ -68,7 +73,10 @@ message EnrollmentStartResponse {
 
 message ActivateUserRequest {
   optional string phone_number = 1;
-  string password = 2;
+  // Omitted for externally-managed users whose provider disabled local password
+  // management (see InitialUserInfo.password_management_disabled). Core must not call
+  // set_password when this is absent.
+  optional string password = 2;
   optional string token = 3;
 }
 
