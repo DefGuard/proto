@@ -52,6 +52,8 @@ message DevicePostureData {
   StringCheck linux_kernel_version = 10;
   // Android and macOS only
   BoolCheck device_integrity = 11;
+  // Android only: Security patch level date string (e.g. "2026-06-05").
+  StringCheck android_security_patch_date = 12;
 }
 
 message DevicePostureCheckRequest {
