@@ -151,6 +151,11 @@ message InstanceInfo {
   bool disable_all_traffic = 7 [deprecated = true];
   optional string openid_display_name = 8;
   optional ClientTrafficPolicy client_traffic_policy = 9;
+  // Added for 2.1
+  // When ANY enrolled instance has this true, the desktop
+  // client and CLI hide, block, and disconnect bare WireGuard tunnels
+  // (OR-across-instances semantics).
+  optional bool disable_tunnels = 10;
 }
 
 message DeviceConfigResponse {
