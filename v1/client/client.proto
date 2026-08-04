@@ -58,12 +58,18 @@ message ServiceLocation {
   uint32 keepalive_interval = 6;
   string dns = 7;
   ServiceLocationMode mode = 8;
+  int64 network_id = 9;
+  bool posture_check_required = 10;
 }
 
 message SaveServiceLocationsRequest {
   repeated ServiceLocation service_locations = 1;
   string instance_id = 2;
   string private_key = 3;
+  string proxy_url = 4;
+  string device_pubkey = 5;
+  // Device polling token
+  optional string token = 6;
 }
 
 message DeleteServiceLocationsRequest {
@@ -84,6 +90,18 @@ message ListInterfacesResponse {
   repeated ManagedInterfaceData interfaces = 1;
 }
 
+message AuthorizePostureSessionRequest {
+  string proxy_url = 1;
+  string device_pubkey = 2;
+  int64 location_id = 3;
+  // Device polling token
+  optional string token = 4;
+}
+
+message AuthorizePostureSessionResponse {
+  string preshared_key = 1;
+}
+
 // service used by desktop clients to communicate with interface management
 // daemon
 service DesktopDaemonService {
@@ -94,4 +112,5 @@ service DesktopDaemonService {
   rpc DeleteServiceLocations(DeleteServiceLocationsRequest) returns (google.protobuf.Empty);
   rpc GetPostureData(google.protobuf.Empty) returns (defguard.enterprise.posture.v2.DevicePostureData);
   rpc ListInterfaces(google.protobuf.Empty) returns (ListInterfacesResponse);
+  rpc AuthorizePostureSession(AuthorizePostureSessionRequest) returns (AuthorizePostureSessionResponse);
 }
