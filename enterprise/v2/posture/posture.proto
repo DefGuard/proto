@@ -60,6 +60,8 @@ message DevicePostureCheckRequest {
   int64 location_id = 1;
   string pubkey = 2;
   DevicePostureData device_posture_data = 3;
+  // Polling token of the calling device, used to authenticate the request.
+  optional string token = 4;
 }
 
 message DevicePostureCheckResponse {
