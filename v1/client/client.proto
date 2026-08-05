@@ -90,18 +90,6 @@ message ListInterfacesResponse {
   repeated ManagedInterfaceData interfaces = 1;
 }
 
-message AuthorizePostureSessionRequest {
-  string proxy_url = 1;
-  string device_pubkey = 2;
-  int64 location_id = 3;
-  // Device polling token
-  optional string token = 4;
-}
-
-message AuthorizePostureSessionResponse {
-  string preshared_key = 1;
-}
-
 // service used by desktop clients to communicate with interface management
 // daemon
 service DesktopDaemonService {
@@ -112,5 +100,4 @@ service DesktopDaemonService {
   rpc DeleteServiceLocations(DeleteServiceLocationsRequest) returns (google.protobuf.Empty);
   rpc GetPostureData(google.protobuf.Empty) returns (defguard.enterprise.posture.v2.DevicePostureData);
   rpc ListInterfaces(google.protobuf.Empty) returns (ListInterfacesResponse);
-  rpc AuthorizePostureSession(AuthorizePostureSessionRequest) returns (AuthorizePostureSessionResponse);
 }
