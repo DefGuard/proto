@@ -58,7 +58,7 @@ message ServiceLocation {
   uint32 keepalive_interval = 6;
   string dns = 7;
   ServiceLocationMode mode = 8;
-  int64 network_id = 9;
+  int64 core_location_id = 9;
   bool posture_check_required = 10;
 }
 
