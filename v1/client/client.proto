@@ -58,12 +58,18 @@ message ServiceLocation {
   uint32 keepalive_interval = 6;
   string dns = 7;
   ServiceLocationMode mode = 8;
+  int64 core_location_id = 9;
+  bool posture_check_required = 10;
 }
 
 message SaveServiceLocationsRequest {
   repeated ServiceLocation service_locations = 1;
   string instance_id = 2;
   string private_key = 3;
+  string proxy_url = 4;
+  string device_pubkey = 5;
+  // Device polling token
+  optional string token = 6;
 }
 
 message DeleteServiceLocationsRequest {
