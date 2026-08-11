@@ -332,10 +332,54 @@ message MfaCompleted {
   string preshared_key = 1;
 }
 
+// Why a step could not be completed. Values are prefixed because proto3 scopes
+// enum value names to the package, and the unprefixed names are already taken
+// by MfaStartRejectionReason.
+enum MfaStepFailureReason {
+  MFA_STEP_FAILURE_UNSPECIFIED = 0;
+  // Credential rejected: wrong TOTP or emailed code, bad biometric signature,
+  // denied mobile approval. The only reason that counts against the attempt limit.
+  MFA_STEP_FAILURE_INVALID_CREDENTIAL = 1;
+  // Chosen method is not in this step's allowed set. Reachable via the mid-flow
+  // method switch on StepStart, or an admin editing the flow during the session.
+  MFA_STEP_FAILURE_METHOD_NOT_IN_STEP = 2;
+  // Method is allowed for the step but this user has not set it up.
+  MFA_STEP_FAILURE_METHOD_NOT_CONFIGURED = 3;
+  // Method lost its license mid-session. Fail closed: the step does not advance
+  // and the factor is never silently dropped.
+  MFA_STEP_FAILURE_METHOD_NOT_LICENSED = 4;
+  // No active session for this token: expired, superseded by a newer Start, or
+  // destroyed after the attempt limit was reached.
+  MFA_STEP_FAILURE_SESSION_INVALID = 5;
+  // An out-of-band step has not completed yet (OIDC callback not received,
+  // mobile approval not given). Not a credential failure and not counted; the
+  // client should keep waiting rather than treat this as an error.
+  MFA_STEP_FAILURE_AWAITING_EXTERNAL = 6;
+}
+
+// No step index: exactly one step is ever in flight (the session holds a single
+// current_step cursor), the client already knows which step it submitted, and a
+// failure does not move the cursor. Contrast MfaStepRejection, which is sparse
+// and can name several steps at once.
+message MfaStepFailure {
+  MfaStepFailureReason reason = 1;
+  // Credential attempts left before the session is destroyed. Meaningful only
+  // for MFA_STEP_FAILURE_INVALID_CREDENTIAL; zero otherwise.
+  uint32 attempts_remaining = 2;
+  // The session no longer exists and the client must restart from Start.
+  // Always set for MFA_STEP_FAILURE_SESSION_INVALID, and for the credential
+  // failure that exhausts the attempt limit. Derivable from the two fields
+  // above, but stated explicitly because it decides retry versus start-over.
+  bool session_terminated = 3;
+}
+
 message MfaStepResult {
   oneof outcome {
     MfaAdvanced advanced = 1;
     MfaCompleted completed = 2;
+    // Business-level failure. Returned with an OK status, not a gRPC error;
+    // transport-level errors remain reserved for malformed or internal faults.
+    MfaStepFailure failed = 3;
   }
 }
 
@@ -344,9 +388,24 @@ message ClientMfaStepStartRequest {
   MfaMethod method = 2;
 }
 
-message ClientMfaStepStartResponse {
+message MfaStepStarted {
+  // Nonce identifying this attempt at the current step. The client round-trips
+  // it through the OIDC state parameter and the mobile-approve payload so late
+  // callbacks can be matched against the attempt that is actually current.
   string step_attempt_id = 1;
+  // Biometric or mobile-approve challenge, when the method needs one.
   optional string challenge = 2;
+}
+
+// A oneof rather than presence-routed flat fields (as ClientMfaStartResponse
+// uses): this message is new in 2.2, so no client has ever parsed it and there
+// is no wire format to preserve. The oneof makes "started and failed" and
+// "neither" unrepresentable.
+message ClientMfaStepStartResponse {
+  oneof outcome {
+    MfaStepStarted started = 1;
+    MfaStepFailure failed = 2;
+  }
 }
 
 // External OIDC authentication flow
