@@ -128,10 +128,20 @@ message DeviceConfig {
   // DEPRECATED(1.5): superseded by location_mfa_mode
   bool mfa_enabled = 9 [deprecated = true];
   int32 keepalive_interval = 10;
-  optional LocationMfaMode location_mfa_mode = 11;
+  // DEPRECATED(2.2): superseded by steps (field 14).
+  // Populated server-side only for backward-compatible locations
+  // (single-flow, single-step, full method set).
+  // Omitted (along with the location) when incompatible.
+  optional LocationMfaMode location_mfa_mode = 11 [deprecated = true];
   optional ServiceLocationMode service_location_mode = 12;
   // added for 2.1
   optional bool posture_check_required = 13;
+  // [2.2] Resolved MFA flow for this location+user.
+  // The server resolves group membership at config-build time and delivers
+  // a single effective MfaStep list per location. Every MfaStepMethod.configured
+  // already reflects whether THIS user has that method set up — no intersection
+  // with InstanceInfo.mfa_user_state is needed.
+  repeated MfaStep steps = 14;
 }
 
 enum ClientTrafficPolicy {
@@ -156,6 +166,11 @@ message InstanceInfo {
   // client and CLI hide, block, and disconnect bare WireGuard tunnels
   // (OR-across-instances semantics).
   optional bool disable_tunnels = 10;
+  // [2.2] Lightweight summary of the enrolled user's configured MFA methods.
+  // Used for quick checks (e.g. "does this user have any MFA methods?").
+  // The client does NOT intersect this with DeviceConfig.steps — the resolved
+  // flow in DeviceConfig already carries per-user configured flags.
+  MfaUserState mfa_user_state = 11;
 }
 
 message DeviceConfigResponse {
@@ -201,15 +216,29 @@ enum MfaMethod {
 message ClientMfaStartRequest {
   int64 location_id = 1;
   string pubkey = 2;
-  MfaMethod method = 3;
+  // Legacy single-step path: set on its own to trigger the fused Start +
+  // StepStart adapter for pre-2.2.0 clients. Must not be set together with
+  // selected_methods.
+  optional MfaMethod method = 3;
   // [2.1] Required when the location has posture policies assigned.
   optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 4;
+  // [2.2] Multi-step path: the client's full per-step method plan, one entry
+  // per step in flow order — index i is the chosen method for step i.
+  // Must contain exactly one entry per step; a mismatched length is rejected
+  // with WRONG_PLAN_LENGTH. Non-empty triggers the multi-step Start flow.
+  repeated MfaMethod selected_methods = 5;
 }
 
 message ClientMfaStartResponse {
   string token = 1;
-  // for biometric mfa method
+  // for biometric mfa method (legacy fused path only)
   optional string challenge = 2;
+  // [2.2] The flow descriptor with per-user configured annotations set.
+  // Returned on success as a safety net for stale DeviceConfig.
+  repeated MfaStep steps = 3;
+  // [2.2] Structured rejection list. Non-empty on failure; the client
+  // maps rejections to picker steps by MfaStepRejection.step.
+  repeated MfaStepRejection rejections = 4;
 }
 
 message ClientMfaFinishRequest {
@@ -219,8 +248,11 @@ message ClientMfaFinishRequest {
 }
 
 message ClientMfaFinishResponse {
-  string preshared_key = 1;
+  string preshared_key = 1 [deprecated = true];
   optional string token = 2;
+  // [2.2] Per-step result — either MfaAdvanced (proceed to next_step)
+  // or MfaCompleted (flow done, preshared_key inside).
+  MfaStepResult result = 3;
 }
 
 message RegisterMobileAuthRequest {
@@ -249,6 +281,72 @@ message CodeMfaSetupFinishRequest {
 
 message CodeMfaSetupFinishResponse {
   repeated string recovery_codes = 1;
+}
+
+// Multi-step MFA (added for 2.2)
+
+message MfaStepMethod {
+  MfaMethod method = 1;
+  // Per-user configured status, set server-side.
+  // On DeviceConfig.steps: the server resolves per-user state at config-build
+  // time — the client uses it directly.
+  // On ClientMfaStartResponse.steps: returned as a safety net for stale
+  // DeviceConfig; the flow shape is authoritative.
+  bool configured = 2;
+}
+
+message MfaStep {
+  // Positionally addressed throughout the client proto: a step is identified by
+  // its index in the ordered list it appears in. No server-side row id crosses
+  // the wire, and the client never reasons about flow identity.
+  repeated MfaStepMethod methods = 1;
+}
+
+message MfaUserState {
+  // Lightweight summary: the set of MFA methods this user can currently use
+  // on this device. For quick checks (e.g. "does this user have any MFA
+  // methods at all?").
+  repeated MfaMethod configured_methods = 1;
+}
+
+enum MfaStartRejectionReason {
+  WRONG_PLAN_LENGTH = 0;
+  METHOD_NOT_IN_STEP = 1;
+  METHOD_NOT_CONFIGURED = 2;
+  STEP_EMPTY_AFTER_LICENSE = 3;
+  STEP_NO_CONFIGURED_METHODS = 4;
+}
+
+// Sparse: only failing steps are returned, so the step index is carried
+// explicitly here (unlike the request plan, which is positional).
+message MfaStepRejection {
+  uint32 step = 1;
+  MfaStartRejectionReason reason = 2;
+}
+
+message MfaAdvanced {
+  uint32 next_step = 1;
+}
+
+message MfaCompleted {
+  string preshared_key = 1;
+}
+
+message MfaStepResult {
+  oneof outcome {
+    MfaAdvanced advanced = 1;
+    MfaCompleted completed = 2;
+  }
+}
+
+message ClientMfaStepStartRequest {
+  string token = 1;
+  MfaMethod method = 2;
+}
+
+message ClientMfaStepStartResponse {
+  string step_attempt_id = 1;
+  optional string challenge = 2;
 }
 
 // External OIDC authentication flow
