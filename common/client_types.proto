@@ -242,14 +242,14 @@ enum MfaStartRejectionReason {
   // This user cannot satisfy the step. Deliberately opaque: Start is
   // authenticated by device pubkey alone, before any factor is proven, so it
   // must not report whether the method is unconfigured, unlicensed, or the
-  // step has no configured methods at all. 
+  // step has no configured methods at all.
   MFA_START_REJECTION_STEP_UNAVAILABLE = 3;
 }
 
 // Sparse: only failing steps are returned, so the step index is carried
 // explicitly here (unlike the request plan, which is positional).
 message MfaStepRejection {
-  // Index of the rejected step. 
+  // Index of the rejected step.
   uint32 step = 1;
   MfaStartRejectionReason reason = 2;
 }
