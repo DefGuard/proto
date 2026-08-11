@@ -69,8 +69,9 @@ message AwaitRemoteMfaFinishRequest {
 }
 
 message AwaitRemoteMfaFinishResponse {
+  // DEPRECATED(2.2): superseded by result (MfaCompleted.preshared_key)
   string preshared_key = 1 [deprecated = true];
-  // [2.2] Per-step result when the flow completes via mobile approve.
+  // [2.2] Outcome of the remote-approved step.
   defguard.client_types.MfaStepResult result = 2;
 }
 
