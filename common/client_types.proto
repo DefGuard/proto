@@ -128,10 +128,17 @@ message DeviceConfig {
   // DEPRECATED(1.5): superseded by location_mfa_mode
   bool mfa_enabled = 9 [deprecated = true];
   int32 keepalive_interval = 10;
-  optional LocationMfaMode location_mfa_mode = 11;
+  // DEPRECATED(2.2): superseded by steps (field 14).
+  // Populated server-side only for backward-compatible locations
+  // (single-flow, single-step, full method set).
+  // Omitted (along with the location) when incompatible.
+  optional LocationMfaMode location_mfa_mode = 11 [deprecated = true];
   optional ServiceLocationMode service_location_mode = 12;
   // added for 2.1
   optional bool posture_check_required = 13;
+  // [2.2] The ordered steps of the MFA flow resolved for this user at this
+  // location.
+  repeated MfaStep steps = 14;
 }
 
 enum ClientTrafficPolicy {
@@ -156,6 +163,9 @@ message InstanceInfo {
   // client and CLI hide, block, and disconnect bare WireGuard tunnels
   // (OR-across-instances semantics).
   optional bool disable_tunnels = 10;
+  // [2.2] Lightweight summary of the enrolled user's configured MFA methods.
+  // Used for quick checks (e.g. "does this user have any MFA methods?").
+  MfaUserState mfa_user_state = 11;
 }
 
 message DeviceConfigResponse {
@@ -198,18 +208,128 @@ enum MfaMethod {
   MOBILE_APPROVE = 4;
 }
 
+// Multi-step MFA (added for 2.2)
+
+message MfaStepMethod {
+  MfaMethod method = 1;
+  // Whether THIS user has the method set up, resolved server-side at
+  // config-build time.
+  bool configured = 2;
+}
+
+message MfaStep {
+  // Positionally addressed throughout the client proto: a step is identified by
+  // its index in the ordered list it appears in.
+  repeated MfaStepMethod methods = 1;
+}
+
+message MfaUserState {
+  // Lightweight summary: the set of MFA methods this user has configured. For
+  // quick checks (e.g. "does this user have any MFA methods at all?").
+  repeated MfaMethod configured_methods = 1;
+}
+
+// Why a step of the submitted plan was refused at Start. Every reason names one
+// specific step. A plan whose length does not match the resolved flow is a
+// malformed request and is refused with an INVALID_ARGUMENT status instead of
+// appearing here.
+enum MfaStartRejectionReason {
+  MFA_START_REJECTION_UNSPECIFIED = 0;
+  // Chosen method is not in this step's allowed set.
+  MFA_START_REJECTION_METHOD_NOT_IN_STEP = 1;
+  // The step has no methods left once the license filter is applied.
+  MFA_START_REJECTION_STEP_EMPTY_AFTER_LICENSE = 2;
+  // This user cannot satisfy the step. Deliberately opaque: Start is
+  // authenticated by device pubkey alone, before any factor is proven, so it
+  // must not report whether the method is unconfigured, unlicensed, or the
+  // step has no configured methods at all.
+  MFA_START_REJECTION_STEP_UNAVAILABLE = 3;
+}
+
+// Sparse: only failing steps are returned, so the step index is carried
+// explicitly here (unlike the request plan, which is positional).
+message MfaStepRejection {
+  // Index of the rejected step.
+  uint32 step = 1;
+  MfaStartRejectionReason reason = 2;
+}
+
+message MfaAdvanced {
+  uint32 next_step = 1;
+}
+
+message MfaCompleted {
+  string preshared_key = 1;
+}
+
+// An out-of-band step has not resolved yet: the OIDC callback has not arrived,
+// or the mobile approval has not been given. Not a failure - the client keeps
+// waiting, and it does not count against the attempt limit.
+message MfaAwaitingExternal {}
+
+// Step failures are NOT carried here. They are returned as gRPC error statuses.
+//
+// ClientMfaFinishResponse is shared with pre-2.2 clients, and those gate on the
+// status alone: the desktop client connects the tunnel on any OK response, and
+// configures the peer with no preshared key when one is absent. An OK response
+// carrying a failure would let a deployed client treat a rejected factor as
+// success. The status code is the protection, not the deprecation marker.
+message MfaStepResult {
+  oneof outcome {
+    MfaAdvanced advanced = 1;
+    MfaCompleted completed = 2;
+    MfaAwaitingExternal awaiting_external = 3;
+  }
+}
+
+message ClientMfaStepStartRequest {
+  string token = 1;
+  MfaMethod method = 2;
+}
+
+// Returned only when the step actually started; failures are gRPC error
+// statuses, mapped as described on MfaStepResult.
+message ClientMfaStepStartResponse {
+  // Nonce identifying this attempt at the current step. The client round-trips
+  // it through the OIDC state parameter and the mobile-approve payload so late
+  // callbacks can be matched against the attempt that is actually current.
+  string step_attempt_id = 1;
+  // Biometric or mobile-approve challenge, when the method needs one.
+  optional string challenge = 2;
+}
+
 message ClientMfaStartRequest {
   int64 location_id = 1;
   string pubkey = 2;
-  MfaMethod method = 3;
+  // Legacy single-step path. Read ONLY when selected_methods is empty.
+  //
+  // Never test this field for presence. MfaMethod.TOTP is 0 and pre-2.2 clients
+  // encode with implicit presence, so a legacy client selecting TOTP omits the
+  // field entirely - "absent" and "TOTP" are indistinguishable on the wire. The
+  // proto3 default of 0 is the correct reading in both cases.
+  // DEPRECATED(2.2): superseded by selected_methods (MfaCompleted.preshared_key)
+  MfaMethod method = 3 [deprecated = true];
   // [2.1] Required when the location has posture policies assigned.
   optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 4;
+  // [2.2] Multi-step path: the client's full per-step method plan, one entry
+  // per step in flow order - index i is the chosen method for step i.
+  // Non-empty is the SOLE discriminator between the multi-step flow and the
+  // legacy fused Start + StepStart adapter. A length that does not match the
+  // resolved flow is refused with an INVALID_ARGUMENT status.
+  repeated MfaMethod selected_methods = 5;
 }
 
+// Flat presence-routed fields rather than a oneof, unlike
+// ClientMfaStepStartResponse: this message predates 2.2, so token and challenge
+// are already parsed by deployed clients and cannot be moved inside a oneof.
+// repeated fields cannot live in a oneof either.
 message ClientMfaStartResponse {
   string token = 1;
-  // for biometric mfa method
+  // for biometric mfa method (legacy fused path only)
   optional string challenge = 2;
+  // [2.2] Per-step rejections, sparse - only failing steps appear. Non-empty
+  // means the plan was refused and no session was created.
+  repeated MfaStepRejection rejections = 3;
 }
 
 message ClientMfaFinishRequest {
@@ -219,8 +339,11 @@ message ClientMfaFinishRequest {
 }
 
 message ClientMfaFinishResponse {
-  string preshared_key = 1;
+  // DEPRECATED(2.2): superseded by result (MfaCompleted.preshared_key)
+  string preshared_key = 1 [deprecated = true];
   optional string token = 2;
+  // [2.2] Outcome of the step just submitted.
+  MfaStepResult result = 3;
 }
 
 message RegisterMobileAuthRequest {
@@ -230,7 +353,6 @@ message RegisterMobileAuthRequest {
 }
 
 // TOTP and Email MFA Setup
-
 message CodeMfaSetupStartRequest {
   MfaMethod method = 1;
   string token = 2;

@@ -69,7 +69,10 @@ message AwaitRemoteMfaFinishRequest {
 }
 
 message AwaitRemoteMfaFinishResponse {
-  string preshared_key = 1;
+  // DEPRECATED(2.2): superseded by result (MfaCompleted.preshared_key)
+  string preshared_key = 1 [deprecated = true];
+  // [2.2] Outcome of the remote-approved step.
+  defguard.client_types.MfaStepResult result = 2;
 }
 
 message InitialInfo {
@@ -113,6 +116,7 @@ message CoreResponse {
     defguard.enterprise.posture.v2.DevicePostureCheckResponse device_posture_check = 19;
     defguard.enterprise.posture.v2.DevicePostureRejection device_posture_rejected = 20;
     PublicSettings public_settings = 21;
+    defguard.client_types.ClientMfaStepStartResponse client_mfa_step_start = 22;
   }
 }
 
@@ -209,6 +213,7 @@ message CoreRequest {
     AwaitRemoteMfaFinishRequest await_remote_mfa_finish = 20;
     AcmeCertificate acme_certificate = 21;
     defguard.enterprise.posture.v2.DevicePostureCheckRequest device_posture_check = 22;
+    defguard.client_types.ClientMfaStepStartRequest client_mfa_step_start = 23;
   }
 }
 
