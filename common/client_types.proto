@@ -336,6 +336,11 @@ message ClientMfaFinishRequest {
   string token = 1;
   optional string code = 2;
   optional string auth_pub_key = 3;
+  // [2.2] The attempt id minted by StepStart for the step being submitted. It binds
+  // this proof to a specific attempt, so a stale or duplicate proof cannot advance
+  // the step twice. Optional so pre-2.2 clients that omit it still parse; a None
+  // value keeps the legacy single-step path working.
+  optional string step_attempt_id = 4;
 }
 
 message ClientMfaFinishResponse {
