@@ -298,9 +298,11 @@ message ClientMfaStepStartResponse {
   // Biometric or mobile-approve challenge, when the method needs one.
   // [2.2] For FIDO2 this holds the challenge the key has to sign.
   optional string challenge = 2;
-  // [2.2] For FIDO2 this holds the base64 id of the credential the key must
-  // sign with, i.e. the one registered for this user.
-  optional string credential_id = 3;
+  // [2.2] For FIDO2: the credentials registered for this user, base64url as
+  // webauthn-rs serializes them. The client offers the whole list to the key,
+  // which answers for the one it holds, and names it in the finish request so
+  // later attempts can be narrowed to that credential.
+  repeated string credential_ids = 3;
 }
 
 message ClientMfaStartRequest {
@@ -335,9 +337,9 @@ message ClientMfaStartResponse {
   // [2.2] Per-step rejections, sparse - only failing steps appear. Non-empty
   // means the plan was refused and no session was created.
   repeated MfaStepRejection rejections = 3;
-  // [2.2] For FIDO2 on the legacy fused path: the base64 id of the credential
-  // the key must sign with, alongside the challenge above.
-  optional string credential_id = 4;
+  // [2.2] For FIDO2 on the legacy fused path: the credentials registered for
+  // this user, alongside the challenge above.
+  repeated string credential_ids = 4;
 }
 
 message ClientMfaFinishRequest {
@@ -353,6 +355,10 @@ message ClientMfaFinishRequest {
   optional string step_attempt_id = 4;
   // [2.2] FIDO2
   optional bytes auth_data = 5;
+  // [2.2] For FIDO2: which credential actually signed, base64url. Picked by the
+  // key out of the list it was offered, so Core knows which of the user's
+  // security keys is in use.
+  optional string credential_id = 6;
 }
 
 message ClientMfaFinishResponse {
