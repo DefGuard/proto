@@ -296,7 +296,11 @@ message ClientMfaStepStartResponse {
   // callbacks can be matched against the attempt that is actually current.
   string step_attempt_id = 1;
   // Biometric or mobile-approve challenge, when the method needs one.
+  // [2.2] For FIDO2 this holds the challenge the key has to sign.
   optional string challenge = 2;
+  // [2.2] For FIDO2 this holds the base64 id of the credential the key must
+  // sign with, i.e. the one registered for this user.
+  optional string credential_id = 3;
 }
 
 message ClientMfaStartRequest {
@@ -331,6 +335,9 @@ message ClientMfaStartResponse {
   // [2.2] Per-step rejections, sparse - only failing steps appear. Non-empty
   // means the plan was refused and no session was created.
   repeated MfaStepRejection rejections = 3;
+  // [2.2] For FIDO2 on the legacy fused path: the base64 id of the credential
+  // the key must sign with, alongside the challenge above.
+  optional string credential_id = 4;
 }
 
 message ClientMfaFinishRequest {
