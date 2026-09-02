@@ -124,6 +124,8 @@ message HttpsCerts {
 message PublicSettings {
   bool display_password_reset = 1;
   bool display_download_step = 2;
+  // Public URL the Edge component is reached at.
+  optional string public_url = 3;
 }
 
 /*
