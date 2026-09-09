@@ -117,6 +117,9 @@ message CoreResponse {
     defguard.enterprise.posture.v2.DevicePostureRejection device_posture_rejected = 20;
     PublicSettings public_settings = 21;
     defguard.client_types.ClientMfaStepStartResponse client_mfa_step_start = 22;
+    defguard.client_types.MfaConfigStartResponse mfa_config_start = 23;
+    defguard.client_types.MfaConfigAuthorizeResponse mfa_config_authorize = 24;
+    defguard.client_types.MfaConfigSendCodeResponse mfa_config_send_code = 25;
   }
 }
 
@@ -216,6 +219,9 @@ message CoreRequest {
     AcmeCertificate acme_certificate = 21;
     defguard.enterprise.posture.v2.DevicePostureCheckRequest device_posture_check = 22;
     defguard.client_types.ClientMfaStepStartRequest client_mfa_step_start = 23;
+    defguard.client_types.MfaConfigStartRequest mfa_config_start = 24;
+    defguard.client_types.MfaConfigAuthorizeRequest mfa_config_authorize = 25;
+    defguard.client_types.MfaConfigSendCodeRequest mfa_config_send_code = 26;
   }
 }
 

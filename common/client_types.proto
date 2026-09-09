@@ -396,6 +396,37 @@ message CodeMfaSetupFinishResponse {
   repeated string recovery_codes = 1;
 }
 
+// [2.2] MFA factor configuration for an enrolled device.
+// Authenticate with the device's polling token and public key.
+message MfaConfigStartRequest {
+  string token = 1;
+  string pubkey = 2;
+}
+
+message MfaConfigStartResponse {
+  string session_token = 1;
+  repeated MfaMethod available_methods = 2;
+  // True when no factor is configured and an email code is the only authorization method.
+  bool email_fallback = 3;
+  int64 deadline_timestamp = 4;
+}
+
+message MfaConfigSendCodeRequest {
+  string session_token = 1;
+}
+
+message MfaConfigSendCodeResponse {}
+
+message MfaConfigAuthorizeRequest {
+  string session_token = 1;
+  MfaMethod method = 2;
+  string code = 3;
+}
+
+message MfaConfigAuthorizeResponse {
+  int64 deadline_timestamp = 1;
+}
+
 // External OIDC authentication flow
 enum AuthFlowType {
   AUTH_FLOW_TYPE_UNSPECIFIED = 0;
