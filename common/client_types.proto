@@ -344,7 +344,6 @@ message ClientMfaStartResponse {
 
 message ClientMfaFinishRequest {
   string token = 1;
-  // [2.2] For FIDO2 this holds the hash of RP ID.
   optional string code = 2;
   // [2.2] For FIDO2 this holds the signature.
   optional string auth_pub_key = 3;
@@ -355,10 +354,9 @@ message ClientMfaFinishRequest {
   optional string step_attempt_id = 4;
   // [2.2] FIDO2
   optional bytes auth_data = 5;
-  // [2.2] For FIDO2: which credential actually signed, base64url. Picked by the
-  // key out of the list it was offered, so Core knows which of the user's
-  // security keys is in use.
-  optional string credential_id = 6;
+  // [2.2] For FIDO2: which credential actually signed. Picked by the key out of the list
+  // it was offered, so Core knows which of the user's security keys is in use.
+  optional bytes credential_id = 6;
 }
 
 message ClientMfaFinishResponse {
