@@ -222,6 +222,7 @@ message CoreRequest {
     defguard.client_types.MfaConfigStartRequest mfa_config_start = 24;
     defguard.client_types.MfaConfigAuthorizeRequest mfa_config_authorize = 25;
     defguard.client_types.MfaConfigSendCodeRequest mfa_config_send_code = 26;
+    defguard.client_types.MfaConfigEndRequest mfa_config_end = 27;
   }
 }
 
