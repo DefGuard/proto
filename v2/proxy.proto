@@ -68,11 +68,9 @@ message AwaitRemoteMfaFinishRequest {
   string token = 1;
 }
 
+// LEGACY/FROZEN: preserve this message's wire contract for deployed clients.
 message AwaitRemoteMfaFinishResponse {
-  // DEPRECATED(2.2): superseded by result (MfaCompleted.preshared_key)
-  string preshared_key = 1 [deprecated = true];
-  // [2.2] Outcome of the remote-approved step.
-  defguard.client_types.MfaStepResult result = 2;
+  string preshared_key = 1;
 }
 
 message InitialInfo {
@@ -81,8 +79,8 @@ message InitialInfo {
 
 /*
  * Error response variant.
- * Due to reverse proxy -> core communication this is how we
- * can return gRPC errors from core.
+ * The proxy-to-core stream is reversed, so core returns gRPC errors
+ * through this message.
  */
 message CoreError {
   int32 status_code = 1;
@@ -90,7 +88,7 @@ message CoreError {
 }
 
 /*
- * CoreResponse represents messages send from core to proxy
+ * CoreResponse represents messages sent from core to proxy
  * in response to CoreRequest.
  */
 message CoreResponse {
@@ -116,10 +114,11 @@ message CoreResponse {
     defguard.enterprise.posture.v2.DevicePostureCheckResponse device_posture_check = 19;
     defguard.enterprise.posture.v2.DevicePostureRejection device_posture_rejected = 20;
     PublicSettings public_settings = 21;
-    defguard.client_types.ClientMfaStepStartResponse client_mfa_step_start = 22;
     defguard.client_types.MfaConfigStartResponse mfa_config_start = 23;
     defguard.client_types.MfaConfigAuthorizeResponse mfa_config_authorize = 24;
     defguard.client_types.MfaConfigSendCodeResponse mfa_config_send_code = 25;
+    defguard.client_types.ClientMfaFlowStartResponse client_mfa_flow_start = 26;
+    defguard.client_types.ClientMfaFlowStepStartResponse client_mfa_flow_step_start = 27;
   }
 }
 
@@ -131,7 +130,7 @@ message HttpsCerts {
 message PublicSettings {
   bool display_password_reset = 1;
   bool display_download_step = 2;
-  // Public URL the Edge component is reached at.
+  // Public URL used to reach the Edge component.
   optional string public_url = 3;
 }
 
@@ -179,7 +178,7 @@ message AcmeLogs {
 }
 
 /*
- * Wrapper message streamed by IssueAcme.
+ * Wrapper message streamed by TriggerAcme.
  * Carries either a progress update, the final certificate, or (on failure)
  * the collected proxy log lines.
  */
@@ -192,7 +191,7 @@ message AcmeIssueEvent {
 }
 
 /*
- * CoreRequest represents messages send from proxy to core.
+ * CoreRequest represents messages sent from proxy to core.
  */
 message CoreRequest {
   uint64 id = 1;
@@ -218,10 +217,11 @@ message CoreRequest {
     AwaitRemoteMfaFinishRequest await_remote_mfa_finish = 20;
     AcmeCertificate acme_certificate = 21;
     defguard.enterprise.posture.v2.DevicePostureCheckRequest device_posture_check = 22;
-    defguard.client_types.ClientMfaStepStartRequest client_mfa_step_start = 23;
     defguard.client_types.MfaConfigStartRequest mfa_config_start = 24;
     defguard.client_types.MfaConfigAuthorizeRequest mfa_config_authorize = 25;
     defguard.client_types.MfaConfigSendCodeRequest mfa_config_send_code = 26;
+    defguard.client_types.ClientMfaFlowStartRequest client_mfa_flow_start = 28;
+    defguard.client_types.ClientMfaFlowStepStartRequest client_mfa_flow_step_start = 29;
   }
 }
 
@@ -244,8 +244,8 @@ service Proxy {
   rpc TriggerAcme(AcmeChallenge) returns (stream AcmeIssueEvent);
 }
 
-// Service used for initial Proxy setup, for configuring TLS certificate
-// on Proxy for gRPC communication.
+// Service used during initial Proxy setup to configure the TLS certificate
+// for gRPC communication.
 service ProxySetup {
   rpc Start(google.protobuf.Empty) returns (stream defguard.common.v2.LogEntry);
   rpc GetCsr(defguard.common.v2.CertificateInfo) returns (defguard.common.v2.DerPayload);

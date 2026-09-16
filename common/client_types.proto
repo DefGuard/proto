@@ -50,15 +50,15 @@ message InitialUserInfo {
 }
 
 message EnrollmentSettings {
-  // Vpn step is skippable
+  // VPN step is skippable.
   bool vpn_setup_optional = 1;
-  // Manual WireGuard setup is disabled
+  // Manual WireGuard setup is disabled.
   bool only_client_activation = 2;
-  // Only admins can add devices so vpn step is skipped
+  // Only admins can add devices, so the VPN step is skipped.
   bool admin_device_management = 3;
-  // Enable Email method for MFA setup
+  // Enable email as an MFA setup method.
   bool smtp_configured = 4;
-  // MFA setup is not skippable
+  // MFA setup is not skippable.
   bool mfa_required = 5;
 }
 
@@ -121,7 +121,7 @@ message DeviceConfig {
   string config = 3;
   string endpoint = 4;
   string assigned_ip = 5;
-  // network pubkey
+  // Network public key.
   string pubkey = 6;
   string allowed_ips = 7;
   optional string dns = 8;
@@ -134,9 +134,8 @@ message DeviceConfig {
   // Omitted (along with the location) when incompatible.
   optional LocationMfaMode location_mfa_mode = 11 [deprecated = true];
   optional ServiceLocationMode service_location_mode = 12;
-  // added for 2.1
   optional bool posture_check_required = 13;
-  // [2.2] The ordered steps of the MFA flow resolved for this user at this
+  // The ordered steps of the MFA flow resolved for this user at this
   // location.
   repeated MfaStep steps = 14;
 }
@@ -158,12 +157,11 @@ message InstanceInfo {
   bool disable_all_traffic = 7 [deprecated = true];
   optional string openid_display_name = 8;
   optional ClientTrafficPolicy client_traffic_policy = 9;
-  // Added for 2.1
   // When ANY enrolled instance has this true, the desktop
   // client and CLI hide, block, and disconnect bare WireGuard tunnels
   // (OR-across-instances semantics).
   optional bool disable_tunnels = 10;
-  // [2.2] Lightweight summary of the enrolled user's configured MFA methods.
+  // Lightweight summary of the enrolled user's configured MFA methods.
   // Used for quick checks (e.g. "does this user have any MFA methods?").
   MfaUserState mfa_user_state = 11;
 }
@@ -209,7 +207,7 @@ enum MfaMethod {
   FIDO2 = 5;
 }
 
-// Multi-step MFA (added for 2.2)
+// Multi-step MFA
 
 message MfaStepMethod {
   MfaMethod method = 1;
@@ -228,6 +226,32 @@ message MfaUserState {
   // Lightweight summary: the set of MFA methods this user has configured. For
   // quick checks (e.g. "does this user have any MFA methods at all?").
   repeated MfaMethod configured_methods = 1;
+}
+
+message MfaSignatureChallenge {
+  string challenge = 1;
+}
+
+message MfaFido2Challenge {
+  string challenge = 1;
+  repeated string credential_ids = 2;
+}
+
+message MfaStepStarted {
+  string step_attempt_id = 1;
+  oneof challenge {
+    MfaSignatureChallenge signature = 2;
+    MfaFido2Challenge fido2 = 3;
+  }
+}
+
+message MfaFlowStartAccepted {
+  string token = 1;
+  MfaStepStarted first_step = 2;
+}
+
+message MfaFlowStartRejected {
+  repeated MfaStepRejection rejections = 1;
 }
 
 // Why a step of the submitted plan was refused at Start. Every reason names one
@@ -264,17 +288,16 @@ message MfaCompleted {
 }
 
 // An out-of-band step has not resolved yet: the OIDC callback has not arrived,
-// or the mobile approval has not been given. Not a failure - the client keeps
-// waiting, and it does not count against the attempt limit.
+// or the mobile approval has not been given. This is not a failure. The client
+// keeps waiting, and it does not count against the attempt limit.
 message MfaAwaitingExternal {}
 
-// Step failures are NOT carried here. They are returned as gRPC error statuses.
-//
-// ClientMfaFinishResponse is shared with pre-2.2 clients, and those gate on the
-// status alone: the desktop client connects the tunnel on any OK response, and
-// configures the peer with no preshared key when one is absent. An OK response
+// Step failures are NOT carried here. New-flow adapters return them as gRPC
+// error statuses. The legacy ClientMfaFinishResponse remains top-level PSK-only:
+// pre-2.2 clients gate on the status alone, connect the tunnel on any OK response,
+// and configure the peer with no preshared key when one is absent. An OK result
 // carrying a failure would let a deployed client treat a rejected factor as
-// success. The status code is the protection, not the deprecation marker.
+// success.
 message MfaStepResult {
   oneof outcome {
     MfaAdvanced advanced = 1;
@@ -283,88 +306,58 @@ message MfaStepResult {
   }
 }
 
-message ClientMfaStepStartRequest {
+message ClientMfaFlowStartRequest {
+  int64 location_id = 1;
+  string pubkey = 2;
+  optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 3;
+  repeated MfaMethod selected_methods = 4;
+}
+
+message ClientMfaFlowStartResponse {
+  oneof outcome {
+    MfaFlowStartAccepted accepted = 1;
+    MfaFlowStartRejected rejected = 2;
+  }
+}
+
+message ClientMfaFlowStepStartRequest {
   string token = 1;
   MfaMethod method = 2;
 }
 
-// Returned only when the step actually started; failures are gRPC error
-// statuses, mapped as described on MfaStepResult.
-message ClientMfaStepStartResponse {
-  // Nonce identifying this attempt at the current step. The client round-trips
-  // it through the OIDC state parameter and the mobile-approve payload so late
-  // callbacks can be matched against the attempt that is actually current.
-  string step_attempt_id = 1;
-  // Biometric or mobile-approve challenge, when the method needs one.
-  // [2.2] For FIDO2 this holds the challenge the key has to sign.
-  optional string challenge = 2;
-  // [2.2] For FIDO2: the credentials registered for this user, base64url as
-  // webauthn-rs serializes them. The client offers the whole list to the key,
-  // which answers for the one it holds, and names it in the finish request so
-  // later attempts can be narrowed to that credential.
-  repeated string credential_ids = 3;
+message ClientMfaFlowStepStartResponse {
+  MfaStepStarted started = 1;
 }
 
+// LEGACY/FROZEN: preserve this message's wire contract for deployed clients.
 message ClientMfaStartRequest {
   int64 location_id = 1;
   string pubkey = 2;
-  // Legacy single-step path. Read ONLY when selected_methods is empty.
-  //
-  // Never test this field for presence. MfaMethod.TOTP is 0 and pre-2.2 clients
-  // encode with implicit presence, so a legacy client selecting TOTP omits the
-  // field entirely - "absent" and "TOTP" are indistinguishable on the wire. The
-  // proto3 default of 0 is the correct reading in both cases.
-  // DEPRECATED(2.2): superseded by selected_methods (MfaCompleted.preshared_key)
-  MfaMethod method = 3 [deprecated = true];
-  // [2.1] Required when the location has posture policies assigned.
+  // MfaMethod.TOTP is 0, so an omitted value and explicit TOTP are equivalent.
+  MfaMethod method = 3;
+  // Required when the location has posture policies assigned.
   optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 4;
-  // [2.2] Multi-step path: the client's full per-step method plan, one entry
-  // per step in flow order - index i is the chosen method for step i.
-  // Non-empty is the SOLE discriminator between the multi-step flow and the
-  // legacy fused Start + StepStart adapter. A length that does not match the
-  // resolved flow is refused with an INVALID_ARGUMENT status.
-  repeated MfaMethod selected_methods = 5;
 }
 
-// Flat presence-routed fields rather than a oneof, unlike
-// ClientMfaStepStartResponse: this message predates 2.2, so token and challenge
-// are already parsed by deployed clients and cannot be moved inside a oneof.
-// repeated fields cannot live in a oneof either.
+// LEGACY/FROZEN: preserve this message's wire contract for deployed clients.
 message ClientMfaStartResponse {
   string token = 1;
-  // for biometric mfa method (legacy fused path only)
+  // Initial biometric or mobile-approve challenge.
   optional string challenge = 2;
-  // [2.2] Per-step rejections, sparse - only failing steps appear. Non-empty
-  // means the plan was refused and no session was created.
-  repeated MfaStepRejection rejections = 3;
-  // [2.2] For FIDO2 on the legacy fused path: the credentials registered for
-  // this user, alongside the challenge above.
-  repeated string credential_ids = 4;
 }
 
+// LEGACY/FROZEN: preserve this message's wire contract for deployed clients.
 message ClientMfaFinishRequest {
   string token = 1;
   optional string code = 2;
-  // [2.2] For FIDO2 this holds the signature.
+  // Public key used for mobile approval.
   optional string auth_pub_key = 3;
-  // [2.2] The attempt id minted by StepStart for the step being submitted. It binds
-  // this proof to a specific attempt, so a stale or duplicate proof cannot advance
-  // the step twice. Optional so pre-2.2 clients that omit it still parse; a None
-  // value keeps the legacy single-step path working.
-  optional string step_attempt_id = 4;
-  // [2.2] FIDO2
-  optional bytes auth_data = 5;
-  // [2.2] For FIDO2: which credential actually signed. Picked by the key out of the list
-  // it was offered, so Core knows which of the user's security keys is in use.
-  optional bytes credential_id = 6;
 }
 
+// LEGACY/FROZEN: preserve this message's wire contract for deployed clients.
 message ClientMfaFinishResponse {
-  // DEPRECATED(2.2): superseded by result (MfaCompleted.preshared_key)
-  string preshared_key = 1 [deprecated = true];
+  string preshared_key = 1;
   optional string token = 2;
-  // [2.2] Outcome of the step just submitted.
-  MfaStepResult result = 3;
 }
 
 message RegisterMobileAuthRequest {
@@ -379,7 +372,7 @@ message CodeMfaSetupStartRequest {
   string token = 2;
 }
 
-// in case of email secret is empty
+// The TOTP secret is empty for the email method.
 message CodeMfaSetupStartResponse {
   optional string totp_secret = 1;
 }
@@ -394,7 +387,7 @@ message CodeMfaSetupFinishResponse {
   repeated string recovery_codes = 1;
 }
 
-// [2.2] MFA factor configuration for an enrolled device.
+// MFA factor configuration for an enrolled device.
 // Authenticate with the device's polling token and public key.
 message MfaConfigStartRequest {
   string token = 1;
