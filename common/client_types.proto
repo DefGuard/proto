@@ -139,6 +139,8 @@ message DeviceConfig {
   // [2.2] The ordered steps of the MFA flow resolved for this user at this
   // location.
   repeated MfaStep steps = 14;
+  // [2.2] MTU for the client.
+  optional uint32 mtu = 15;
 }
 
 enum ClientTrafficPolicy {
