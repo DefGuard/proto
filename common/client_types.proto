@@ -329,6 +329,58 @@ message ClientMfaFlowStepStartResponse {
   MfaStepStarted started = 1;
 }
 
+message MfaCodeCredential {
+  string code = 1;
+}
+
+message MfaBiometricSignature {
+  string signature = 1;
+}
+
+// CTAP-native binary fields. Carries no clientDataJSON.
+message MfaFido2Assertion {
+  bytes rp_id_hash = 1;
+  bytes authenticator_data = 2;
+  bytes signature = 3;
+  bytes credential_id = 4;
+}
+
+// The session's persisted method selects the verifier. An unset submission is
+// valid only for OIDC and MobileApprove polling.
+message ClientMfaFlowStepFinishRequest {
+  string token = 1;
+  string step_attempt_id = 2;
+  oneof submission {
+    MfaCodeCredential code = 3;
+    MfaBiometricSignature biometric = 4;
+    MfaFido2Assertion fido2 = 5;
+  }
+}
+
+message ClientMfaFlowStepFinishResponse {
+  MfaStepResult result = 1;
+}
+
+message ClientMfaFlowRemoteRequest {
+  string token = 1;
+  string step_attempt_id = 2;
+}
+
+message ClientMfaFlowRemoteResponse {
+  MfaStepResult result = 1;
+}
+
+message MfaMobileApprovalProof {
+  string signature = 1;
+  string auth_pub_key = 2;
+}
+
+message ClientMfaFlowApproveRequest {
+  string token = 1;
+  string step_attempt_id = 2;
+  MfaMobileApprovalProof proof = 3;
+}
+
 // LEGACY/FROZEN: preserve this message's wire contract for deployed clients.
 message ClientMfaStartRequest {
   int64 location_id = 1;
