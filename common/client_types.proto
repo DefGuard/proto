@@ -384,12 +384,19 @@ message CodeMfaSetupStartRequest {
 // in case of email secret is empty
 message CodeMfaSetupStartResponse {
   optional string totp_secret = 1;
+  // [2.2] WebAuthn CreationChallengeResponse, JSON as serialized by webauthn-rs.
+  optional string fido2_creation_challenge = 2;
 }
 
 message CodeMfaSetupFinishRequest {
+  // Empty for FIDO2, proven by fido2_attestation instead.
   string code = 1;
   string token = 2;
   MfaMethod method = 3;
+  // [2.2] FIDO2 security key name.
+  optional string name = 4;
+  // [2.2] WebAuthn RegisterPublicKeyCredential, JSON as serialized by webauthn-rs.
+  optional string fido2_attestation = 5;
 }
 
 message CodeMfaSetupFinishResponse {
@@ -425,6 +432,8 @@ message MfaConfigAuthorizeRequest {
 
 message MfaConfigAuthorizeResponse {
   int64 deadline_timestamp = 1;
+  // Populated only when the email fallback enables the email factor.
+  repeated string recovery_codes = 2;
 }
 
 // External OIDC authentication flow
