@@ -382,21 +382,18 @@ message CodeMfaSetupStartRequest {
 // in case of email secret is empty
 message CodeMfaSetupStartResponse {
   optional string totp_secret = 1;
-  // [2.2] For FIDO2: the WebAuthn CreationChallengeResponse, JSON-encoded as
-  // webauthn-rs serializes it. The client feeds it to the authenticator and
-  // returns the resulting attestation in CodeMfaSetupFinishRequest.
+  // [2.2] WebAuthn CreationChallengeResponse, JSON as serialized by webauthn-rs.
   optional string fido2_creation_challenge = 2;
 }
 
 message CodeMfaSetupFinishRequest {
-  // Empty for FIDO2, whose proof is the attestation below rather than a code.
+  // Empty for FIDO2, proven by fido2_attestation instead.
   string code = 1;
   string token = 2;
   MfaMethod method = 3;
-  // [2.2] For FIDO2: the name to store the new security key under.
+  // [2.2] FIDO2 security key name.
   optional string name = 4;
-  // [2.2] For FIDO2: the WebAuthn RegisterPublicKeyCredential attestation,
-  // JSON-encoded as webauthn-rs serializes it.
+  // [2.2] WebAuthn RegisterPublicKeyCredential, JSON as serialized by webauthn-rs.
   optional string fido2_attestation = 5;
 }
 
@@ -433,7 +430,7 @@ message MfaConfigAuthorizeRequest {
 
 message MfaConfigAuthorizeResponse {
   int64 deadline_timestamp = 1;
-  // Recovery codes, populated only when the email fallback enables the email factor.
+  // Populated only when the email fallback enables the email factor.
   repeated string recovery_codes = 2;
 }
 
