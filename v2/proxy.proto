@@ -117,10 +117,10 @@ message CoreResponse {
     defguard.client_types.MfaConfigStartResponse mfa_config_start = 23;
     defguard.client_types.MfaConfigAuthorizeResponse mfa_config_authorize = 24;
     defguard.client_types.MfaConfigSendCodeResponse mfa_config_send_code = 25;
-    defguard.client_types.ClientMfaFlowStartResponse client_mfa_flow_start = 26;
-    defguard.client_types.ClientMfaFlowStepStartResponse client_mfa_flow_step_start = 27;
-    defguard.client_types.ClientMfaFlowStepFinishResponse client_mfa_flow_step_finish = 28;
-    defguard.client_types.ClientMfaFlowRemoteResponse await_flow_step_finish = 29;
+    defguard.client_types.MfaFlowStartResponse mfa_flow_start = 26;
+    defguard.client_types.MfaFlowStepStartResponse mfa_flow_step_start = 27;
+    defguard.client_types.MfaFlowStepFinishResponse mfa_flow_step_finish = 28;
+    defguard.client_types.MfaFlowRemoteResponse mfa_flow_remote = 29;
   }
 }
 
@@ -222,11 +222,11 @@ message CoreRequest {
     defguard.client_types.MfaConfigStartRequest mfa_config_start = 24;
     defguard.client_types.MfaConfigAuthorizeRequest mfa_config_authorize = 25;
     defguard.client_types.MfaConfigSendCodeRequest mfa_config_send_code = 26;
-    defguard.client_types.ClientMfaFlowStartRequest client_mfa_flow_start = 28;
-    defguard.client_types.ClientMfaFlowStepStartRequest client_mfa_flow_step_start = 29;
-    defguard.client_types.ClientMfaFlowStepFinishRequest client_mfa_flow_step_finish = 30;
-    defguard.client_types.ClientMfaFlowRemoteRequest await_flow_step_finish = 31;
-    defguard.client_types.ClientMfaFlowApproveRequest client_mfa_flow_approve = 32;
+    defguard.client_types.MfaFlowStartRequest mfa_flow_start = 28;
+    defguard.client_types.MfaFlowStepStartRequest mfa_flow_step_start = 29;
+    defguard.client_types.MfaFlowStepFinishRequest mfa_flow_step_finish = 30;
+    defguard.client_types.MfaFlowRemoteRequest mfa_flow_remote = 31;
+    defguard.client_types.MfaFlowApproveRequest mfa_flow_approve = 32;
   }
 }
 

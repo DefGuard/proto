@@ -308,26 +308,26 @@ message MfaStepResult {
   }
 }
 
-message ClientMfaFlowStartRequest {
+message MfaFlowStartRequest {
   int64 location_id = 1;
   string pubkey = 2;
   optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 3;
   repeated MfaMethod selected_methods = 4;
 }
 
-message ClientMfaFlowStartResponse {
+message MfaFlowStartResponse {
   oneof outcome {
     MfaFlowStartAccepted accepted = 1;
     MfaFlowStartRejected rejected = 2;
   }
 }
 
-message ClientMfaFlowStepStartRequest {
+message MfaFlowStepStartRequest {
   string token = 1;
   MfaMethod method = 2;
 }
 
-message ClientMfaFlowStepStartResponse {
+message MfaFlowStepStartResponse {
   MfaStepStarted started = 1;
 }
 
@@ -349,7 +349,7 @@ message MfaFido2Assertion {
 
 // The session's persisted method selects the verifier. An unset submission is
 // valid only for OIDC and MobileApprove polling.
-message ClientMfaFlowStepFinishRequest {
+message MfaFlowStepFinishRequest {
   string token = 1;
   string step_attempt_id = 2;
   oneof submission {
@@ -359,16 +359,16 @@ message ClientMfaFlowStepFinishRequest {
   }
 }
 
-message ClientMfaFlowStepFinishResponse {
+message MfaFlowStepFinishResponse {
   MfaStepResult result = 1;
 }
 
-message ClientMfaFlowRemoteRequest {
+message MfaFlowRemoteRequest {
   string token = 1;
   string step_attempt_id = 2;
 }
 
-message ClientMfaFlowRemoteResponse {
+message MfaFlowRemoteResponse {
   MfaStepResult result = 1;
 }
 
@@ -377,7 +377,7 @@ message MfaMobileApprovalProof {
   string auth_pub_key = 2;
 }
 
-message ClientMfaFlowApproveRequest {
+message MfaFlowApproveRequest {
   string token = 1;
   string step_attempt_id = 2;
   MfaMobileApprovalProof proof = 3;
