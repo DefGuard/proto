@@ -436,6 +436,10 @@ message MfaConfigAuthorizeResponse {
   repeated string recovery_codes = 2;
 }
 
+message MfaConfigEndRequest {
+  string session_token = 1;
+}
+
 // External OIDC authentication flow
 enum AuthFlowType {
   AUTH_FLOW_TYPE_UNSPECIFIED = 0;
