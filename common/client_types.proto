@@ -442,8 +442,8 @@ message MfaConfigAuthorizeRequest {
   MfaMethod method = 2;
   // Empty for FIDO2 and OIDC.
   string code = 3;
-  // FIDO2 assertion, encoded as in `ClientMfaFinishRequest`: base64url signature.
-  optional string signature = 4;
+  // FIDO2 assertion.
+  optional bytes signature = 4;
   optional bytes auth_data = 5;
   optional bytes credential_id = 6;
 }
