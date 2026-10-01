@@ -412,8 +412,9 @@ message MfaConfigStartRequest {
 
 message MfaConfigStartResponse {
   string session_token = 1;
+  // Methods that can authorize the session: TOTP, EMAIL, FIDO2 and OIDC.
   repeated MfaMethod available_methods = 2;
-  // True when no factor is configured and an email code is the only authorization method.
+  // True when no method can authorize and an email code is the only authorization method.
   bool email_fallback = 3;
   int64 deadline_timestamp = 4;
 }
@@ -424,10 +425,27 @@ message MfaConfigSendCodeRequest {
 
 message MfaConfigSendCodeResponse {}
 
+// Issues a single-use challenge for authorizing the session with a FIDO2 security key.
+message MfaConfigFido2ChallengeRequest {
+  string session_token = 1;
+}
+
+message MfaConfigFido2ChallengeResponse {
+  string challenge = 1;
+  // Base64url credential IDs of the user's registered security keys.
+  repeated string credential_ids = 2;
+}
+
+// For OIDC the client polls this until the browser authentication completes.
 message MfaConfigAuthorizeRequest {
   string session_token = 1;
   MfaMethod method = 2;
+  // Empty for FIDO2 and OIDC.
   string code = 3;
+  // FIDO2 assertion.
+  optional bytes signature = 4;
+  optional bytes auth_data = 5;
+  optional bytes credential_id = 6;
 }
 
 message MfaConfigAuthorizeResponse {

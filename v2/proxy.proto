@@ -120,6 +120,7 @@ message CoreResponse {
     defguard.client_types.MfaConfigStartResponse mfa_config_start = 23;
     defguard.client_types.MfaConfigAuthorizeResponse mfa_config_authorize = 24;
     defguard.client_types.MfaConfigSendCodeResponse mfa_config_send_code = 25;
+    defguard.client_types.MfaConfigFido2ChallengeResponse mfa_config_fido2_challenge = 26;
   }
 }
 
@@ -223,6 +224,7 @@ message CoreRequest {
     defguard.client_types.MfaConfigAuthorizeRequest mfa_config_authorize = 25;
     defguard.client_types.MfaConfigSendCodeRequest mfa_config_send_code = 26;
     defguard.client_types.MfaConfigEndRequest mfa_config_end = 27;
+    defguard.client_types.MfaConfigFido2ChallengeRequest mfa_config_fido2_challenge = 28;
   }
 }
 
