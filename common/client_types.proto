@@ -168,6 +168,8 @@ message InstanceInfo {
   // [2.2] Lightweight summary of the enrolled user's configured MFA methods.
   // Used for quick checks (e.g. "does this user have any MFA methods?").
   MfaUserState mfa_user_state = 11;
+  // [2.2] absent when this core cannot configure mfa from the client
+  MfaCapabilities mfa_capabilities = 12;
 }
 
 message DeviceConfigResponse {
@@ -230,6 +232,15 @@ message MfaUserState {
   // Lightweight summary: the set of MFA methods this user has configured. For
   // quick checks (e.g. "does this user have any MFA methods at all?").
   repeated MfaMethod configured_methods = 1;
+}
+
+// [2.2] factors an mfa configuration session supports, static per core version.
+// current availability comes from MfaConfigStartResponse and MfaUserState.
+message MfaCapabilities {
+  // accepted by CodeMfaSetupStart and CodeMfaSetupFinish
+  repeated MfaMethod setup_methods = 1;
+  // accepted by MfaConfigAuthorize
+  repeated MfaMethod authorize_methods = 2;
 }
 
 // Why a step of the submitted plan was refused at Start. Every reason names one
