@@ -149,6 +149,16 @@ enum ClientTrafficPolicy {
   FORCE_ALL_TRAFFIC = 2;
 }
 
+enum OpenIdProviderKind {
+  OPEN_ID_PROVIDER_KIND_UNSPECIFIED = 0;
+  OPEN_ID_PROVIDER_KIND_CUSTOM = 1;
+  OPEN_ID_PROVIDER_KIND_GOOGLE = 2;
+  OPEN_ID_PROVIDER_KIND_MICROSOFT = 3;
+  OPEN_ID_PROVIDER_KIND_OKTA = 4;
+  OPEN_ID_PROVIDER_KIND_JUMPCLOUD = 5;
+  OPEN_ID_PROVIDER_KIND_ZITADEL = 6;
+}
+
 message InstanceInfo {
   string id = 1;
   string name = 2;
@@ -169,6 +179,7 @@ message InstanceInfo {
   MfaUserState mfa_user_state = 11;
   // [2.2] absent when this core cannot configure mfa from the client
   MfaCapabilities mfa_capabilities = 12;
+  optional OpenIdProviderKind openid_provider_kind = 13;
 }
 
 message DeviceConfigResponse {
