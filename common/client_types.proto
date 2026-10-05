@@ -134,8 +134,9 @@ message DeviceConfig {
   // Omitted (along with the location) when incompatible.
   optional LocationMfaMode location_mfa_mode = 11 [deprecated = true];
   optional ServiceLocationMode service_location_mode = 12;
+  // Added for 2.1
   optional bool posture_check_required = 13;
-  // The ordered steps of the MFA flow resolved for this user at this
+  // [2.2] The ordered steps of the MFA flow resolved for this user at this
   // location.
   repeated MfaStep steps = 14;
   // [2.2] MTU for the client.
@@ -159,11 +160,11 @@ message InstanceInfo {
   bool disable_all_traffic = 7 [deprecated = true];
   optional string openid_display_name = 8;
   optional ClientTrafficPolicy client_traffic_policy = 9;
-  // When ANY enrolled instance has this true, the desktop
+  // [2.1] When ANY enrolled instance has this true, the desktop
   // client and CLI hide, block, and disconnect bare WireGuard tunnels
   // (OR-across-instances semantics).
   optional bool disable_tunnels = 10;
-  // Lightweight summary of the enrolled user's configured MFA methods.
+  // [2.2] Lightweight summary of the enrolled user's configured MFA methods.
   // Used for quick checks (e.g. "does this user have any MFA methods?").
   MfaUserState mfa_user_state = 11;
   // [2.2] absent when this core cannot configure mfa from the client
@@ -211,7 +212,7 @@ enum MfaMethod {
   FIDO2 = 5;
 }
 
-// Multi-step MFA
+// [2.2] Multi-step MFA
 
 message MfaStepMethod {
   MfaMethod method = 1;
@@ -350,7 +351,7 @@ message MfaBiometricSignature {
   string signature = 1;
 }
 
-// CTAP-native binary fields. Carries no clientDataJSON.
+// CTAP-native binary fields.
 message MfaFido2Assertion {
   bytes rp_id_hash = 1;
   bytes authenticator_data = 2;
@@ -400,7 +401,7 @@ message ClientMfaStartRequest {
   string pubkey = 2;
   // MfaMethod.TOTP is 0, so an omitted value and explicit TOTP are equivalent.
   MfaMethod method = 3;
-  // Required when the location has posture policies assigned.
+  // [2.1] Required when the location has posture policies assigned.
   optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 4;
 }
 
@@ -459,7 +460,7 @@ message CodeMfaSetupFinishResponse {
   repeated string recovery_codes = 1;
 }
 
-// MFA factor configuration for an enrolled device.
+// [2.2] MFA factor configuration for an enrolled device.
 // Authenticate with the device's polling token and public key.
 message MfaConfigStartRequest {
   string token = 1;
