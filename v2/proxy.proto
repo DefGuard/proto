@@ -33,22 +33,12 @@ message ClientMfaTokenValidationResponse {
   bool token_valid = 1;
 }
 
-enum OpenIdProviderKind {
-  OPEN_ID_PROVIDER_KIND_UNSPECIFIED = 0;
-  OPEN_ID_PROVIDER_KIND_CUSTOM = 1;
-  OPEN_ID_PROVIDER_KIND_GOOGLE = 2;
-  OPEN_ID_PROVIDER_KIND_MICROSOFT = 3;
-  OPEN_ID_PROVIDER_KIND_OKTA = 4;
-  OPEN_ID_PROVIDER_KIND_JUMPCLOUD = 5;
-  OPEN_ID_PROVIDER_KIND_ZITADEL = 6;
-}
-
 message AuthInfoResponse {
   string url = 1;
   string csrf_token = 2;
   string nonce = 3;
   optional string button_display_name = 4;
-  OpenIdProviderKind provider_kind = 5;
+  defguard.client_types.OpenIdProviderKind provider_kind = 5;
 }
 
 message AuthCallbackRequest {
