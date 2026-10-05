@@ -180,6 +180,10 @@ message InstanceInfo {
   // [2.2] absent when this core cannot configure mfa from the client
   MfaCapabilities mfa_capabilities = 12;
   optional OpenIdProviderKind openid_provider_kind = 13;
+  // [2.2] core has a working SMTP configuration
+  optional bool smtp_configured = 14;
+  // [2.2] an OpenID provider is configured and licensed for MFA
+  optional bool openid_available = 15;
 }
 
 message DeviceConfigResponse {
