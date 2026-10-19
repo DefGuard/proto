@@ -86,6 +86,21 @@ message InitialInfo {
 message CoreError {
   int32 status_code = 1;
   string message = 2;
+  CoreErrorCode code = 3;
+}
+
+/*
+ * Reasons for a CoreError. UNSPECIFIED means core sent no code,
+ * so the proxy falls back to a generic message.
+ */
+enum CoreErrorCode {
+  CORE_ERROR_CODE_UNSPECIFIED = 0;
+  // The user signed in to the identity provider with another account.
+  CORE_ERROR_CODE_OIDC_ACCOUNT_MISMATCH = 1;
+  // Core could not verify the identity provider's response.
+  CORE_ERROR_CODE_OIDC_VERIFICATION_FAILED = 2;
+  // The MFA session or attempt no longer exists or was already used.
+  CORE_ERROR_CODE_MFA_SESSION_EXPIRED = 3;
 }
 
 /*
