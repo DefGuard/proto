@@ -396,7 +396,19 @@ message MfaFlowRemoteRequest {
 }
 
 message MfaFlowRemoteResponse {
-  MfaStepResult result = 1;
+  oneof outcome {
+    MfaStepResult result = 1;
+    MfaFlowRemoteRejected rejected = 2;
+  }
+}
+
+message MfaFlowRemoteRejected {
+  MfaRemoteRejectionReason reason = 1;
+}
+
+enum MfaRemoteRejectionReason {
+  MFA_REMOTE_REJECTION_UNSPECIFIED = 0;
+  MFA_REMOTE_REJECTION_MOBILE_CLIENT_OUTDATED = 1;
 }
 
 message MfaMobileApprovalProof {
