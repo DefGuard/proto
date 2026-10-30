@@ -1,6 +1,7 @@
 syntax = "proto3";
 package defguard.client_types;
 
+import "common/device_identity.proto";
 import "enterprise/v2/posture/posture.proto";
 
 /*
@@ -24,6 +25,12 @@ import "enterprise/v2/posture/posture.proto";
 
 message EnrollmentStartRequest {
   string token = 1;
+  oneof device_identity {
+    defguard.device_identity.v1.AttestationIdentity attestation_identity = 2;
+    defguard.device_identity.v1.IdentityErrorCode identity_error = 4;
+  }
+  // Base64 WireGuard public key that must match NewDevice.pubkey.
+  optional string proposed_wireguard_pubkey = 3;
 }
 
 message AdminInfo {
@@ -69,6 +76,7 @@ message EnrollmentStartResponse {
   string final_page_content = 5;
   InstanceInfo instance = 7;
   EnrollmentSettings settings = 8;
+  defguard.device_identity.v1.AttestationRequest attestation_request = 9;
 }
 
 message ActivateUserRequest {
@@ -84,6 +92,7 @@ message NewDevice {
   string name = 1;
   string pubkey = 2;
   optional string token = 3;
+  defguard.device_identity.v1.AttestationResponse attestation_response = 4;
 }
 
 message ExistingDevice {
@@ -192,15 +201,20 @@ message DeviceConfigResponse {
   InstanceInfo instance = 3;
   // polling token used for further client-core communication
   optional string token = 4;
+  defguard.device_identity.v1.IdentityState identity_state = 5;
+  // Used for the next polling request after enrollment or a successful poll.
+  defguard.device_identity.v1.PossessionChallenge possession_challenge = 6;
 }
 
 // Configuration polling
 
 message InstanceInfoRequest {
   string token = 1;
+  defguard.device_identity.v1.PossessionResponse possession_response = 2;
 }
 
 message InstanceInfoResponse {
+  // Shares the identity state and next possession challenge with enrollment.
   DeviceConfigResponse device_config = 1;
 }
 
