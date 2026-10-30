@@ -1,0 +1,155 @@
+syntax = "proto3";
+
+package defguard.device_identity.v1;
+
+import "google/protobuf/empty.proto";
+
+message AttestationIdentity {
+  oneof backend {
+    TpmAttestationIdentity tpm = 1;
+    AppleAttestationIdentity apple_app_attest = 2;
+  }
+}
+
+message TpmAttestationIdentity {
+  // Marshalled TPMT_PUBLIC for the endorsement key.
+  bytes ek_public = 1;
+  // Each certificate is DER-encoded, starting with the EK certificate.
+  repeated bytes ek_certificate_chain_der = 2;
+  // Marshalled TPMT_PUBLIC used by Core to compute the AK Name.
+  bytes ak_public = 3;
+}
+
+message AppleAttestationIdentity {
+  // Base64 key identifier returned by App Attest.
+  string key_id = 1;
+}
+
+message CredentialChallenge {
+  // Contents of TPM2B_ID_OBJECT produced by MakeCredential.
+  bytes credential_blob = 1;
+  // Contents of TPM2B_ENCRYPTED_SECRET carrying the encrypted protection seed.
+  bytes encrypted_secret = 2;
+}
+
+message AttestationRequest {
+  string session_id = 1;
+  // Exact Core-encoded bytes containing the nonce, session and operation binding.
+  // SHA-256 of these bytes becomes TPM qualifyingData or App Attest clientDataHash.
+  bytes data = 2;
+  oneof challenge {
+    CredentialChallenge tpm = 3;
+    // Apple App Attest requires only data, so this variant has no payload.
+    google.protobuf.Empty apple_app_attest = 4;
+  }
+  // Unix timestamp in seconds, evaluated by Core.
+  int64 expires_at = 5;
+}
+
+message AttestationResponse {
+  string session_id = 1;
+  oneof result {
+    TpmAttestationResponse tpm = 2;
+    AppleEvidence apple_app_attest = 3;
+    // A client-reported failure carries no attestation guarantee.
+    IdentityErrorCode error = 4;
+  }
+}
+
+message TpmAttestationResponse {
+  // Recovered Core secret, sensitive until the challenge is verified.
+  bytes activation_secret = 1;
+  TpmEvidence evidence = 2;
+}
+
+message TpmEvidence {
+  // Marshalled TPMT_PUBLIC for the endorsement key.
+  bytes ek_public = 1;
+  // Each certificate is DER-encoded, starting with the EK certificate.
+  repeated bytes ek_certificate_chain_der = 2;
+  // Marshalled TPMT_PUBLIC for the attestation key.
+  bytes ak_public = 3;
+  // Marshalled TPMT_PUBLIC for the certified identity key.
+  bytes identity_public = 4;
+  // Marshalled TPMS_ATTEST produced by TPM2_Certify.
+  bytes attest = 5;
+  Signature signature = 6;
+}
+
+message AppleEvidence {
+  // CBOR attestation object returned by App Attest.
+  bytes attestation_object = 1;
+}
+
+message PossessionChallenge {
+  string challenge_id = 1;
+  // Exact Core-encoded bytes containing the nonce, session and operation binding.
+  // The proof covers these bytes without reserializing them.
+  bytes data = 2;
+  // Unix timestamp in seconds, evaluated by Core.
+  int64 expires_at = 3;
+}
+
+message PossessionResponse {
+  // Identity identifier assigned by Core during enrollment.
+  string identity_id = 1;
+  string challenge_id = 2;
+  oneof result {
+    Signature signature = 3;
+    AppleAssertion apple_app_attest = 4;
+    IdentityErrorCode error = 5;
+  }
+}
+
+message Signature {
+  SignatureAlgorithm algorithm = 1;
+  // Raw RSA signature bytes or ASN.1 DER ECDSA, according to algorithm.
+  bytes signature = 2;
+}
+
+enum SignatureAlgorithm {
+  SIGNATURE_ALGORITHM_UNSPECIFIED = 0;
+  SIGNATURE_ALGORITHM_RSA_SSA_SHA256 = 1;
+  SIGNATURE_ALGORITHM_ECDSA_SHA256 = 2;
+}
+
+message AppleAssertion {
+  // CBOR assertion containing the signature and authenticator data with a counter.
+  bytes assertion_object = 1;
+}
+
+// Current state established by Core after verifying client evidence.
+message IdentityState {
+  string identity_id = 1;
+  AttestationStatus attestation_status = 2;
+  optional IdentityErrorCode error = 3;
+  // SHA-256 of the identity public key encoded as SPKI DER.
+  bytes key_fingerprint = 4;
+  // Unix timestamp in seconds, absent before the first successful attestation.
+  optional int64 attested_at = 5;
+  // Unix timestamp in seconds, absent before the first successful possession proof.
+  optional int64 last_possession_verified_at = 6;
+}
+
+enum AttestationStatus {
+  ATTESTATION_STATUS_UNSPECIFIED = 0;
+  ATTESTATION_STATUS_NOT_ATTESTED = 1;
+  ATTESTATION_STATUS_ATTESTED = 2;
+  ATTESTATION_STATUS_UNRECOGNIZED = 3;
+  ATTESTATION_STATUS_ATTESTED_MANUALLY = 4;
+}
+
+enum IdentityErrorCode {
+  IDENTITY_ERROR_CODE_UNSPECIFIED = 0;
+  IDENTITY_ERROR_CODE_UNAVAILABLE = 1;
+  IDENTITY_ERROR_CODE_TEMPORARILY_UNAVAILABLE = 2;
+  IDENTITY_ERROR_CODE_TIMEOUT = 3;
+  IDENTITY_ERROR_CODE_RATE_LIMITED = 4;
+  IDENTITY_ERROR_CODE_PERMISSION_DENIED = 5;
+  IDENTITY_ERROR_CODE_UNSUPPORTED = 6;
+  IDENTITY_ERROR_CODE_IDENTITY_LOST = 7;
+  IDENTITY_ERROR_CODE_INVALID_CHALLENGE = 8;
+  IDENTITY_ERROR_CODE_BACKEND_FAILURE = 9;
+  IDENTITY_ERROR_CODE_INVALID_EVIDENCE = 10;
+  IDENTITY_ERROR_CODE_CHALLENGE_EXPIRED = 11;
+}
