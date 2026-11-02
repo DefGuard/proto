@@ -354,12 +354,17 @@ message MfaFlowStartRequest {
   string pubkey = 2;
   optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 3;
   repeated MfaMethod selected_methods = 4;
+  // Answers Start's connection challenge when repeating the same request
+  optional defguard.device_identity.v1.PossessionResponse possession_response = 5;
 }
 
 message MfaFlowStartResponse {
   oneof outcome {
     MfaFlowStartAccepted accepted = 1;
     MfaFlowStartRejected rejected = 2;
+    // Requires a repeated Start with proof before MFA starts or a PSK can be issued.
+    // Core binds the challenge to this attempt, location, pubkey, methods and posture data.
+    defguard.device_identity.v1.PossessionChallenge possession_challenge = 3;
   }
 }
 
