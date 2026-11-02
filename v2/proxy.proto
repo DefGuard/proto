@@ -101,6 +101,8 @@ enum CoreErrorCode {
   CORE_ERROR_CODE_OIDC_VERIFICATION_FAILED = 2;
   // The MFA session or attempt no longer exists or was already used.
   CORE_ERROR_CODE_MFA_SESSION_EXPIRED = 3;
+  // Core could not process the request because SMTP is not configured.
+  CORE_ERROR_CODE_SMTP_NOT_CONFIGURED = 4;
 }
 
 /*
