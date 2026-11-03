@@ -30,7 +30,7 @@ message EnrollmentStartRequest {
     defguard.device_identity.v1.IdentityErrorCode identity_error = 4;
   }
   // Base64 WireGuard public key that must match NewDevice.pubkey.
-  optional string proposed_wireguard_pubkey = 3;
+  optional string wireguard_key = 3;
 }
 
 message AdminInfo {
