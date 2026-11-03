@@ -1,0 +1,35 @@
+syntax = "proto3";
+package defguard.enterprise.monitor.v2;
+
+import "google/protobuf/timestamp.proto";
+
+enum Direction {
+    DIRECTION_INBOUND = 0;
+    DIRECTION_OUTBOUND = 1;
+}
+
+enum Status {
+    STATUS_ALLOWED = 0;
+    STATUS_BLOCKED = 1;
+}
+
+message ConnectionEvent {
+    google.protobuf.Timestamp timestamp = 1;
+    Direction direction = 2;
+    Status status = 3;
+    // IANA protocol number (e.g. 6 for TCP, 17 for UDP).
+    uint32 protocol = 4;
+    // Origin of the traffic.
+    bytes source_ip_addr = 5;
+    optional uint32 source_port = 6;
+    // Target of the traffic.
+    bytes destination_ip_addr = 7;
+    optional uint32 destination_port = 8;
+    // ID of the Defguard ACL rule that matched, or `None` if the default policy applied or the
+    // traffic is not subject to ACL rules.
+    optional int64 rule_id = 9;
+    // Bytes sent by the VPN device.
+    uint64 upload_bytes = 10;
+    // Bytes received by the VPN device.
+    uint64 download_bytes = 11;
+}
