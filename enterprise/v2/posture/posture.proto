@@ -65,14 +65,14 @@ message DevicePostureCheckRequest {
   // Polling token of the calling device, used to authenticate the request.
   optional string token = 4;
   // Answers the connection challenge when repeating the same request
-  optional defguard.device_identity.v1.PossessionResponse possession_response = 5;
+  optional defguard.device_identity.v2.PossessionResponse possession_response = 5;
 }
 
 message DevicePostureCheckResponse {
   string preshared_key = 1;
   // When present, PSK is withheld until the same request is repeated with proof
   // Core binds the challenge to this attempt, location, pubkey and posture data
-  optional defguard.device_identity.v1.PossessionChallenge possession_challenge = 2;
+  optional defguard.device_identity.v2.PossessionChallenge possession_challenge = 2;
 }
 
 message DevicePostureRejection {

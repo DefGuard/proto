@@ -26,8 +26,8 @@ import "enterprise/v2/posture/posture.proto";
 message EnrollmentStartRequest {
   string token = 1;
   oneof device_identity {
-    defguard.device_identity.v1.AttestationIdentity attestation_identity = 2;
-    defguard.device_identity.v1.IdentityErrorCode identity_error = 4;
+    defguard.device_identity.v2.AttestationIdentity attestation_identity = 2;
+    defguard.device_identity.v2.IdentityErrorCode identity_error = 4;
   }
   // Base64 WireGuard public key that must match NewDevice.pubkey.
   optional string wireguard_key = 3;
@@ -76,7 +76,7 @@ message EnrollmentStartResponse {
   string final_page_content = 5;
   InstanceInfo instance = 7;
   EnrollmentSettings settings = 8;
-  defguard.device_identity.v1.AttestationRequest attestation_request = 9;
+  defguard.device_identity.v2.AttestationRequest attestation_request = 9;
 }
 
 message ActivateUserRequest {
@@ -92,7 +92,7 @@ message NewDevice {
   string name = 1;
   string pubkey = 2;
   optional string token = 3;
-  defguard.device_identity.v1.AttestationResponse attestation_response = 4;
+  defguard.device_identity.v2.AttestationResponse attestation_response = 4;
 }
 
 message ExistingDevice {
@@ -201,16 +201,16 @@ message DeviceConfigResponse {
   InstanceInfo instance = 3;
   // polling token used for further client-core communication
   optional string token = 4;
-  defguard.device_identity.v1.IdentityState identity_state = 5;
+  defguard.device_identity.v2.IdentityState identity_state = 5;
   // Used for the next polling request after enrollment or a successful poll.
-  defguard.device_identity.v1.PossessionChallenge possession_challenge = 6;
+  defguard.device_identity.v2.PossessionChallenge possession_challenge = 6;
 }
 
 // Configuration polling
 
 message InstanceInfoRequest {
   string token = 1;
-  defguard.device_identity.v1.PossessionResponse possession_response = 2;
+  defguard.device_identity.v2.PossessionResponse possession_response = 2;
 }
 
 message InstanceInfoResponse {
@@ -355,7 +355,7 @@ message MfaFlowStartRequest {
   optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 3;
   repeated MfaMethod selected_methods = 4;
   // Answers Start's connection challenge when repeating the same request
-  optional defguard.device_identity.v1.PossessionResponse possession_response = 5;
+  optional defguard.device_identity.v2.PossessionResponse possession_response = 5;
 }
 
 message MfaFlowStartResponse {
@@ -364,7 +364,7 @@ message MfaFlowStartResponse {
     MfaFlowStartRejected rejected = 2;
     // Requires a repeated Start with proof before MFA starts or a PSK can be issued.
     // Core binds the challenge to this attempt, location, pubkey, methods and posture data.
-    defguard.device_identity.v1.PossessionChallenge possession_challenge = 3;
+    defguard.device_identity.v2.PossessionChallenge possession_challenge = 3;
   }
 }
 
