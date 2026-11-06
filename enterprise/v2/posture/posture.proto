@@ -1,6 +1,8 @@
 syntax = "proto3";
 package defguard.enterprise.posture.v2;
 
+import "common/device_identity.proto";
+
 enum UnavailableReason {
   UNAVAILABLE_REASON_UNSPECIFIED = 0;
   UNAVAILABLE_REASON_INSUFFICIENT_PERMISSIONS = 1;
@@ -62,10 +64,15 @@ message DevicePostureCheckRequest {
   DevicePostureData device_posture_data = 3;
   // Polling token of the calling device, used to authenticate the request.
   optional string token = 4;
+  // Answers the connection challenge when repeating the same request
+  optional defguard.device_identity.v2.PossessionResponse possession_response = 5;
 }
 
 message DevicePostureCheckResponse {
   string preshared_key = 1;
+  // When present, PSK is withheld until the same request is repeated with proof
+  // Core binds the challenge to this attempt, location, pubkey and posture data
+  optional defguard.device_identity.v2.PossessionChallenge possession_challenge = 2;
 }
 
 message DevicePostureRejection {
