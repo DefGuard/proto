@@ -32,4 +32,6 @@ message ConnectionEvent {
     uint64 upload_bytes = 10;
     // Bytes received by the VPN device.
     uint64 download_bytes = 11;
+    // Number of packets of this kind (aggregation).
+    uint64 count = 12;
 }
