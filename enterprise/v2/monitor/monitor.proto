@@ -4,13 +4,15 @@ package defguard.enterprise.monitor.v2;
 import "google/protobuf/timestamp.proto";
 
 enum Direction {
-  DIRECTION_INBOUND = 0;
-  DIRECTION_OUTBOUND = 1;
+  DIRECTION_UNSPECIFIED = 0;
+  DIRECTION_INBOUND = 1;
+  DIRECTION_OUTBOUND = 2;
 }
 
 enum Status {
-  STATUS_ALLOWED = 0;
-  STATUS_BLOCKED = 1;
+  STATUS_UNSPECIFIED = 0;
+  STATUS_ALLOWED = 1;
+  STATUS_BLOCKED = 2;
 }
 
 message ConnectionEvent {
