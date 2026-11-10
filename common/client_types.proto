@@ -210,7 +210,7 @@ message DeviceConfigResponse {
 
 message InstanceInfoRequest {
   string token = 1;
-  defguard.device_identity.v2.PossessionResponse possession_response = 2;
+  defguard.device_identity.v2.PossessionChallengeSolution possession_challenge_solution = 2;
 }
 
 message InstanceInfoResponse {
@@ -355,7 +355,7 @@ message MfaFlowStartRequest {
   optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 3;
   repeated MfaMethod selected_methods = 4;
   // Answers Start's connection challenge when repeating the same request
-  optional defguard.device_identity.v2.PossessionResponse possession_response = 5;
+  optional defguard.device_identity.v2.PossessionChallengeSolution possession_challenge_solution = 5;
 }
 
 message MfaFlowStartResponse {

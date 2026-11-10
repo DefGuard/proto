@@ -65,7 +65,7 @@ message DevicePostureCheckRequest {
   // Polling token of the calling device, used to authenticate the request.
   optional string token = 4;
   // Answers the connection challenge when repeating the same request
-  optional defguard.device_identity.v2.PossessionResponse possession_response = 5;
+  optional defguard.device_identity.v2.PossessionChallengeSolution possession_challenge_solution = 5;
 }
 
 message DevicePostureCheckResponse {

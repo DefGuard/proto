@@ -90,7 +90,7 @@ message PossessionChallenge {
   int64 expires_at = 3;
 }
 
-message PossessionResponse {
+message PossessionChallengeSolution {
   // Identity identifier assigned by Core during enrollment.
   string identity_id = 1;
   string challenge_id = 2;
