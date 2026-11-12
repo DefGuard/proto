@@ -97,13 +97,13 @@ message AttestationStartRequest {
 }
 
 message AttestationStartResponse {
-  defguard.device_identity.v2.AttestationRequest attestation_request = 1;
+  defguard.device_identity.v2.AttestationChallenge challenge = 1;
 }
 
 message AttestationFinishRequest {
   string token = 1;
   int64 device_id = 2;
-  defguard.device_identity.v2.AttestationResponse attestation_response = 3;
+  defguard.device_identity.v2.AttestationChallengeSolution solution = 3;
 }
 
 message AttestationFinishResponse {

@@ -32,7 +32,7 @@ message CredentialChallenge {
   bytes encrypted_secret = 2;
 }
 
-message AttestationRequest {
+message AttestationChallenge {
   string session_id = 1;
   // Exact Core-encoded bytes containing the nonce, session and operation binding.
   // SHA-256 of these bytes becomes TPM qualifyingData or App Attest clientDataHash.
@@ -46,7 +46,7 @@ message AttestationRequest {
   int64 expires_at = 5;
 }
 
-message AttestationResponse {
+message AttestationChallengeSolution {
   string session_id = 1;
   oneof result {
     TpmAttestationResponse tpm = 2;
