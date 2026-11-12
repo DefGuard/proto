@@ -25,12 +25,6 @@ import "enterprise/v2/posture/posture.proto";
 
 message EnrollmentStartRequest {
   string token = 1;
-  oneof device_identity {
-    defguard.device_identity.v2.AttestationIdentity attestation_identity = 2;
-    defguard.device_identity.v2.IdentityErrorCode identity_error = 4;
-  }
-  // Base64 WireGuard public key that must match NewDevice.pubkey.
-  optional string wireguard_key = 3;
 }
 
 message AdminInfo {
@@ -76,7 +70,6 @@ message EnrollmentStartResponse {
   string final_page_content = 5;
   InstanceInfo instance = 7;
   EnrollmentSettings settings = 8;
-  defguard.device_identity.v2.AttestationRequest attestation_request = 9;
 }
 
 message ActivateUserRequest {
@@ -92,7 +85,29 @@ message NewDevice {
   string name = 1;
   string pubkey = 2;
   optional string token = 3;
-  defguard.device_identity.v2.AttestationResponse attestation_response = 4;
+}
+
+message AttestationStartRequest {
+  string token = 1;
+  int64 device_id = 2;
+  oneof device_identity {
+    defguard.device_identity.v2.AttestationIdentity attestation_identity = 3;
+    defguard.device_identity.v2.IdentityErrorCode identity_error = 4;
+  }
+}
+
+message AttestationStartResponse {
+  defguard.device_identity.v2.AttestationRequest attestation_request = 1;
+}
+
+message AttestationFinishRequest {
+  string token = 1;
+  int64 device_id = 2;
+  defguard.device_identity.v2.AttestationResponse attestation_response = 3;
+}
+
+message AttestationFinishResponse {
+  defguard.device_identity.v2.IdentityState identity_state = 1;
 }
 
 message ExistingDevice {
