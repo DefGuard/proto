@@ -1,6 +1,7 @@
 syntax = "proto3";
 package defguard.client_types;
 
+import "common/device_identity.proto";
 import "enterprise/v2/posture/posture.proto";
 
 /*
@@ -84,6 +85,26 @@ message NewDevice {
   string name = 1;
   string pubkey = 2;
   optional string token = 3;
+}
+
+message AttestationStartRequest {
+  string token = 1;
+  int64 device_id = 2;
+  defguard.device_identity.v2.AttestationIdentity attestation_identity = 3;
+}
+
+message AttestationStartResponse {
+  defguard.device_identity.v2.AttestationChallenge challenge = 1;
+}
+
+message AttestationFinishRequest {
+  string token = 1;
+  int64 device_id = 2;
+  defguard.device_identity.v2.AttestationChallengeSolution solution = 3;
+}
+
+message AttestationFinishResponse {
+  defguard.device_identity.v2.IdentityState identity_state = 1;
 }
 
 message ExistingDevice {
@@ -192,12 +213,16 @@ message DeviceConfigResponse {
   InstanceInfo instance = 3;
   // polling token used for further client-core communication
   optional string token = 4;
+  defguard.device_identity.v2.IdentityState identity_state = 5;
+  // Issued for a registered identity and answered in the next polling request.
+  defguard.device_identity.v2.PossessionChallenge possession_challenge = 6;
 }
 
 // Configuration polling
 
 message InstanceInfoRequest {
   string token = 1;
+  defguard.device_identity.v2.PossessionChallengeSolution possession_challenge_solution = 2;
 }
 
 message InstanceInfoResponse {
@@ -340,12 +365,17 @@ message MfaFlowStartRequest {
   string pubkey = 2;
   optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 3;
   repeated MfaMethod selected_methods = 4;
+  // Answers Start's connection challenge when repeating the same request.
+  optional defguard.device_identity.v2.PossessionChallengeSolution possession_challenge_solution = 5;
 }
 
 message MfaFlowStartResponse {
   oneof outcome {
     MfaFlowStartAccepted accepted = 1;
     MfaFlowStartRejected rejected = 2;
+    // Requires a repeated Start with proof before MFA starts or a PSK can be issued.
+    // Core binds the challenge to this attempt, location, pubkey, methods and posture data.
+    defguard.device_identity.v2.PossessionChallenge possession_challenge = 3;
   }
 }
 
