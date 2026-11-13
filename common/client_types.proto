@@ -90,10 +90,7 @@ message NewDevice {
 message AttestationStartRequest {
   string token = 1;
   int64 device_id = 2;
-  oneof device_identity {
-    defguard.device_identity.v2.AttestationIdentity attestation_identity = 3;
-    defguard.device_identity.v2.IdentityErrorCode identity_error = 4;
-  }
+  defguard.device_identity.v2.AttestationIdentity attestation_identity = 3;
 }
 
 message AttestationStartResponse {
