@@ -33,8 +33,9 @@ message CredentialChallenge {
 }
 
 message AttestationChallenge {
+  // Identifies this attestation challenge within the enrollment session.
   string session_id = 1;
-  // Exact Core-encoded bytes containing the nonce, session and operation binding.
+  // Exact Core-encoded bytes binding the nonce to the enrollment session, device and operation.
   // SHA-256 of these bytes becomes TPM qualifyingData or App Attest clientDataHash.
   bytes data = 2;
   oneof challenge {
@@ -47,6 +48,7 @@ message AttestationChallenge {
 }
 
 message AttestationChallengeSolution {
+  // Matches session_id from the corresponding AttestationChallenge.
   string session_id = 1;
   oneof result {
     TpmAttestationResponse tpm = 2;
@@ -57,7 +59,7 @@ message AttestationChallengeSolution {
 }
 
 message TpmAttestationResponse {
-  // Recovered Core secret, sensitive until the challenge is verified.
+  // Secret recovered by TPM2_ActivateCredential and returned to Core for verification.
   bytes activation_secret = 1;
   TpmEvidence evidence = 2;
 }
@@ -91,7 +93,7 @@ message PossessionChallenge {
 }
 
 message PossessionChallengeSolution {
-  // Identity identifier assigned by Core during enrollment.
+  // Identity identifier from the IdentityState returned by Core.
   string identity_id = 1;
   string challenge_id = 2;
   oneof result {
@@ -118,14 +120,14 @@ message AppleAssertion {
   bytes assertion_object = 1;
 }
 
-// Current state established by Core after verifying client evidence.
+// Core determines this state, including devices awaiting attestation or approved manually.
 message IdentityState {
   string identity_id = 1;
   AttestationStatus attestation_status = 2;
   optional IdentityErrorCode error = 3;
   // SHA-256 of the identity public key encoded as SPKI DER.
   bytes key_fingerprint = 4;
-  // Unix timestamp in seconds, absent before the first successful attestation.
+  // Unix timestamp in seconds, absent until successful attestation or manual approval.
   optional int64 attested_at = 5;
   // Unix timestamp in seconds, absent before the first successful possession proof.
   optional int64 last_possession_verified_at = 6;

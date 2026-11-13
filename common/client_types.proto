@@ -217,7 +217,7 @@ message DeviceConfigResponse {
   // polling token used for further client-core communication
   optional string token = 4;
   defguard.device_identity.v2.IdentityState identity_state = 5;
-  // Used for the next polling request after enrollment or a successful poll.
+  // Issued for a registered identity and answered in the next polling request.
   defguard.device_identity.v2.PossessionChallenge possession_challenge = 6;
 }
 
@@ -229,7 +229,6 @@ message InstanceInfoRequest {
 }
 
 message InstanceInfoResponse {
-  // Shares the identity state and next possession challenge with enrollment.
   DeviceConfigResponse device_config = 1;
 }
 
@@ -369,7 +368,7 @@ message MfaFlowStartRequest {
   string pubkey = 2;
   optional defguard.enterprise.posture.v2.DevicePostureData posture_data = 3;
   repeated MfaMethod selected_methods = 4;
-  // Answers Start's connection challenge when repeating the same request
+  // Answers Start's connection challenge when repeating the same request.
   optional defguard.device_identity.v2.PossessionChallengeSolution possession_challenge_solution = 5;
 }
 
