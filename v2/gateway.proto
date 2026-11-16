@@ -77,7 +77,7 @@ message CoreRequest {
   oneof payload {
     PeerStats peer_stats = 2;
     google.protobuf.Empty config_request = 3;
-    defguard.enterprise.monitor.v2.ConnectionEvent connection_event = 4;
+    defguard.enterprise.monitor.v2.ConnectionEvents connection_events = 4;
   }
 }
 

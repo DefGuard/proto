@@ -37,3 +37,9 @@ message ConnectionEvent {
   // Number of packets of this kind (aggregation).
   uint64 count = 12;
 }
+
+// Batch of connection events, e.g. one per aggregation period. Keep it under the gRPC message
+// size limit (4 MB by default).
+message ConnectionEvents {
+  repeated ConnectionEvent events = 1;
+}
