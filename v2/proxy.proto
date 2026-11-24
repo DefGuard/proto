@@ -140,6 +140,8 @@ message CoreResponse {
     defguard.client_types.MfaFlowStepStartResponse mfa_flow_step_start = 28;
     defguard.client_types.MfaFlowStepFinishResponse mfa_flow_step_finish = 29;
     defguard.client_types.MfaFlowRemoteResponse mfa_flow_remote = 30;
+    defguard.client_types.AttestationStartResponse attestation_start = 31;
+    defguard.client_types.AttestationFinishResponse attestation_finish = 32;
   }
 }
 
@@ -248,6 +250,8 @@ message CoreRequest {
     defguard.client_types.MfaFlowStepFinishRequest mfa_flow_step_finish = 31;
     defguard.client_types.MfaFlowRemoteRequest mfa_flow_remote = 32;
     defguard.client_types.MfaFlowApproveRequest mfa_flow_approve = 33;
+    defguard.client_types.AttestationStartRequest attestation_start = 34;
+    defguard.client_types.AttestationFinishRequest attestation_finish = 35;
   }
 }
 
