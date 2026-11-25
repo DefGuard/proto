@@ -1,0 +1,53 @@
+syntax = "proto3";
+package defguard.client_common.v2;
+
+/*
+ * Side operations between desktop clients and Core, forwarded by Edge.
+ * Every request carries the device polling token.
+ */
+
+message DeviceVerificationStartRequest {
+  string token = 1;
+}
+
+enum TotpAlgorithm {
+  TOTP_ALGORITHM_UNSPECIFIED = 0;
+  TOTP_ALGORITHM_SHA1 = 1;
+}
+
+// Returns the active session when the administrator or this device already started one.
+message DeviceVerificationStartResponse {
+  int64 session_id = 1;
+  // Raw RFC 6238 secret, not base32 encoded.
+  bytes secret = 2;
+  TotpAlgorithm algorithm = 3;
+  uint32 digits = 4;
+  // Seconds.
+  uint32 period = 5;
+  // Unix timestamp in seconds.
+  int64 expires_at = 6;
+}
+
+message DeviceVerificationStatusRequest {
+  string token = 1;
+  int64 session_id = 2;
+}
+
+enum DeviceVerificationOutcome {
+  DEVICE_VERIFICATION_OUTCOME_UNSPECIFIED = 0;
+  DEVICE_VERIFICATION_OUTCOME_PENDING = 1;
+  DEVICE_VERIFICATION_OUTCOME_VERIFIED = 2;
+  DEVICE_VERIFICATION_OUTCOME_BLOCKED = 3;
+  DEVICE_VERIFICATION_OUTCOME_CANCELLED = 4;
+  DEVICE_VERIFICATION_OUTCOME_EXPIRED = 5;
+}
+
+// Answers a status request and is pushed to every Edge when an administrator decides.
+message DeviceVerificationStatus {
+  int64 session_id = 1;
+  DeviceVerificationOutcome outcome = 2;
+  // Unix timestamp in seconds.
+  int64 expires_at = 3;
+  // Unix timestamp in seconds, set only for an administrator decision.
+  optional int64 resolved_at = 4;
+}
