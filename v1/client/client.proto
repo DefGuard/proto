@@ -133,6 +133,11 @@ message AttestDeviceIdentityRequest {
   defguard.device_identity.v2.AttestationChallenge challenge = 2;
 }
 
+message StartUpdateResponse {
+  // Version the daemon is installing.
+  string version = 1;
+}
+
 // service used by desktop clients to communicate with interface management
 // daemon
 service DesktopDaemonService {
@@ -145,4 +150,5 @@ service DesktopDaemonService {
   rpc ListInterfaces(google.protobuf.Empty) returns (ListInterfacesResponse);
   rpc CreateDeviceIdentity(google.protobuf.Empty) returns (CreateDeviceIdentityResponse);
   rpc AttestDeviceIdentity(AttestDeviceIdentityRequest) returns (defguard.device_identity.v2.AttestationChallengeSolution);
+  rpc StartUpdate(google.protobuf.Empty) returns (StartUpdateResponse);
 }
