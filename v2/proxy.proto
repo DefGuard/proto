@@ -2,9 +2,9 @@ syntax = "proto3";
 package defguard.proxy.v2;
 
 import "common/client_types.proto";
-import "v2/client_common.proto";
 import "enterprise/v2/posture/posture.proto";
 import "google/protobuf/empty.proto";
+import "v2/client_common.proto";
 import "v2/common.proto";
 
 // Password Reset (proxy-internal)
