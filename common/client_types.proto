@@ -162,6 +162,9 @@ message DeviceConfig {
   repeated MfaStep steps = 14;
   // [2.2] MTU for the client.
   optional uint32 mtu = 15;
+  // [2.2.2] Static WireGuard preshared key, set only for network devices on
+  // locations without MFA.
+  optional string preshared_key = 16;
 }
 
 enum ClientTrafficPolicy {
