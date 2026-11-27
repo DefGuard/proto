@@ -181,6 +181,14 @@ enum OpenIdProviderKind {
   OPEN_ID_PROVIDER_KIND_KEYCLOAK = 7;
 }
 
+enum DeviceStatus {
+  DEVICE_STATUS_UNKNOWN = 0;
+  DEVICE_STATUS_UNVERIFIED = 1;
+  DEVICE_STATUS_VERIFIED = 2;
+  // Takes precedence over the verification result.
+  DEVICE_STATUS_BLOCKED = 3;
+}
+
 message InstanceInfo {
   string id = 1;
   string name = 2;
@@ -206,6 +214,8 @@ message InstanceInfo {
   optional bool smtp_configured = 14;
   // [2.2] an OpenID provider is configured and licensed for MFA
   optional bool openid_available = 15;
+  // [2.3] Absent before the device exists (enrollment start) and from older cores.
+  optional DeviceStatus device_status = 16;
 }
 
 message DeviceConfigResponse {
