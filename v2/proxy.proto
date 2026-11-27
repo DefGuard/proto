@@ -4,6 +4,7 @@ package defguard.proxy.v2;
 import "common/client_types.proto";
 import "enterprise/v2/posture/posture.proto";
 import "google/protobuf/empty.proto";
+import "v2/client_common.proto";
 import "v2/common.proto";
 
 // Password Reset (proxy-internal)
@@ -103,6 +104,13 @@ enum CoreErrorCode {
   CORE_ERROR_CODE_MFA_SESSION_EXPIRED = 3;
   // Core could not process the request because SMTP is not configured.
   CORE_ERROR_CODE_SMTP_NOT_CONFIGURED = 4;
+  CORE_ERROR_CODE_LICENSE_REQUIRED = 5;
+  // The device token is missing or unknown, the device was removed or enrolled again.
+  CORE_ERROR_CODE_DEVICE_TOKEN_INVALID = 6;
+  CORE_ERROR_CODE_USER_INACTIVE = 7;
+  CORE_ERROR_CODE_DEVICE_BLOCKED = 8;
+  // The verification session no longer exists, the client must start a new one.
+  CORE_ERROR_CODE_VERIFICATION_SESSION_NOT_FOUND = 9;
 }
 
 /*
@@ -142,6 +150,11 @@ message CoreResponse {
     defguard.client_types.MfaFlowRemoteResponse mfa_flow_remote = 30;
     defguard.client_types.AttestationStartResponse attestation_start = 31;
     defguard.client_types.AttestationFinishResponse attestation_finish = 32;
+    defguard.client_common.v2.DeviceVerificationStartResponse device_verification_start = 33;
+    defguard.client_common.v2.DeviceVerificationStatus device_verification_status = 34;
+    // Unsolicited with id 0, sent to every Edge when an administrator decides. Delivery is best
+    // effort, so Edge asks for the status of its waiting sessions again after reconnecting.
+    defguard.client_common.v2.DeviceVerificationStatus device_verification_resolved = 35;
   }
 }
 
@@ -252,6 +265,8 @@ message CoreRequest {
     defguard.client_types.MfaFlowApproveRequest mfa_flow_approve = 33;
     defguard.client_types.AttestationStartRequest attestation_start = 34;
     defguard.client_types.AttestationFinishRequest attestation_finish = 35;
+    defguard.client_common.v2.DeviceVerificationStartRequest device_verification_start = 36;
+    defguard.client_common.v2.DeviceVerificationStatusRequest device_verification_status = 37;
   }
 }
 
