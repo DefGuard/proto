@@ -1,6 +1,7 @@
 syntax = "proto3";
 package defguard.client.v1;
 
+import "common/device_identity.proto";
 import "enterprise/v2/posture/posture.proto";
 import "google/protobuf/empty.proto";
 
@@ -90,6 +91,48 @@ message ListInterfacesResponse {
   repeated ManagedInterfaceData interfaces = 1;
 }
 
+message DeviceIdentityMaterial {
+  oneof backend {
+    TpmIdentityMaterial tpm = 1;
+  }
+}
+
+message TpmIdentityMaterial {
+  TpmEndorsementKeyMaterial ek = 1;
+  // Input TPMT_PUBLIC used to recreate the original parent with CreatePrimary.
+  bytes srk_template = 2;
+  TpmKeyBlobs ak = 3;
+  TpmKeyBlobs identity_key = 4;
+}
+
+message TpmEndorsementKeyMaterial {
+  // Input TPMT_PUBLIC used to recreate the EK for credential activation.
+  bytes template = 1;
+  // Marshalled TPMT_PUBLIC, without an outer TPM2B size field.
+  bytes public = 2;
+  // Leaf first, possibly empty or incomplete.
+  repeated bytes certificate_chain_der = 3;
+}
+
+message TpmKeyBlobs {
+  // Marshalled TPMT_PUBLIC, without an outer TPM2B size field.
+  bytes public = 1;
+  // Parent-protected TPM2B_PRIVATE contents, without the outer size field.
+  bytes private = 2;
+}
+
+message CreateDeviceIdentityResponse {
+  // Caller-owned material for local persistence, never sent to Core.
+  DeviceIdentityMaterial identity = 1;
+  defguard.device_identity.v2.AttestationIdentity attestation_identity = 2;
+}
+
+message AttestDeviceIdentityRequest {
+  // Supplied by the caller, the daemon keeps no persistent identity store.
+  DeviceIdentityMaterial identity = 1;
+  defguard.device_identity.v2.AttestationChallenge challenge = 2;
+}
+
 message StartUpdateResponse {
   // Version the daemon is installing.
   string version = 1;
@@ -105,5 +148,7 @@ service DesktopDaemonService {
   rpc DeleteServiceLocations(DeleteServiceLocationsRequest) returns (google.protobuf.Empty);
   rpc GetPostureData(google.protobuf.Empty) returns (defguard.enterprise.posture.v2.DevicePostureData);
   rpc ListInterfaces(google.protobuf.Empty) returns (ListInterfacesResponse);
+  rpc CreateDeviceIdentity(google.protobuf.Empty) returns (CreateDeviceIdentityResponse);
+  rpc AttestDeviceIdentity(AttestDeviceIdentityRequest) returns (defguard.device_identity.v2.AttestationChallengeSolution);
   rpc StartUpdate(google.protobuf.Empty) returns (StartUpdateResponse);
 }
